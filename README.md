@@ -7,6 +7,7 @@ Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)
 |-----------| ------------ |-------|
 | Windows   | x64          | Yes   |
 | Windows   | x86          | No    |
+| Windows   | arm64        | No    |
 | Linux     | x64          | Yes   |
 | Linux     | x86          | No    |
 | Linux     | arm64        | No    |
@@ -23,7 +24,9 @@ Box2D 3.x contains significant efficiency improvements that make use of SIMD int
 While it's not impossible to implement in C# - intrinsics have been available since dotnet 6 - it's probably unlikely that Box2D 3.x will be ported into Box2D.NetStandard: one of the challenges with Box2D.NetStandard has always been keeping it up-to-date with changes to Box2D 2.x, and the performance was never on par. Since Box2D 3.x builds to shared libraries, it makes much more sense all round to simply write bindings to that library than to put time into porting it. It also means I can target .net standard 2.1 instead of dotnet 6 or above.
 
 ## How is this better than Hexa.NET.Box2D or Box2D.NET?
-Hexa.NET.Box2D and Box2D.NET are auto-generated with code generators, and are direct mappings of the Box2D API. This, by contrast, is a hand-crafted API that is designed to be more idiomatic to dotnet coders.
+Hexa.NET.Box2D is auto-generated with a code generator, and is a direct mapping of the Box2D API. It's fine if you're happy dealing with pointers and Box2D's flat API.
+Box2D.NET is a copy-paste-fixup of the Box2D API, and is almost a direct mapping of the Box2D API.
+This, by contrast, is a hand-crafted API that is designed to be more idiomatic to dotnet coders.
 These bindings also have full XmlDoc comments and fully defined delegates. There are also method and delegate overrides which consume and deliver Spans of data instead of pointers.
 In this case "better" is probably subjective: this library is designed to bring quality of life improvements. *This API is complete up to 3.1.0 and will be upgraded as new versions of Box2D are released.*
 
