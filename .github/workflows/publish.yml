@@ -156,6 +156,12 @@ jobs:
           name: box2d-windows-x86
           path: src/Box2DBindings/native/win-x86
 
+      - name: Get Windows ARM64 artifact
+        uses:  actions/download-artifact@v4  
+        with:
+          name: box2d-windows-arm64
+          path: src/Box2DBindings/native/win-arm64
+
       - name: Get Linux x64 artifact
         uses: actions/download-artifact@v4
         with:
