@@ -55,7 +55,7 @@ jobs:
             runs_on: ubuntu-22.04-arm
             artifact_name: box2d-linux-arm64
             artifact_path: box2d-src/build/bin/libbox2d.so
-            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF'
+            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
             post_build_cmd: |
               echo 'Linux ARM64 build complete'
 
