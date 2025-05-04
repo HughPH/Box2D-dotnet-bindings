@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-box2d:
-    runs-on: ${{ matrix.runs_on }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
         include:
