@@ -86,9 +86,24 @@ jobs:
           git clone --depth 1 --branch $latest_tag https://github.com/erincatto/box2d.git box2d-src
 
       - name: Setup CMake
+        if: ${{ runner.arch == 'ARM64' }}
+        shell: bash
+        run: |
+            if [[ "$(uname -m)" == "aarch64" ]]; then
+              echo "Installing CMake manually for ARM64..."
+              sudo apt update
+              sudo apt install -y cmake
+              cmake --version
+            else
+              echo "Using jwlawson/actions-setup-cmake for non-ARM64"
+            fi
+        
+      - name: Setup CMake on x64
+        if: ${{ runner.arch != 'ARM64' }}
         uses: jwlawson/actions-setup-cmake@v2
         with:
-          cmake-version: 3.22.x
+            cmake-version: 3.22.x
+
 
       - name: Build Box2D
         run: |
