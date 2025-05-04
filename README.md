@@ -1,6 +1,20 @@
 # Box2D-dotnet-bindings
 Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)
 
+### The NuGet package includes native binaries for:
+
+| Platform  | Architecture | Tested |
+|-----------| ------------ |-------|
+| Windows   | x64          | Yes   |
+| Windows   | x86          | No    |
+| Linux     | x64          | Yes   |
+| Linux     | x86          | No    |
+| Linux     | arm64        | No    |
+| MacOS     | x64          | No    |
+| MacOS     | arm64        | Yes   |
+
+Please [submit an issue](https://github.com/HughPH/Box2D-dotnet-bindings/issues) if you try an untested platform and it works or doesn't work.
+
 ## What is it?
 This is a "link" from dotnet to Box2D 3.x, with an API that should be more familiar and comfortable to dotnet users.
 

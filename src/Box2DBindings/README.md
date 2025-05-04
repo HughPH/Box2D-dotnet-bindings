@@ -1,6 +1,20 @@
 # Box2D-dotnet-bindings
 Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)
 
+### Includes native binaries for:
+
+| Platform  | Architecture | Tested |
+|-----------| ------------ |-------|
+| Windows   | x64          | Yes   |
+| Windows   | x86          | No    |
+| Linux     | x64          | Yes   |
+| Linux     | x86          | No    |
+| Linux     | arm64        | No    |
+| MacOS     | x64          | No    |
+| MacOS     | arm64        | Yes   |
+
+Please [submit a github issue](https://github.com/HughPH/Box2D-dotnet-bindings/issues) if you try an untested platform and it works or doesn't work.
+
 ## What is it?
 This is a "link" from dotnet to Box2D 3.x, with an API that should be more familiar and comfortable to dotnet users. World has a Bodies property, Body has a Shapes property and a Joints property, and so on. Delegates are fully formed, rather than being vague IntPtrs. All methods and most properties are PascalCased and have XML documentation.
 
@@ -14,9 +28,9 @@ These bindings also have full XmlDoc comments and fully defined delegates.
 In this case "better" is probably subjective: Hexa.NET.Box2D and Box2D.NET are API-complete in that they include DynamicTree functions, while this library brings quality of life improvements. *This API is complete up to 3.1.0 and will be upgraded as new Box2D versions are released.* 
 
 ## Getting things working
-Just install this package. It should work. If not, *please* raise an issue in the github repository: https://github.com/HughPH/Box2D-dotnet-bindings/issues
+Just install this package. It should work. If not, *please* [raise an issue in the github repository](https://github.com/HughPH/Box2D-dotnet-bindings/issues)
 
 ## Known limitations / quirks
-- The native binaries are built from Erin's Box2D mainline, not the latest release tag. This will capture any latest bugfixes, but *could* introduce bugs - in which case, revert to the previous version.
+- The native binaries are built from Erin's Box2D latest release tag.
 - Extensions to the Box2D API won't appear automagically. Please feel free to submit a PR if you want to add something.
-- The native binaries are built for Windows x64 and Linux x64 only.
+
