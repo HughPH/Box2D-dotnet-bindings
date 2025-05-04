@@ -5,38 +5,46 @@ on:
     types: [publish]
 
 jobs:
-  
   build-box2d:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: windows-latest
-            artifact_name: box2d-windows
+            arch: x64
+            artifact_name: box2d-windows-x64
             artifact_path: box2d-src/build/bin/Release/box2d.dll
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF"
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
-              echo 'Windows build complete'
-              # -- not needed until updating to 3.1.0
-              # cd box2d-src/build/bin/Release
-              # ren shared.dll box2d.dll
+              echo 'Windows x64 build complete'
 
           - os: ubuntu-latest
-            artifact_name: box2d-linux
+            arch: x64
+            artifact_name: box2d-linux-x64
             artifact_path: box2d-src/build/bin/libbox2d.so
             cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
               rm box2d-src/build/bin/libbox2d.so
               mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
-                
+
           - os: macos-latest
-            artifact_name: box2d-macos
+            arch: x64
+            artifact_name: box2d-macos-x64
             artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
-            post_build_cmd: "echo 'macOS build complete'"
-    
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: "echo 'macOS x64 build complete'"
+
+          - os: macos-14
+            arch: arm64
+            artifact_name: box2d-macos-arm64
+            artifact_path: box2d-src/build/bin/libbox2d.dylib
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: "echo 'macOS ARM64 build complete'"
+
     steps:
       - name: Clone Box2D (Latest Tag)
         shell: bash
@@ -44,7 +52,7 @@ jobs:
           latest_tag=$(git ls-remote --tags --sort=-v:refname https://github.com/erincatto/box2d.git | awk -F/ '{print $NF}' | grep -E '^[vV]?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
           echo "Latest tag: $latest_tag"
           git clone --depth 1 --branch $latest_tag https://github.com/erincatto/box2d.git box2d-src
-                
+
       - name: Setup CMake
         uses: jwlawson/actions-setup-cmake@v2
         with:
@@ -61,15 +69,15 @@ jobs:
       - name: Post-build adjustments
         run: ${{ matrix.post_build_cmd }}
 
-      - name: Upload to artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact_path }}
           if-no-files-found: error
-              
-    continue-on-error: ${{ matrix.os == 'macos-latest' }}
-          
+
+    continue-on-error: ${{ startsWith(matrix.os, 'macos') }}
+
   build-and-deploy-bindings:
     needs: build-box2d
     runs-on: ubuntu-latest
@@ -80,24 +88,29 @@ jobs:
           fetch-depth: 1
           ref: ${{ github.event.client_payload.sha }}
 
-      - name: Get Windows artefacts
+      - name: Get Windows x64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: box2d-windows
+          name: box2d-windows-x64
           path: src/Box2DBindings/native/win-x64
 
-      - name: Get Linux artefacts
+      - name: Get Linux x64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: box2d-linux
+          name: box2d-linux-x64
           path: src/Box2DBindings/native/linux-x64
 
-      - name: Get macOS artefacts (if exists)
-        continue-on-error: true
+      - name: Get macOS x64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: box2d-macos
+          name: box2d-macos-x64
           path: src/Box2DBindings/native/osx-x64
+
+      - name: Get macOS ARM64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-macos-arm64
+          path: src/Box2DBindings/native/osx-arm64
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
