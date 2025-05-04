@@ -6,13 +6,13 @@ on:
 
 jobs:
   build-box2d:
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
         include:
           - os: windows-latest
             arch: x64
-            runs-on: windows-latest
+            runs_on: windows-latest
             artifact_name: box2d-windows-x64
             artifact_path: box2d-src/build/bin/Release/box2d.dll
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF"
@@ -22,7 +22,7 @@ jobs:
 
           - os: windows-latest
             arch: x86
-            runs-on: windows-latest
+            runs_on: windows-latest
             artifact_name: box2d-windows-x86
             artifact_path: box2d-src/build/bin/Release/box2d.dll
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=x86"
@@ -32,7 +32,7 @@ jobs:
 
           - os: ubuntu-latest
             arch: x64
-            runs-on: ubuntu-latest
+            runs_on: ubuntu-latest
             artifact_name: box2d-linux-x64
             artifact_path: box2d-src/build/bin/libbox2d.so
             cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
@@ -42,7 +42,7 @@ jobs:
 
           - os: ubuntu-latest
             arch: x86
-            runs-on: ubuntu-latest
+            runs_on: ubuntu-latest
             artifact_name: box2d-linux-x86
             artifact_path: box2d-src/build/bin/libbox2d.so
             cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
@@ -61,7 +61,7 @@ jobs:
 
           - os: macos-latest
             arch: x64
-            runs-on: macos-latest
+            runs_on: macos-latest
             artifact_name: box2d-macos-x64
             artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
@@ -70,7 +70,7 @@ jobs:
 
           - os: macos-14
             arch: arm64
-            runs-on: macos-14
+            runs_on: macos-14
             artifact_name: box2d-macos-arm64
             artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
