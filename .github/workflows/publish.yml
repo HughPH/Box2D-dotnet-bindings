@@ -6,12 +6,13 @@ on:
 
 jobs:
   build-box2d:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
         include:
           - os: windows-latest
             arch: x64
+            runs-on: windows-latest
             artifact_name: box2d-windows-x64
             artifact_path: box2d-src/build/bin/Release/box2d.dll
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF"
@@ -19,18 +20,48 @@ jobs:
             post_build_cmd: |
               echo 'Windows x64 build complete'
 
+          - os: windows-latest
+            arch: x86
+            runs-on: windows-latest
+            artifact_name: box2d-windows-x86
+            artifact_path: box2d-src/build/bin/Release/box2d.dll
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=x86"
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+                echo 'Windows x86 build complete'
+
           - os: ubuntu-latest
             arch: x64
+            runs-on: ubuntu-latest
             artifact_name: box2d-linux-x64
             artifact_path: box2d-src/build/bin/libbox2d.so
             cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: |
-              rm box2d-src/build/bin/libbox2d.so
-              mv box2d-src/build/bin/libbox2d.so.3.1.0 box2d-src/build/bin/libbox2d.so
+              echo 'Linux x64 build complete'
+
+          - os: ubuntu-latest
+            arch: x86
+            runs-on: ubuntu-latest
+            artifact_name: box2d-linux-x86
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"'
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: |
+                echo 'Linux x86 build complete'
+
+          - os: ubuntu-22.04-arm64
+            arch: arm64
+            runs_on: ubuntu-22.04-arm
+            artifact_name: box2d-linux-arm64
+            artifact_path: box2d-src/build/bin/libbox2d.so
+            cmake_flags: '-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF'
+            post_build_cmd: |
+              echo 'Linux ARM64 build complete'
 
           - os: macos-latest
             arch: x64
+            runs-on: macos-latest
             artifact_name: box2d-macos-x64
             artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
@@ -39,6 +70,7 @@ jobs:
 
           - os: macos-14
             arch: arm64
+            runs-on: macos-14
             artifact_name: box2d-macos-arm64
             artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"
@@ -94,11 +126,29 @@ jobs:
           name: box2d-windows-x64
           path: src/Box2DBindings/native/win-x64
 
+      - name: Get Windows x86 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-windows-x86
+          path: src/Box2DBindings/native/win-x86
+
       - name: Get Linux x64 artifact
         uses: actions/download-artifact@v4
         with:
           name: box2d-linux-x64
           path: src/Box2DBindings/native/linux-x64
+
+      - name: Get Linux x86 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux-x86
+          path: src/Box2DBindings/native/linux-x86
+
+      - name: Get Linux arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: box2d-linux-arm64
+          path: src/Box2DBindings/native/linux-arm64
 
       - name: Get macOS x64 artifact
         uses: actions/download-artifact@v4
