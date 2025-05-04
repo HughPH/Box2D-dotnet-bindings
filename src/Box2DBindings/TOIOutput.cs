@@ -6,7 +6,7 @@ namespace Box2D;
 /// Output parameters for TimeOfImpact.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct TOIOutput
+public readonly struct TOIOutput
 {
     /// <summary>
     /// The type of result

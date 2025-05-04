@@ -7,7 +7,7 @@ namespace Box2D;
 /// A node in a <see cref="DynamicTree"/>.
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct TreeNode
+public readonly struct TreeNode
 {
     /// <summary>
     /// The bounding box of the node.

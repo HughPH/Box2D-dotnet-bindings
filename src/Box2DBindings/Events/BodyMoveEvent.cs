@@ -17,7 +17,7 @@ namespace Box2D;
 /// </summary>
 [PublicAPI]
 [StructLayout(LayoutKind.Sequential)]
-public struct BodyMoveEvent
+public readonly struct BodyMoveEvent
 {
     /// <summary>
     /// The transform of the body
@@ -29,7 +29,7 @@ public struct BodyMoveEvent
     /// </summary>
     public readonly Body Body;
     
-    private nint userData;
+    private readonly nint userData;
     
     /// <summary>
     /// The user data associated with the body

@@ -6,7 +6,7 @@ namespace Box2D;
 /// A begin touch event is generated when two shapes begin touching.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct ContactBeginTouchEvent
+public readonly struct ContactBeginTouchEvent
 {
     /// <summary>
     /// The first shape

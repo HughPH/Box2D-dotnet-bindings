@@ -14,10 +14,11 @@ public unsafe struct ShapeProxy
 {
     private fixed float points[MAX_POLYGON_VERTICES*2];
     private int count;
+    
     /// <summary>
     /// The radius of the shape.
     /// </summary>
-    public readonly float Radius;
+    public float Radius;
 
     /// <summary>
     /// The points of the shape in local coordinates.

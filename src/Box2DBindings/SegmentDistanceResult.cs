@@ -6,7 +6,7 @@ namespace Box2D;
 /// Result of computing the distance between two line segments
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct SegmentDistanceResult
+public readonly struct SegmentDistanceResult
 {
     /// <summary>
     /// The closest point on the first segment

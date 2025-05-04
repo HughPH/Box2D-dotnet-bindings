@@ -9,7 +9,7 @@ namespace Box2D;
 ///	Therefore you should always confirm the shape id is valid using Shape.Valid.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct SensorEndTouchEvent
+public readonly struct SensorEndTouchEvent
 {
     /// <summary>
     /// The id of the sensor shape

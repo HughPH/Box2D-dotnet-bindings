@@ -6,7 +6,7 @@ namespace Box2D;
 /// A begin touch event is generated when a shape starts to overlap a sensor shape.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct SensorBeginTouchEvent
+public readonly struct SensorBeginTouchEvent
 {
     /// <summary>
     /// The id of the sensor shape

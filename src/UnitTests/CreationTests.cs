@@ -113,4 +113,49 @@ public class CreationTests
         
         if (error is not null) Assert.Fail(error);
     }
+    
+    [Fact]
+    void GetBodyMassData()
+    {
+        string? error = null;
+        Core.SetAssertFunction((condition, name, number) =>
+        {
+            error = condition;
+            return 0;
+        });
+        
+        WorldDef worldDf = new WorldDef();
+        World world = World.CreateWorld(worldDf);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.Type = BodyType.Dynamic;
+        bodyDef.Position = new(-10f, 0f);
+        Body bodyA = world.CreateBody(bodyDef);
+
+        ShapeDef shapeDef = new ShapeDef();
+        shapeDef.Material = new SurfaceMaterial
+            {
+                Friction = 0.5f,
+                Restitution = 0.5f,
+                RollingResistance = 0.5f,
+                TangentSpeed = 0.5f
+            };
+        shapeDef.Density = 1f;
+        shapeDef.Filter.CategoryBits = 0x0004;
+        shapeDef.Filter.MaskBits = 0x0004;
+        shapeDef.Filter.GroupIndex = 0;
+        
+        Circle circle = new Circle();
+        circle.Radius = 1f;
+        circle.Center = new(0f, 0f);
+        
+        bodyA.CreateShape(shapeDef, circle);
+        
+        MassData massData = bodyA.MassData;
+        
+        Assert.Equal(MathF.PI, massData.Mass);
+        
+        if (error is not null) Assert.Fail(error);
+    }
+
 }

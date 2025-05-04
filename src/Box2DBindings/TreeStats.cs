@@ -6,7 +6,7 @@ namespace Box2D;
 /// These are performance results returned by dynamic tree queries.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct TreeStats
+public readonly struct TreeStats
 {
     /// <summary>
     /// Number of internal nodes visited during the query

@@ -15,27 +15,27 @@ public struct Sweep
     /// <summary>
     /// Local center of mass position
     /// </summary>
-    public readonly Vec2 LocalCenter;
+    public Vec2 LocalCenter;
 
     /// <summary>
     /// Starting center of mass world position
     /// </summary>
-    public readonly Vec2 C1;
+    public Vec2 C1;
 
     /// <summary>
     /// Ending center of mass world position
     /// </summary>
-    public readonly Vec2 C2;
+    public Vec2 C2;
 
     /// <summary>
     /// Starting world rotation
     /// </summary>
-    public readonly Rotation Q1;
+    public Rotation Q1;
 
     /// <summary>
     /// Ending world rotation
     /// </summary>
-    public readonly Rotation Q2;
+    public Rotation Q2;
     
     /// <summary>
     /// Evaluate the transform sweep at a specific time.

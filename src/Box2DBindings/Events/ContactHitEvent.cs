@@ -6,7 +6,7 @@ namespace Box2D;
 /// A hit touch event is generated when two shapes collide with a speed faster than the hit speed threshold.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct ContactHitEvent
+public readonly struct ContactHitEvent
 {
     /// <summary>
     /// The first shape

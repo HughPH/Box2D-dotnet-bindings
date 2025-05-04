@@ -7,7 +7,7 @@ namespace Box2D;
 /// from shape A to shape B.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct ContactData
+public readonly struct ContactData
 {
     /// <summary>
     /// The first shape in the contact

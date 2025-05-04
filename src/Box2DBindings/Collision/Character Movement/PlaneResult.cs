@@ -8,7 +8,7 @@ namespace Box2D.Character_Movement;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct PlaneResult
+public readonly struct PlaneResult
 {
     /// <summary>
     /// The collision plane between the mover and a convex shape.

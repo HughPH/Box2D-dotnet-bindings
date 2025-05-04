@@ -9,7 +9,7 @@ namespace Box2D;
 ///	or shape, or changing a filter or body type.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct ContactEndTouchEvent
+public readonly struct ContactEndTouchEvent
 {
     /// <summary>
     /// The first shape

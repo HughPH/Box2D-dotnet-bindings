@@ -16,7 +16,7 @@ public unsafe struct Counters
     /// The number of shapes in the world.
     /// </summary>
     public readonly int ShapeCount;
-// ContactCount:
+    // ContactCount:
     /// <summary>
     /// The number of contacts in the world.
     /// </summary>

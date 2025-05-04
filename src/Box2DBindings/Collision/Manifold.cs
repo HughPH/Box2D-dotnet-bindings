@@ -9,7 +9,7 @@ namespace Box2D;
 /// </summary>
 /// <remarks>Box2D uses speculative collision so some contact points may be separated.</remarks>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct Manifold
+public readonly unsafe struct Manifold
 {
     /// <summary>
     /// The unit normal vector in world space, points from shape A to bodyB
@@ -21,13 +21,13 @@ public unsafe struct Manifold
     /// </summary>
     public readonly float RollingImpulse;
 
-    private ManifoldPoint manifoldPoint0;
-    private ManifoldPoint manifoldPoint1;
+    private readonly ManifoldPoint manifoldPoint0;
+    private readonly ManifoldPoint manifoldPoint1;
 
     /// <summary>
     /// The number of contacts points, will be 0, 1, or 2
     /// </summary>
-    private int pointCount;
+    private readonly int pointCount;
     
     /// <summary>
     /// The manifold points, up to two are possible in 2D

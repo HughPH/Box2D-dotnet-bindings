@@ -11,30 +11,30 @@ public struct SimplexVertex
     /// <summary>
     /// Support point in proxyA
     /// </summary>
-    public readonly Vec2 WA;
+    public Vec2 WA;
 
     /// <summary>
     /// Support point in proxyB
     /// </summary>
-    public readonly Vec2 WB;
+    public Vec2 WB;
 
     /// <summary>
     /// wB - wA
     /// </summary>
-    public readonly Vec2 W;
+    public Vec2 W;
 
     /// <summary>
     /// Barycentric coordinate for closest point
     /// </summary>
-    public readonly float A;
+    public float A;
 
     /// <summary>
     /// wA index
     /// </summary>
-    public readonly int IndexA;
+    public int IndexA;
 
     /// <summary>
     /// wB index
     /// </summary>
-    public readonly int IndexB;
+    public int IndexB;
 }

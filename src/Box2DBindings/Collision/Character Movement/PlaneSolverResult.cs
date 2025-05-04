@@ -8,7 +8,7 @@ namespace Box2D.Character_Movement;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct PlaneSolverResult
+public readonly struct PlaneSolverResult
 {
     /// <summary>
     /// The final position of the mover.

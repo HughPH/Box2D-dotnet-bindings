@@ -1,9 +1,11 @@
 using System.Runtime.InteropServices;
+namespace Box2D;
+
 /// <summary>
 /// Box2D version information.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct Box2DVersion
+public readonly struct Box2DVersion
 {
     /// <summary>
     /// Significant changes

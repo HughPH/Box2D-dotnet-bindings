@@ -12,7 +12,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct ManifoldPoint
+public readonly struct ManifoldPoint
 {
     /// <summary>
     /// Location of the contact point in world space. Subject to precision loss at large coordinates.

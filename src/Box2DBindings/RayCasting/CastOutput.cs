@@ -8,7 +8,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct CastOutput
+public readonly struct CastOutput
 {
     /// <summary>
     /// The surface normal at the hit point
