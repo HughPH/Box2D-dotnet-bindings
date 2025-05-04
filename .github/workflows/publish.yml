@@ -30,6 +30,15 @@ jobs:
             post_build_cmd: |
                 echo 'Windows x86 build complete'
 
+          - os: windows-latest
+            arch: arm64
+            runs_on: windows-latest
+            artifact_name: box2d-windows-arm64
+            artifact_path: box2d-src/build/bin/Release/box2d.dll
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=ARM64"
+            cmake_build_dir: "box2d-src/build"
+            post_build_cmd: "echo 'Windows ARM64 build (cross) complete'"
+
           - os: ubuntu-latest
             arch: x64
             runs_on: ubuntu-latest
