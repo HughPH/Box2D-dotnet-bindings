@@ -7,6 +7,7 @@ Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)
 |-----------| ------------ |-------|
 | Windows   | x64          | Yes   |
 | Windows   | x86          | No    |
+| Windows   | arm64        | No    |
 | Linux     | x64          | Yes   |
 | Linux     | x86          | No    |
 | Linux     | arm64        | No    |
@@ -24,8 +25,8 @@ While it's not impossible to implement in C# - intrinsics have been available si
 
 ## How is this better than Hexa.NET.Box2D or Box2D.NET?
 Hexa.NET.Box2D and Box2D.NET are auto-generated with code generators, and are direct mappings of the Box2D API. This, by contrast, is a hand-crafted API that is designed to be more idiomatic to dotnet coders.
-These bindings also have full XmlDoc comments and fully defined delegates.
-In this case "better" is probably subjective: Hexa.NET.Box2D and Box2D.NET are API-complete in that they include DynamicTree functions, while this library brings quality of life improvements. *This API is complete up to 3.1.0 and will be upgraded as new Box2D versions are released.* 
+These bindings also have full XmlDoc comments and fully defined delegates. There are also method and delegate overrides which consume and deliver Spans of data instead of pointers.
+In this case "better" is probably subjective: this library is designed to bring quality of life improvements. *This API is complete up to 3.1.0 and will be upgraded as new versions of Box2D are released.* 
 
 ## Getting things working
 Just install this package. It should work. If not, *please* [raise an issue in the github repository](https://github.com/HughPH/Box2D-dotnet-bindings/issues)
