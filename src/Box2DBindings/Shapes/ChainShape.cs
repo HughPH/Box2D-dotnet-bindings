@@ -32,9 +32,12 @@ public struct ChainShape
     /// Destroys this chain shape
     /// </summary>
     /// <remarks>This will remove the chain shape from the world and destroy all contacts associated with this shape</remarks>
-    [PublicAPI]
-    public void Destroy() => b2DestroyChain(this);
-    
+    public void Destroy()
+    {
+        if (!Valid) return;
+        b2DestroyChain(this);
+    }
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetWorld")]
     private static extern WorldId b2Chain_GetWorld(ChainShape chainId);
     
@@ -42,7 +45,6 @@ public struct ChainShape
     /// Gets the world that owns this chain shape
     /// </summary>
     /// <returns>The world that owns this chain shape</returns>
-    [PublicAPI]
     public World World => World.GetWorld(b2Chain_GetWorld(this));
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegmentCount")]
@@ -54,7 +56,6 @@ public struct ChainShape
     /// <summary>
     /// The chain segments
     /// </summary>
-    [PublicAPI]
     public unsafe ReadOnlySpan<Shape> Segments
     {
         get
@@ -79,16 +80,15 @@ public struct ChainShape
     /// <summary>
     /// The chain friction
     /// </summary>
-    [PublicAPI]
     public float Friction
     {
-        get
+        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetFriction(this);
+        set
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            return b2Chain_GetFriction(this);
+            b2Chain_SetFriction(this, value);
         }
-        set => b2Chain_SetFriction(this, value);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetRestitution")]
@@ -100,16 +100,15 @@ public struct ChainShape
     /// <summary>
     /// The chain restitution (bounciness)
     /// </summary>
-    [PublicAPI]
     public float Restitution
     {
-        get
+        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetRestitution(this);
+        set
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            return b2Chain_GetRestitution(this);
+            b2Chain_SetRestitution(this, value);
         }
-        set => b2Chain_SetRestitution(this, value);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetMaterial")]
@@ -121,16 +120,15 @@ public struct ChainShape
     /// <summary>
     /// The chain material
     /// </summary>
-    [PublicAPI]
     public int Material
     {
-        get
+        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetMaterial(this);
+        set
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            return b2Chain_GetMaterial(this);
+            b2Chain_SetMaterial(this, value);
         }
-        set => b2Chain_SetMaterial(this, value);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_IsValid")]
@@ -140,7 +138,6 @@ public struct ChainShape
     /// Checks if the chain shape is valid
     /// </summary>
     /// <returns>True if the chain shape is valid, false otherwise</returns>
-    [PublicAPI]
     public bool Valid => b2Chain_IsValid(this) != 0;
     
     

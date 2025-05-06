@@ -73,6 +73,8 @@ public sealed partial class World
     /// </summary>
     public void Destroy()
     {
+        if (!Valid) return;
+        
         foreach (var body in bodies.Values)
             body.Destroy();
         bodies.Clear();
@@ -228,13 +230,12 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(WorldId worldId, CustomFilterNintCallback fcn, nint context);
 
-    internal static Dictionary<int, World> worlds = new();
+    private static Dictionary<int, World> worlds = new();
 
     internal static World GetWorld(WorldId world)
     {
         if (!worlds.TryGetValue(world.index1, out var w))
-            worlds.Add(world.index1, w = new()
-                    { id = world });
+            worlds.Add(world.index1, w = new World { id = world });
         return w;
     }
 

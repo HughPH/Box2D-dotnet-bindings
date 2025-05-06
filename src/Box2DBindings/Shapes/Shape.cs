@@ -113,6 +113,7 @@ public struct Shape : IEquatable<Shape>
     /// <remarks>You may defer the body mass update which can improve performance if several shapes on a body are destroyed at once</remarks>
     public void Destroy(bool updateBodyMass)
     {
+        if (!Valid) return;
         // dealloc user data
         nint userDataPtr = b2Shape_GetUserData(this);
         FreeHandle(ref userDataPtr);

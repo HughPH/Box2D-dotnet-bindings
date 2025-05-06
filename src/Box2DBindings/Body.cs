@@ -113,6 +113,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>This destroys all shapes and joints attached to the body. Do not keep references to the associated shapes and joints</remarks>
     public void Destroy()
     {
+        if (!Valid) return;
         // remove self from world
         World.bodies.Remove(index1);
 
