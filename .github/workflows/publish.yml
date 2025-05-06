@@ -67,9 +67,7 @@ jobs:
                     # Linux x86 (cross‑compile)
                     - target: linux-x86
                       runs_on: ubuntu-latest
-                      pre_build_cmd: |
-                          sed -i 's/-Werror//g' box2d-src/CMakeLists.txt
-                      cmake_flags: >
+                      cmake_flags: > 
                           -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin \
                           -DCMAKE_C_FLAGS="-m32 -msse2 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi" -DCMAKE_CXX_FLAGS="-m32 -msse2 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi"
                     
@@ -121,7 +119,7 @@ jobs:
             - name: "Install gcc‑multilib for 32‑bit build"
               if: matrix.target == 'linux-x86' && steps.cache.outputs.cache-hit != 'true'
               run: sudo apt-get update && sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
-
+                  
             - id: cache
               name: Restore native build cache
               uses: actions/cache@v4
@@ -134,6 +132,11 @@ jobs:
             - name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
               if: steps.cache.outputs.cache-hit != 'true'
               run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_tag }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+
+            # Install 32‑bit toolchain when building linux‑x86
+            - name: "Nuke '-Werror' from CMakeLists.txt"
+              if: matrix.target == 'linux-x86' && steps.cache.outputs.cache-hit != 'true'
+              run: sed -i 's/-Werror//g' box2d-src/CMakeLists.txt
 
             - name: "Configure & compile Box2D"
               if: steps.cache.outputs.cache-hit != 'true'
