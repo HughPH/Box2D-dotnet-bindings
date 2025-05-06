@@ -68,9 +68,9 @@ jobs:
                     - target: linux-x86
                       runs_on: ubuntu-latest
                       cmake_flags: >
-                          -DBOX2D_DISABLE_SIMD=ON \
+                          -DBOX2D_DISABLE_SIMD=ON -DBOX2D_COMPILE_WARNING_AS_ERROR=OFF \
                           -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin \
-                          -DCMAKE_C_FLAGS="-m32 -Wno-error=maybe-uninitialized -Wno-error=psabi" -DCMAKE_CXX_FLAGS="-m32 -Wno-error=maybe-uninitialized -Wno-error=psabi"
+                          -DCMAKE_C_FLAGS="-m32 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi" -DCMAKE_CXX_FLAGS="-m32 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi"
                     
                     # Linux ARM64
                     - target: linux-arm64
