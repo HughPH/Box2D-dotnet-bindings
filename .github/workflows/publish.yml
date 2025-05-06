@@ -139,6 +139,7 @@ jobs:
                     cmake --build box2d-build --config Release --parallel
 
             -   name: Prepare artefact directory
+                shell: bash
                 run: |
                     mkdir -p artefact/${{ matrix.target }}
                     if [ -f box2d-build/bin/libbox2d.so ]; then
