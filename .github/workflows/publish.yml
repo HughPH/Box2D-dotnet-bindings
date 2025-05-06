@@ -142,13 +142,17 @@ jobs:
                 shell: bash
                 run: |
                     mkdir -p artefact/${{ matrix.target }}
+                    ls box2d-build/bin
                     if [ -f box2d-build/bin/libbox2d.so ]; then
+                      echo Copying libbox2d.so to artefact/${{ matrix.target }}/
                       cp box2d-build/bin/libbox2d.so artefact/${{ matrix.target }}/
                     fi
                     if [ -f box2d-build/bin/libbox2d.dylib ]; then
+                      echo Copying libbox2d.dylib to artefact/${{ matrix.target }}/
                       cp box2d-build/bin/libbox2d.dylib artefact/${{ matrix.target }}/
                     fi
                     if [ -f box2d-build/bin/box2d.dll ]; then
+                      echo Copying box2d.dll to artefact/${{ matrix.target }}/
                       cp box2d-build/bin/box2d.dll artefact/${{ matrix.target }}/
                     fi
 
