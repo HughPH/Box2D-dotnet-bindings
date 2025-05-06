@@ -62,19 +62,19 @@ jobs:
                     - target: linux-x64
                       runs_on: ubuntu-latest
                       cmake_flags: >
-                          -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
                     # Linux x86 (cross‑compile)
                     - target: linux-x86
                       runs_on: ubuntu-latest
                       cmake_flags: > 
-                          -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi"
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi"
                     
                     # Linux ARM64
                     - target: linux-arm64
                       runs_on: ubuntu-22.04-arm64
                       cmake_flags: >
-                          -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
                     # Windows x64
                     - target: windows-x64
@@ -142,7 +142,10 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-${{ matrix.target }}
-                  path: box2d-build/**/*
+                  path: |
+                      box2d-build/bin/libbox2d.so
+                      box2d-build/bin/libbox2d.dylib
+                      box2d-build/bin/box2d.dll
                   retention-days: 7
     
     # -----------------------------------------------------------------------------
@@ -181,7 +184,7 @@ jobs:
               run: dotnet build src/UnitTests --configuration Release
 
             - name: Show native libs
-              run: tree / | grep box2d
+              run: find native-libs -type f | grep box2d
     
             - name: Copy Linux shared library to UnitTests output
               run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
