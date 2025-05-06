@@ -69,8 +69,7 @@ jobs:
                       runs_on: ubuntu-latest
                       cmake_flags: >
                           -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin \
-                          -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse -Wno-error=maybe-uninitialized" \
-                          -DCMAKE_CXX_FLAGS="-m32 -msse2 -mfpmath=sse -Wno-error=maybe-uninitialized" -DCMAKE_CXX_FLAGS="-m32 -Wno-error=maybe-uninitialized"
+                          -DCMAKE_C_FLAGS="-m32 -msse2 -mfpmath=sse -Wno-error=maybe-uninitialized" -DCMAKE_CXX_FLAGS="-m32 -msse2 -mfpmath=sse -Wno-error=maybe-uninitialized"
                     
                     # Linux ARM64
                     - target: linux-arm64
