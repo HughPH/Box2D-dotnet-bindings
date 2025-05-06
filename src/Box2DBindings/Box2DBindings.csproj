@@ -4,7 +4,7 @@
         <PackageId>HughPH.Box2D</PackageId>
         <Authors>HughPH BlueSky:@hph.pw</Authors>
         <Description>C# bindings for Box2D 3.1</Description>
-        <PackageTags>Box2D, Physics, GameDev</PackageTags>
+        <PackageTags>Box2D Physics GameDev Bindings Dotnet Csharp Fsharp VisualBasic</PackageTags>
         <RepositoryUrl>https://github.com/HughPH/Box2D-dotnet-bindings</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <License>MIT</License>
@@ -52,11 +52,24 @@
     <ItemGroup>
         <!-- Readme -->
         <None Include="README.md" Pack="true" PackagePath="/" />
-
-        <None Include="native/**/*.dll" Pack="true" PackagePath="runtimes/%(RecursiveDir)native/" />
-        <None Include="native/**/*.so" Pack="true" PackagePath="runtimes/%(RecursiveDir)native/" />
-        <None Include="native/**/*.dylib" Pack="true" PackagePath="runtimes/%(RecursiveDir)native/" />
-    
+        
+        <!-- Windows DLL -->
+        <None Include="native/win-x64/box2d.dll" Pack="true" PackagePath="runtimes/win-x64/native/" />
+        <!-- Windows x86 DLL -->
+        <None Include="native/win-x86/box2d.dll" Pack="true" PackagePath="runtimes/win-x86/native/" />
+        <!-- Windows arm64 DLL -->
+        <None Include="native/win-arm64/box2d.dll" Pack="true" PackagePath="runtimes/win-arm64/native/" />
+        <!-- Linux SO -->
+        <None Include="native/linux-x64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x64/native/" />
+        <!-- Linux x86 SO -->
+        <None Include="native/linux-x86/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x86/native/" />
+        <!-- Linux arm64 SO -->
+        <None Include="native/linux-arm64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-arm64/native/" />
+        <!-- OSX DYLIB -->
+        <None Include="native/osx-x64/libbox2d.dylib" Pack="true" PackagePath="runtimes/osx-x64/native/" />
+        <!-- OSX ARM64 DYLIB -->
+        <None Include="native/osx-arm64/libbox2d.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native/" />
+        
         <!-- XMLDoc -->
 <!--        <None Include="bin/$(Configuration)/netstandard2.1/Box2DBindings.xml" Pack="true" PackagePath="lib/netstandard2.1/" />-->
     </ItemGroup>
