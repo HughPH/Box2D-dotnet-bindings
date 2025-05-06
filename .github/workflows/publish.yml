@@ -74,25 +74,25 @@ jobs:
                     -   target: linux-arm64
                         runs_on: [self-hosted, Linux, ARM64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
                     # Windows x64
                     -   target: win-x64
-                        runs_on: windows-latest
+                        runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF
-                    
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                                        
                     # Windows x86
                     -   target: win-x86
-                        runs_on: windows-latest
+                        runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=Win32 -DCMAKE_C_FLAGS="/wd4738" -DCMAKE_CXX_FLAGS="/wd4738"
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                     
                     # Windows ARM64
                     -   target: win-arm64
-                        runs_on: windows-latest
+                        runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=ARM64 -DCMAKE_C_FLAGS="/wd4738" -DCMAKE_CXX_FLAGS="/wd4738"
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                     
                     # macOS x64
                     -   target: osx-x64
@@ -122,10 +122,6 @@ jobs:
                     key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
                     restore-keys: |
                         ${{ matrix.target }}-
-
-            -   name: "Install gcc‑multilib for 32‑bit build"
-                if: steps.cache.outputs.cache-hit != 'true' && matrix.target == 'linux-x86' && steps.cache.outputs.cache-hit != 'true'
-                run: sudo apt-get update && sudo apt-get install --no-install-recommends -y gcc-multilib g++-multilib
 
             -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
                 if: steps.cache.outputs.cache-hit != 'true'
