@@ -193,6 +193,11 @@ jobs:
                       box2d-${{ needs.detect-tag.outputs.box2d_tag }}-macos-x64
                       box2d-${{ needs.detect-tag.outputs.box2d_tag }}-macos-arm64
 
+            - name: Setup dotnet
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 9.0.x
+
             - name: Build UnitTests project
               run: dotnet build src/UnitTests --configuration Release
     
