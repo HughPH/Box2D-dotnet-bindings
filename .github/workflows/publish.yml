@@ -178,9 +178,6 @@ jobs:
                     path: src/Box2DBindings/native
                     pattern: "*"
 
-            -   name: "List native libs"
-                run: find native-libs -type f
-
             -   name: Setup dotnet
                 uses: actions/setup-dotnet@v4
                 with:
