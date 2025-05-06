@@ -176,15 +176,7 @@ jobs:
                 uses: actions/download-artifact@v4
                 with:
                     path: native-libs
-                    pattern: |
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-x64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-x86
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-arm64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-win-x64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-win-x86
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-win-arm64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-osx-x64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-osx-arm64
+                    pattern: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-*
 
             -   name: Setup dotnet
                 uses: actions/setup-dotnet@v4
@@ -193,9 +185,6 @@ jobs:
 
             -   name: Build UnitTests project
                 run: dotnet build src/UnitTests --configuration Release
-
-            -   name: Show native libs
-                run: find native-libs -type f
 
             -   name: Copy Linux shared library to UnitTests output
                 run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
