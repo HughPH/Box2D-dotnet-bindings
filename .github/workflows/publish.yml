@@ -72,7 +72,7 @@ jobs:
                     
                     # Linux ARM64
                     -   target: linux-arm64
-                        runs_on: ubuntu-22.04-arm64
+                        runs_on: ubuntu-24.04-arm
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
