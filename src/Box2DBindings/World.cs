@@ -39,7 +39,7 @@ public sealed partial class World
         if (!initialized)
         {
             initialized = true;
-            Core.SetAssertFunction(Core.Assert);
+            SetAssertFunction(Assert);
         }
         
         var world = b2CreateWorld(def._internal);
@@ -55,7 +55,7 @@ public sealed partial class World
         if (!initialized)
         {
             initialized = true;
-            Core.SetAssertFunction(Core.Assert);
+            SetAssertFunction(Assert);
         }
         
         id = b2CreateWorld(def._internal);
@@ -73,6 +73,8 @@ public sealed partial class World
     /// </summary>
     public void Destroy()
     {
+        if (!Valid) return;
+        
         foreach (var body in bodies.Values)
             body.Destroy();
         bodies.Clear();

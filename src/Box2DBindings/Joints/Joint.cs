@@ -52,6 +52,7 @@ public class Joint
     /// </summary>
     public void Destroy()
     {
+        if (!Valid) return;
         nint userDataPtr = b2Joint_GetUserData(id);
         FreeHandle(ref userDataPtr);
         b2Joint_SetUserData(id, 0);

@@ -11,6 +11,7 @@ namespace Box2D;
 /// <summary>
 /// Core Box2D functions that don't fit into other categories.
 /// </summary>
+[PublicAPI]
 public static class Core
 {
     internal const string libraryName = "box2d";
@@ -108,7 +109,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(ReadOnlySpan<Vec2> vertices, float radius)
     {
         fixed (Vec2* p = vertices)
@@ -118,14 +118,12 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static ShapeProxy MakeProxy(Vec2[] vertices, float radius)
         => MakeProxy(vertices.AsSpan(), radius);
     
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(Vec2 vertex)
     {
         Vec2* vertices = &vertex;
@@ -135,7 +133,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(Shape shape, float radius)
     {
         Vec2* vertices = shape.GetVertices(out int count);
@@ -145,7 +142,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(Segment segment)
     {
         Vec2* vertices = &segment.Point1;
@@ -155,7 +151,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(Circle circle)
     {
         Vec2* vertices = &circle.Center;
@@ -165,7 +160,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static ShapeProxy MakeProxy(Polygon polygon, float radius)
     {
         var readOnlySpan = polygon.Vertices;
@@ -175,7 +169,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(Capsule capsule, float radius)
     {
         return MakeProxy(&capsule.Center1,2, radius);
@@ -184,7 +177,6 @@ public static class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    [PublicAPI]
     public static unsafe ShapeProxy MakeProxy(ChainSegment segment, float radius)
     {
         return MakeProxy(&segment.Segment.Point1, 2, radius);
@@ -243,11 +235,7 @@ public static class Core
 
     internal static void SetObjectAtPointer(ref nint ptr, object? value)
     {
-        if (ptr != 0)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(ptr);
-            if (handle.IsAllocated) handle.Free();
-        }
+        FreeHandle(ref ptr);
         if (value == null) return;
         GCHandle newHandle = GCHandle.Alloc(value);
         ptr = GCHandle.ToIntPtr(newHandle);
@@ -266,8 +254,7 @@ public static class Core
 
     internal static object? GetObjectAtPointer<T>(Func<T, nint> getFunc, T param)
     {
-        nint ptr = getFunc(param);
-        return GetObjectAtPointer(ptr);
+        return GetObjectAtPointer(getFunc(param));
     }
 
     internal static void SetObjectAtPointer<T>(Func<T, nint> getFunc, Action<T, nint> setFunc, T param, object? value)
@@ -292,7 +279,8 @@ public static class Core
     
     internal static int Assert(string condition, string fileName, int lineNumber)
     {
-        throw new InvalidOperationException($"Assertion failed: {condition} in {fileName} at line {lineNumber}");
+        Console.Error.WriteLine($"Box2D Assertion failed: {condition} in {fileName} at line {lineNumber}");
+        return 0;
     }
 }
 
