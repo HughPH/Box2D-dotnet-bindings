@@ -155,7 +155,7 @@ jobs:
                 uses: actions/upload-artifact@v4
                 with:
                     name: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-${{ matrix.target }}
-                    path: artefact/${{ matrix.target }}/
+                    path: artefact/
                     retention-days: 7
     
     # -----------------------------------------------------------------------------
