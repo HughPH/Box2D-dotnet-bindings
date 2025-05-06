@@ -19,7 +19,9 @@ env:
 jobs:
     detect-tag:
         name: Detect Box2D tag & cache state
-        runs-on: ubuntu-latest   # linux/x64 only
+        runs-on: ubuntu-latest
+        env:
+            GH_TOKEN: ${{ github.token }}
         permissions:
             contents: read
         outputs:
