@@ -188,10 +188,10 @@ jobs:
 
             -   name: Copy Linux shared library to UnitTests output
                 run: cp native-libs/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
-
+                
             -   name: Run UnitTests
                 run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
-
+                
             -   name: "Pack & push to NuGet"
                 env:
                     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
