@@ -180,11 +180,11 @@ jobs:
                         box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-x64
                         box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-x86
                         box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-arm64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-windows-x64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-windows-x86
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-windows-arm64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-macos-x64
-                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-macos-arm64
+                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-win-x64
+                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-win-x86
+                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-win-arm64
+                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-osx-x64
+                        box2d-${{ needs.detect-tag.outputs.box2d_tag }}-osx-arm64
 
             -   name: Setup dotnet
                 uses: actions/setup-dotnet@v4
