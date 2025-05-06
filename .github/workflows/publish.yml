@@ -187,7 +187,7 @@ jobs:
                 run: dotnet build src/UnitTests --configuration Release
 
             -   name: Copy Linux shared library to UnitTests output
-                run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
+                run: cp native-libs/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
 
             -   name: Run UnitTests
                 run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
@@ -200,6 +200,6 @@ jobs:
                       -p:NativeLibPath=native-libs \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
-#                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-#                    --api-key "$NUGET_API_KEY" \
-#                    --source "$NUGET_FEED"
+                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+                    --api-key "$NUGET_API_KEY" \
+                    --source "$NUGET_FEED"
