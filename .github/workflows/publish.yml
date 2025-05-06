@@ -74,25 +74,25 @@ jobs:
                     -   target: linux-arm64
                         runs_on: [self-hosted, Linux, ARM64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
                     # Windows x64
                     -   target: win-x64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                                         
                     # Windows x86
                     -   target: win-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                     
                     # Windows ARM64
                     -   target: win-arm64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                     
                     # macOS x64
                     -   target: osx-x64
