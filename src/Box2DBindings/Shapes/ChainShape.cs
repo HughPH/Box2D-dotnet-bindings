@@ -59,6 +59,8 @@ public struct ChainShape
     {
         get
         {
+            if (!Valid)
+                throw new InvalidOperationException("The chain shape is not valid.");
             int needed = b2Chain_GetSegmentCount(this);
             Shape[] buffer = new Shape[needed];
             int written;
@@ -80,7 +82,12 @@ public struct ChainShape
     [PublicAPI]
     public float Friction
     {
-        get => b2Chain_GetFriction(this);
+        get
+        {
+            if (!Valid)
+                throw new InvalidOperationException("The chain shape is not valid.");
+            return b2Chain_GetFriction(this);
+        }
         set => b2Chain_SetFriction(this, value);
     }
 
@@ -96,7 +103,12 @@ public struct ChainShape
     [PublicAPI]
     public float Restitution
     {
-        get => b2Chain_GetRestitution(this);
+        get
+        {
+            if (!Valid)
+                throw new InvalidOperationException("The chain shape is not valid.");
+            return b2Chain_GetRestitution(this);
+        }
         set => b2Chain_SetRestitution(this, value);
     }
 
@@ -112,8 +124,24 @@ public struct ChainShape
     [PublicAPI]
     public int Material
     {
-        get => b2Chain_GetMaterial(this);
+        get
+        {
+            if (!Valid)
+                throw new InvalidOperationException("The chain shape is not valid.");
+            return b2Chain_GetMaterial(this);
+        }
         set => b2Chain_SetMaterial(this, value);
     }
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_IsValid")]
+    private static extern byte b2Chain_IsValid(ChainShape chainId);
+    
+    /// <summary>
+    /// Checks if the chain shape is valid
+    /// </summary>
+    /// <returns>True if the chain shape is valid, false otherwise</returns>
+    [PublicAPI]
+    public bool Valid => b2Chain_IsValid(this) != 0;
+    
     
 }
