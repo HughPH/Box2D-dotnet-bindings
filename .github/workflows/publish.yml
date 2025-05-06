@@ -19,7 +19,7 @@ env:
 jobs:
     detect-tag:
         name: Detect Box2D tag & compute version
-        runs-on: ubuntu-latest
+        runs-on: home-small-ubuntu
         env:
             GH_TOKEN: ${{ github.token }}
         permissions:
@@ -60,19 +60,19 @@ jobs:
                 include:
                     # Linux x64
                     -   target: linux-x64
-                        runs_on: ubuntu-latest
+                        runs_on: home-small-ubuntu
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
                     # Linux x86 (cross‑compile)
                     -   target: linux-x86
-                        runs_on: ubuntu-latest
+                        runs_on: home-small-ubuntu
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -Wno-error -Wno-error=maybe-uninitialized -Wno-error=psabi"
                     
                     # Linux ARM64
                     -   target: linux-arm64
-                        runs_on: ubuntu-24.04-arm
+                        runs_on: home-pi3-debian
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
                     
@@ -164,7 +164,7 @@ jobs:
     publish-bindings:
         name: Build & publish C# bindings
         needs: [ detect-tag, build-box2d ]
-        runs-on: ubuntu-24.04-arm
+        runs-on: home-small-ubuntu
         permissions:
             contents: read
             packages: write
