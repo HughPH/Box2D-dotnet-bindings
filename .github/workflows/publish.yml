@@ -85,9 +85,9 @@ jobs:
 
                     # Linux ARM64
                     - target: linux-arm64
-                      os: ubuntu-22.04-arm
+                      os: ubuntu-latest
                       arch: arm64
-                      runs_on: ubuntu-22.04-arm
+                      runs_on: ubuntu-latest
                       cmake_flags: >
                           -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
 
@@ -200,6 +200,9 @@ jobs:
 
             - name: Build UnitTests project
               run: dotnet build src/UnitTests --configuration Release
+
+            - name: Show native libs
+              run: tree native-libs
     
             - name: Copy Linux shared library to UnitTests output
               run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
