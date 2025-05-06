@@ -77,9 +77,9 @@ jobs:
             cmake_build_dir: "box2d-src/build"
             post_build_cmd: "echo 'macOS x64 build complete'"
 
-          - os: macos-14
+          - os: macos-latest
             arch: arm64
-            runs_on: macos-14
+            runs_on: macos-latest
             artifact_name: box2d-macos-arm64
             artifact_path: box2d-src/build/bin/libbox2d.dylib
             cmake_flags: "-DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin"

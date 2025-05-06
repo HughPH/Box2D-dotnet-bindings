@@ -1,0 +1,213 @@
+name: Build & publish Box2D‑CSharp bindings
+
+on:
+    push:
+        branches: ["**"]
+    workflow_dispatch:
+
+
+# -----------------------------------------------------------------------------
+# Global constants
+# -----------------------------------------------------------------------------
+env:
+    BOX2D_REPO: erincatto/box2d
+    NUGET_FEED: https://api.nuget.org/v3/index.json
+
+# -----------------------------------------------------------------------------
+# Job 1 ─ Detect upstream tag, compute NuGet version, probe one cache row
+# -----------------------------------------------------------------------------
+jobs:
+    detect-tag:
+        name: Detect Box2D tag & cache state
+        runs-on: ubuntu-latest   # linux/x64 only
+        permissions:
+            contents: read
+        outputs:
+            box2d_tag: ${{ steps.tag.outputs.tag }}
+            pkg_ver:   ${{ steps.version.outputs.value }}
+            cache_key: ${{ steps.cache.outputs.key }}
+            cold:      ${{ steps.cache.outputs.cold }}
+        steps:
+            - id: tag
+              name: "Fetch latest Box2D release tag"
+              run: |
+                  tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
+                  echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+            - id: version
+              name: "Compute managed package version string"
+              run: |
+                  ts=$(date -u '+%Y.%m.%d.%H%M')
+                  branch="${GITHUB_REF_NAME##*/}"
+                  if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+                      version="$ts"
+                  else
+                      safe_branch=$(echo "$branch" | tr '/ "' '--')
+                      version="$ts-$safe_branch"
+                  fi
+                  echo "value=$version" >> "$GITHUB_OUTPUT"
+
+            - id: cache
+              name: "Probe Linux‑x64 cache row"
+              run: |
+                  key="linux-x64-${{ steps.tag.outputs.tag }}"
+                  cold=true
+                  gh api repos/$GITHUB_REPOSITORY/actions/caches --jq '.actions_caches[].key' | grep -q "^$key$" && cold=false
+                  echo "key=$key"  >> "$GITHUB_OUTPUT"
+                  echo "cold=$cold" >> "$GITHUB_OUTPUT"
+
+    # -----------------------------------------------------------------------------
+    # Job 2 ─ Build (or reuse) Box2D native libs for every supported target
+    # -----------------------------------------------------------------------------
+    build-box2d:
+        name: Build / retrieve Box2D native libs
+        needs: detect-tag
+        strategy:
+            matrix:
+                include:
+                    # Linux x64
+                    - target: linux-x64
+                      os: ubuntu-latest
+                      arch: x64
+                      runs_on: ubuntu-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+
+                    # Linux x86 (cross‑compile)
+                    - target: linux-x86
+                      os: ubuntu-latest
+                      arch: x86
+                      runs_on: ubuntu-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+
+                    # Linux ARM64
+                    - target: linux-arm64
+                      os: ubuntu-22.04-arm
+                      arch: arm64
+                      runs_on: ubuntu-22.04-arm
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DBOX2D_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+
+                    # Windows x64
+                    - target: windows-x64
+                      os: windows-latest
+                      arch: x64
+                      runs_on: windows-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF
+
+                    # Windows x86
+                    - target: windows-x86
+                      os: windows-latest
+                      arch: x86
+                      runs_on: windows-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=Win32
+
+                    # Windows ARM64
+                    - target: windows-arm64
+                      os: windows-latest
+                      arch: arm64
+                      runs_on: windows-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=ARM64
+
+                    # macOS x64
+                    - target: macos-x64
+                      os: macos-latest
+                      arch: x64
+                      runs_on: macos-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+
+                    # macOS ARM64
+                    - target: macos-arm64
+                      os: macos-latest
+                      arch: arm64
+                      runs_on: macos-latest
+                      cmake_flags: >
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+        runs-on: ${{ matrix.runs_on }}
+
+        concurrency:
+            group: box2d-${{ matrix.target }}
+            cancel-in-progress: false
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - id: cache
+              name: Restore native build cache
+              uses: actions/cache@v4
+              with:
+                  path: box2d-build
+                  key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+                  restore-keys: |
+                      ${{ matrix.target }}-
+
+            - name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: |
+                  git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_tag }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+
+            - name: "Configure & compile Box2D"
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: |
+                  cmake -S box2d-src -B box2d-build ${{ matrix.cmake_flags }}
+                  cmake --build box2d-build --config Release --parallel
+
+            - name: "Upload artefacts"
+              uses: actions/upload-artifact@v4
+              with:
+                  name: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-${{ matrix.target }}
+                  path: box2d-build/**/*
+                  retention-days: 7
+
+    # -----------------------------------------------------------------------------
+    # Job 3 ─ Build & publish the managed C# bindings package
+    # -----------------------------------------------------------------------------
+    publish-bindings:
+        name: Build & publish C# bindings
+        needs: [detect-tag, build-box2d]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: "Download native libs"
+              uses: actions/download-artifact@v4
+              with:
+                  path: native-libs
+                  pattern: |
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-x64
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-x86
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-linux-arm64
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-windows-x64
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-windows-x86
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-windows-arm64
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-macos-x64
+                      box2d-${{ needs.detect-tag.outputs.box2d_tag }}-macos-arm64
+
+            - name: Build UnitTests project
+              run: dotnet build src/UnitTests --configuration Release
+    
+            - name: Copy Linux shared library to UnitTests output
+              run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
+    
+            - name: Run UnitTests
+              run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
+    
+            - name: "Pack & push to NuGet"
+              env:
+                  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+              run: |
+                  dotnet pack src/Box2DBindings \
+                    -p:NativeLibPath=native-libs \
+                    -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+                    -c Release
+                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+                    --api-key "$NUGET_API_KEY" \
+                    --source "$NUGET_FEED"
