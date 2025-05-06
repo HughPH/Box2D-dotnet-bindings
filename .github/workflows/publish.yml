@@ -176,7 +176,7 @@ jobs:
                 uses: actions/download-artifact@v4
                 with:
                     path: native-libs
-                    pattern: *
+                    pattern: "*"
 
             -   name: "List native libs"
                 run: find native-libs -type f
