@@ -178,6 +178,9 @@ jobs:
                     path: native-libs
                     pattern: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-*
 
+            -   name: "List native libs"
+                run: find native-libs -type f
+
             -   name: Setup dotnet
                 uses: actions/setup-dotnet@v4
                 with:
