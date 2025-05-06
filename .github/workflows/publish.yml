@@ -141,21 +141,21 @@ jobs:
             -   name: Prepare artefact directory
                 shell: bash
                 run: |
-                    mkdir -p artefact/${{ matrix.target }}
+                    mkdir -p artefact/
                     if [ -f box2d-build/bin/libbox2d.so ]; then
-                      cp box2d-build/bin/libbox2d.so artefact/${{ matrix.target }}/
+                      cp box2d-build/bin/libbox2d.so artefact/
                     fi
                     if [ -f box2d-build/bin/libbox2d.dylib ]; then
-                      cp box2d-build/bin/libbox2d.dylib artefact/${{ matrix.target }}/
+                      cp box2d-build/bin/libbox2d.dylib artefact/
                     fi
                     if [ -f box2d-build/bin/Release/box2d.dll ]; then
-                      cp box2d-build/bin/Release/box2d.dll artefact/${{ matrix.target }}/
+                      cp box2d-build/bin/Release/box2d.dll artefact/
                     fi
 
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-${{ matrix.target }}
+                    name: ${{ matrix.target }}
                     path: artefact/
                     retention-days: 7
     
@@ -176,7 +176,7 @@ jobs:
                 uses: actions/download-artifact@v4
                 with:
                     path: native-libs
-                    pattern: box2d-${{ needs.detect-tag.outputs.box2d_tag }}-*
+                    pattern: *
 
             -   name: "List native libs"
                 run: find native-libs -type f
