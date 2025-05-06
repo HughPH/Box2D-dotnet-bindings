@@ -105,7 +105,7 @@ jobs:
                       arch: x86
                       runs_on: windows-latest
                       cmake_flags: >
-                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=Win32
+                          -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_GENERATOR_PLATFORM=Win32  -DCMAKE_C_FLAGS="/wd4738" -DCMAKE_CXX_FLAGS="/wd4738"
 
                     # Windows ARM64
                     - target: windows-arm64
@@ -210,6 +210,6 @@ jobs:
                     -p:NativeLibPath=native-libs \
                     -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                     -c Release
-                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-                    --api-key "$NUGET_API_KEY" \
-                    --source "$NUGET_FEED"
+#                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+#                    --api-key "$NUGET_API_KEY" \
+#                    --source "$NUGET_FEED"
