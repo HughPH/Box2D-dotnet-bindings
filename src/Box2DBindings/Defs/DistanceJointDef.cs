@@ -20,7 +20,7 @@ public class DistanceJointDef
     /// </summary>
     public DistanceJointDef()
     {
-        _internal = new DistanceJointDefInternal();
+        _internal = new();
     }
 
     /// <summary>

@@ -20,7 +20,7 @@ public static class Core
     /// </summary>
     public static Vec2 MultiplySubtract(this Vec2 a, float s, Vec2 b)
     {
-        return new Vec2(a.X - s * b.X, a.Y - s * b.Y);
+        return new(a.X - s * b.X, a.Y - s * b.Y);
     }
     
     /// <summary>
@@ -31,7 +31,7 @@ public static class Core
         float x = ( t.Rotation.Cos * p.X - t.Rotation.Sin * p.Y ) + t.Position.X;
         float y = ( t.Rotation.Sin * p.X + t.Rotation.Cos * p.Y ) + t.Position.Y;
 
-        return new Vec2(x, y);
+        return new(x, y);
     }
     
     /// <summary>

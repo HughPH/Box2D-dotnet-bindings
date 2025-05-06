@@ -19,7 +19,7 @@ public class BodyDef
     /// </summary>
     public BodyDef()
     {
-        _internal = new BodyDefInternal();
+        _internal = new();
     }
 
     /// <summary>

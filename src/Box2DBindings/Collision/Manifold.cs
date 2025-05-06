@@ -38,7 +38,7 @@ public readonly unsafe struct Manifold
         get
         {
             fixed (ManifoldPoint* points = &manifoldPoint0)
-                return new ReadOnlySpan<ManifoldPoint>(points, Math.Clamp(pointCount, 0, 2));
+                return new(points, Math.Clamp(pointCount, 0, 2));
         }
     }
 }

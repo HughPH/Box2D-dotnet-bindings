@@ -34,7 +34,7 @@ public sealed class DebugDrawGeneric<TContext> : DebugDraw where TContext:class
             var del = value;
             var ctx = context;
             void Wrapper(Vec2* vertices, int vertexCount, HexColor color, nint _) =>
-                del(new ReadOnlySpan<Vec2>(vertices, vertexCount), color, ctx);
+                del(new(vertices, vertexCount), color, ctx);
             @internal.DrawPolygon = Wrapper;
         }
     }
@@ -49,7 +49,7 @@ public sealed class DebugDrawGeneric<TContext> : DebugDraw where TContext:class
             var del = value;
             var ctx = context;
             void Wrapper(Transform transform, Vec2* vertices, int vertexCount, float radius, HexColor color, nint _) =>
-                del(transform, new ReadOnlySpan<Vec2>(vertices, vertexCount), radius, color, ctx);
+                del(transform, new(vertices, vertexCount), radius, color, ctx);
             @internal.DrawSolidPolygon = Wrapper;
         }
     }

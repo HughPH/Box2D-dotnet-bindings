@@ -20,7 +20,7 @@ public class WheelJointDef
     /// </summary>
     public WheelJointDef()
     {
-        _internal = new WheelJointDefInternal();
+        _internal = new();
     }
 
     /// <summary>

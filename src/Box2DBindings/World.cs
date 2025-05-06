@@ -36,14 +36,7 @@ public sealed partial class World
     /// <returns>The world</returns>
     public static World CreateWorld(WorldDef def)
     {
-        if (!initialized)
-        {
-            initialized = true;
-            Core.SetAssertFunction(Core.Assert);
-        }
-        
-        var world = b2CreateWorld(def._internal);
-        return GetWorld(world);
+        return new(def);
     }
 
     /// <summary>
@@ -55,7 +48,14 @@ public sealed partial class World
         if (!initialized)
         {
             initialized = true;
-            Core.SetAssertFunction(Core.Assert);
+            SetAssertFunction(Assert);
+        }
+        
+        if (def is { WorkerCount: > 0, EnqueueTask: null, FinishTask: null })
+        {
+            Console.WriteLine("Setting up parallelism with {0} workers", def.WorkerCount);
+            def.EnqueueTask = Parallelism.DefaultEnqueue;
+            def.FinishTask = Parallelism.DefaultFinish;
         }
         
         id = b2CreateWorld(def._internal);
@@ -228,12 +228,13 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(WorldId worldId, CustomFilterNintCallback fcn, nint context);
 
-    private static Dictionary<int, World> worlds = new();
+    internal static Dictionary<int, World> worlds = new();
 
     internal static World GetWorld(WorldId world)
     {
         if (!worlds.TryGetValue(world.index1, out var w))
-            worlds.Add(world.index1, w = new World { id = world });
+            worlds.Add(world.index1, w = new()
+                    { id = world });
         return w;
     }
 

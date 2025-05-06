@@ -21,7 +21,7 @@ public class RevoluteJointDef
     /// </summary>
     public RevoluteJointDef()
     {
-        _internal = new RevoluteJointDefInternal();
+        _internal = new();
     }
     
     /// <summary>

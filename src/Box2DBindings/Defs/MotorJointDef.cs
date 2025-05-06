@@ -17,7 +17,7 @@ public class MotorJointDef
     /// </summary>
     public MotorJointDef()
     {
-        _internal = new MotorJointDefInternal();
+        _internal = new();
     }
 
     /// <summary>

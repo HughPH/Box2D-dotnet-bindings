@@ -4,7 +4,7 @@
         <PackageId>HughPH.Box2D</PackageId>
         <Authors>HughPH BlueSky:@hph.pw</Authors>
         <Description>C# bindings for Box2D 3.1</Description>
-        <PackageTags>Box2D, Physics, GameDev</PackageTags>
+        <PackageTags>Box2D Physics GameDev Bindings Dotnet Csharp Fsharp VisualBasic</PackageTags>
         <RepositoryUrl>https://github.com/HughPH/Box2D-dotnet-bindings</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <License>MIT</License>
@@ -29,7 +29,7 @@
         <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
         
         <Version>$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
-        <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
+        <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)-threading-alpha-0</AssemblyVersion>
         <Copyright>Copyright © 2025 Hugh Phoenix-Hulme</Copyright>
         <PackageProjectUrl>https://github.com/HughPH/Box2D-dotnet-bindings/</PackageProjectUrl>
     </PropertyGroup>

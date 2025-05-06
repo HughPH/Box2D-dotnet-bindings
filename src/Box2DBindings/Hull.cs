@@ -45,7 +45,7 @@ public struct Hull
                 if (count > MAX_POLYGON_VERTICES)
                     throw new ArgumentOutOfRangeException(nameof(count), $"Count cannot be greater than {MAX_POLYGON_VERTICES}");
                 
-                return new ReadOnlySpan<Vec2>(ptr, count);
+                return new(ptr, count);
             }
         }
     }

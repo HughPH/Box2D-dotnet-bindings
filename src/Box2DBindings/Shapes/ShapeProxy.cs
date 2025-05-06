@@ -28,7 +28,7 @@ public unsafe struct ShapeProxy
         get
         {
             fixed (float* ptr = points)
-                return new ReadOnlySpan<Vec2>(ptr, count);
+                return new(ptr, count);
         }
         set
         {

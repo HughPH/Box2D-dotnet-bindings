@@ -37,7 +37,7 @@ public class Joint
             case JointType.Wheel:
                 return new WheelJoint(id);
             case JointType.Filter:
-                return new Joint(id);
+                return new(id);
             default:
                 throw new NotSupportedException($"Joint type {t} is not supported");
 

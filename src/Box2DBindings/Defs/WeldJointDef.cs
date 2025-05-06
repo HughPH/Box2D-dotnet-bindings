@@ -19,7 +19,7 @@ public class WeldJointDef
     /// </summary>
     public WeldJointDef()
     {
-        _internal = new WeldJointDefInternal();
+        _internal = new();
     }
     
     /// <summary>

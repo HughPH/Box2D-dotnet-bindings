@@ -60,7 +60,7 @@ public unsafe struct Polygon
         get
         {
             fixed (float* ptr = vertices)
-                return new ReadOnlySpan<Vec2>(ptr,count);
+                return new(ptr,count);
         }
     }
 
@@ -72,7 +72,7 @@ public unsafe struct Polygon
         get
         {
             fixed (float* ptr = normals)
-                return new ReadOnlySpan<Vec2>(ptr,count);
+                return new(ptr,count);
         }
     }
 

@@ -31,7 +31,7 @@ public class ChainDef
     /// </summary>
     public ChainDef()
     {
-        _internal = new ChainDefInternal();
+        _internal = new();
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class ChainDef
         {
             if (_internal.Points == null)
                 return Span<Vec2>.Empty;
-            return new Span<Vec2>(_internal.Points, _internal.Count);
+            return new(_internal.Points, _internal.Count);
         }
         set
         {
@@ -103,7 +103,7 @@ public class ChainDef
         {
             if (_internal.Materials == null)
                 return Span<SurfaceMaterial>.Empty;
-            return new Span<SurfaceMaterial>(_internal.Materials, _internal.MaterialCount);
+            return new(_internal.Materials, _internal.MaterialCount);
         }
         set
         {
