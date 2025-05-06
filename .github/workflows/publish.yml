@@ -175,7 +175,7 @@ jobs:
             -   name: "Download native libs"
                 uses: actions/download-artifact@v4
                 with:
-                    path: native-libs
+                    path: src/Box2DBindings/native
                     pattern: "*"
 
             -   name: "List native libs"
@@ -190,7 +190,7 @@ jobs:
                 run: dotnet build src/UnitTests --configuration Release
 
             -   name: Copy Linux shared library to UnitTests output
-                run: cp native-libs/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
+                run: cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
                 
             -   name: Run UnitTests
                 run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
@@ -198,7 +198,6 @@ jobs:
             -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
-                      -p:NativeLibPath=native-libs \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
             
