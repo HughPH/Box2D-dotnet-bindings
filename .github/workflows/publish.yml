@@ -202,7 +202,7 @@ jobs:
               run: dotnet build src/UnitTests --configuration Release
 
             - name: Show native libs
-              run: tree /
+              run: tree / | grep box2d
     
             - name: Copy Linux shared library to UnitTests output
               run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
