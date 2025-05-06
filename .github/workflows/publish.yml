@@ -142,18 +142,14 @@ jobs:
                 shell: bash
                 run: |
                     mkdir -p artefact/${{ matrix.target }}
-                    ls box2d-build/bin
                     if [ -f box2d-build/bin/libbox2d.so ]; then
-                      echo Copying libbox2d.so to artefact/${{ matrix.target }}/
                       cp box2d-build/bin/libbox2d.so artefact/${{ matrix.target }}/
                     fi
                     if [ -f box2d-build/bin/libbox2d.dylib ]; then
-                      echo Copying libbox2d.dylib to artefact/${{ matrix.target }}/
                       cp box2d-build/bin/libbox2d.dylib artefact/${{ matrix.target }}/
                     fi
-                    if [ -f box2d-build/bin/box2d.dll ]; then
-                      echo Copying box2d.dll to artefact/${{ matrix.target }}/
-                      cp box2d-build/bin/box2d.dll artefact/${{ matrix.target }}/
+                    if [ -f box2d-build/bin/Release/box2d.dll ]; then
+                      cp box2d-build/bin/Release/box2d.dll artefact/${{ matrix.target }}/
                     fi
 
             -   name: Upload artefacts
@@ -199,7 +195,7 @@ jobs:
                 run: dotnet build src/UnitTests --configuration Release
 
             -   name: Show native libs
-                run: find native-libs -type f | grep box2d
+                run: find native-libs -type f
 
             -   name: Copy Linux shared library to UnitTests output
                 run: cp native-libs/libbox2d.so src/UnitTests/bin/Release/net9.0/
