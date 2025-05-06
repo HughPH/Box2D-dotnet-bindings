@@ -230,7 +230,7 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(WorldId worldId, CustomFilterNintCallback fcn, nint context);
 
-    private static Dictionary<int, World> worlds = new();
+    internal static Dictionary<int, World> worlds = new();
 
     internal static World GetWorld(WorldId world)
     {
