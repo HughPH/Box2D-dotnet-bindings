@@ -192,14 +192,17 @@ jobs:
             -   name: Run UnitTests
                 run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
                 
-            -   name: "Pack & push to NuGet"
-                env:
-                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+            -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
                       -p:NativeLibPath=native-libs \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
+            
+            -   name: "Push to NuGet"
+                env:
+                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+                run: |
                   dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
                     --api-key "$NUGET_API_KEY" \
                     --source "$NUGET_FEED"
