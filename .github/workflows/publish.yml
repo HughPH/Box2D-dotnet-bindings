@@ -143,8 +143,8 @@ jobs:
                     if [ -f box2d-build/bin/libbox2d.dylib ]; then
                       cp box2d-build/bin/libbox2d.dylib artefact/
                     fi
-                    if [ -f box2d-build/bin/Release/box2d.dll ]; then
-                      cp box2d-build/bin/Release/box2d.dll artefact/
+                    if [ -f box2d-build/bin/box2d.dll ]; then
+                      cp box2d-build/bin/box2d.dll artefact/
                     fi
 
             -   name: Upload artefacts
