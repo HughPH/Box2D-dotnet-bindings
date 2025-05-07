@@ -157,6 +157,7 @@ jobs:
                     fi
 
             -   name: objdump for sanity
+                if: ${{ matrix.target != 'win-arm64' }}
                 run: |
                     if [ -f box2d-build/bin/libbox2d.so ]; then
                       objdump -f artefact/libbox2d.so
@@ -186,6 +187,7 @@ jobs:
                     fi
 
             -   name: extra objdump for extra sanity
+                if: ${{ matrix.target != 'win-arm64' }}
                 run: |
                     if [ -f box2d-build/bin/libbox2d.so ]; then
                       objdump -f artefact/libbox2d.so
