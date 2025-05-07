@@ -68,7 +68,7 @@ jobs:
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -Wno-error -Wno-error=maybe-uninitialized"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -mstackrealign -Wno-error -Wno-error=maybe-uninitialized"
                     
                     # Linux ARM64
                     -   target: linux-arm64
@@ -80,19 +80,19 @@ jobs:
                     -   target: win-x64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-windows-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-windows-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                                         
                     # Windows x86
                     -   target: win-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_C_FLAGS="-m32 -msse -mstackrealign" -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-windows-gnu-gcc -DCMAKE_CXX_COMPILER=i686-w64-windows-gnu-g++ -DCMAKE_C_FLAGS="-m32 -msse -mstackrealign" -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                     
                     # Windows ARM64
                     -   target: win-arm64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-windows-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-windows-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
                     
                     # macOS x64
                     -   target: osx-x64
