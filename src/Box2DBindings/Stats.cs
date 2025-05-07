@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+[PublicAPI]
 public static class Stats
 {
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetByteCount")]
@@ -12,19 +13,16 @@ public static class Stats
     /// Get the number of bytes allocated by Box2D
     /// </summary>
     /// <returns>The number of bytes allocated by Box2D</returns>
-    [PublicAPI]
     public static int GetAllocatedBytes() => GetByteCount();
 
     /// <summary>
     /// Get the world performance profile for the supplied world
     /// </summary>
-    [PublicAPI]
     public static Profile GetWorldProfile(World world) => world.Profile;
 
     /// <summary>
     /// Get counters and sizes for the supplied world
     /// </summary>
-    [PublicAPI]
     public static Counters GetWorldCounters(World world) => world.Counters;
 
     /// <summary>
