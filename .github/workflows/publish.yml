@@ -62,49 +62,49 @@ jobs:
                     -   target: linux-x64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # Linux x86 (cross‑compile)
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -mstackrealign -Wno-error -Wno-error=maybe-uninitialized"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -mstackrealign -Wno-error -Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # Linux ARM64
                     -   target: linux-arm64
                         runs_on: [self-hosted, Linux, ARM64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized"
+                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # Windows x64
                     -   target: win-x64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                                         
                     # Windows x86
                     -   target: win-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_C_FLAGS="-m32 -msse -mstackrealign" -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_C_FLAGS="-m32 -msse -mstackrealign" -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # Windows ARM64
                     -   target: win-arm64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
+                            -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # macOS x64
                     -   target: osx-x64
                         runs_on: macos-13
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # macOS ARM64
                     -   target: osx-arm64
                         runs_on: macos-14
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
         runs-on: ${{ matrix.runs_on }}
         
         concurrency:
@@ -154,6 +154,24 @@ jobs:
                       echo "Artefact directory is empty, aborting."
                       tree box2d-build/bin
                       exit 1
+                    fi
+
+            -   name: Strip release artifacts
+                run: |
+                    if [[ -f artefact/libbox2d.so ]]; then
+                      strip artefact/libbox2d.so
+                    elif [[ -f artefact/libbox2d.dylib ]]; then
+                      strip -x artefact/libbox2d.dylib
+                    elif [[ -f artefact/libbox2d.dll ]]; then
+                      strip artefact/libbox2d.dll
+                    fi
+                    
+            -   name: UPX pack release artifacts
+                run: |
+                    if [[ -f artefact/libbox2d.so ]]; then
+                      upx --ultra-brute artefact/libbox2d.so
+                    elif [[ -f artefact/libbox2d.dll ]]; then
+                      upx --ultra-brute artefact/libbox2d.dll
                     fi
 
             -   name: Upload artefacts
