@@ -98,13 +98,13 @@ jobs:
                     -   target: osx-x64
                         runs_on: macos-13
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # macOS ARM64
                     -   target: osx-arm64
                         runs_on: macos-14
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
         runs-on: ${{ matrix.runs_on }}
         
         concurrency:
