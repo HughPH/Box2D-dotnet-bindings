@@ -68,7 +68,7 @@ jobs:
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -mstackrealign -Wno-error -Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -mstackrealign -Wno-error -Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc"
                     
                     # Linux ARM64
                     -   target: linux-arm64
@@ -96,13 +96,13 @@ jobs:
                     
                     # macOS x64
                     -   target: osx-x64
-                        runs_on: macos-13
+                        runs_on: macos-latest
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                     
                     # macOS ARM64
                     -   target: osx-arm64
-                        runs_on: macos-14
+                        runs_on: macos-latest
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
         runs-on: ${{ matrix.runs_on }}
