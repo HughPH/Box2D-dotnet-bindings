@@ -166,8 +166,8 @@ jobs:
                       objdump -f artefact/libbox2d.dll
                     fi                   
                     
-            -   name: Strip release artifacts if not 'linux-arm64'
-                if: ${{ matrix.target != 'linux-arm64' }}
+            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
+                if: ${{ matrix.target != 'linux-arm64' }} && ${{ matrix.target != 'win-arm64' }}
                 run: |
                     if [[ -f artefact/libbox2d.so ]]; then
                       strip artefact/libbox2d.so
