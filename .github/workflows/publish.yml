@@ -143,7 +143,7 @@ jobs:
                     if [ -f box2d-build/bin/libbox2d.dylib ]; then
                       cp box2d-build/bin/libbox2d.dylib artefact/
                     fi
-                    if [ -f box2d-build/bin/box2d.dll ]; then
+                    if [ -f box2d-build/bin/libbox2d.dll ]; then
                       cp box2d-build/bin/libbox2d.dll artefact/
                     fi
 
