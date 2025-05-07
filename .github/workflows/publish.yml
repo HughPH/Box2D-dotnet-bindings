@@ -156,7 +156,8 @@ jobs:
                       exit 1
                     fi
 
-            -   name: Strip release artifacts
+            -   name: Strip release artifacts if not 'linux-arm64'
+                if: ${{ matrix.target != 'linux-arm64' }}
                 run: |
                     if [[ -f artefact/libbox2d.so ]]; then
                       strip artefact/libbox2d.so
