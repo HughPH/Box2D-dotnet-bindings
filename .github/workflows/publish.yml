@@ -93,18 +93,18 @@ jobs:
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
                             -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS_RELEASE="-O3"
-#                    
-#                    # macOS x64
-#                    -   target: osx-x64
-#                        runs_on: macos-latest
-#                        cmake_flags: >
-#                            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=x86_64"
-#                    
-#                    # macOS ARM64
-#                    -   target: osx-arm64
-#                        runs_on: macos-latest
-#                        cmake_flags: >
-#                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
+
+                    # macOS x64
+                    -   target: osx-x64
+                        runs_on: macos-latest
+                        cmake_flags: >
+                            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=x86_64"
+
+                    # macOS ARM64
+                    -   target: osx-arm64
+                        runs_on: macos-latest
+                        cmake_flags: >
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
         runs-on: ${{ matrix.runs_on }}
         
         concurrency:
@@ -206,46 +206,55 @@ jobs:
     # -----------------------------------------------------------------------------
     # Job 3 ─ Build & publish the managed C# bindings package
     # -----------------------------------------------------------------------------
-#    publish-bindings:
-#        name: Build & publish C# bindings
-#        needs: [ detect-tag, build-box2d ]
-#        runs-on: [self-hosted, Linux, ARM64]
-#        permissions:
-#            contents: read
-#            packages: write
-#        steps:
-#            -   uses: actions/checkout@v4
-#
-#            -   name: "Download native libs"
-#                uses: actions/download-artifact@v4
-#                with:
-#                    path: src/Box2DBindings/native
-#                    pattern: "*"
-#
-#            -   name: Setup dotnet
-#                uses: actions/setup-dotnet@v4
-#                with:
-#                    dotnet-version: 9.0.x
-#
-#            -   name: Build UnitTests project
-#                run: dotnet build src/UnitTests --configuration Release
-#
-#            -   name: Copy Linux shared library to UnitTests output
-#                run: cp src/Box2DBindings/native/linux-arm64/libbox2d.so src/UnitTests/bin/Release/net9.0/
-#                
-#            -   name: Run UnitTests
-#                run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
-#                
-#            -   name: "Pack NuGet package"
-#                run: |
-#                    dotnet pack src/Box2DBindings \
-#                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
-#                      -c Release
-#            
-#            -   name: "Push to NuGet"
-#                env:
-#                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#                run: |
-#                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-#                    --api-key "$NUGET_API_KEY" \
-#                    --source "$NUGET_FEED"
+    publish-bindings:
+        name: Build & publish C# bindings
+        needs: [ detect-tag, build-box2d ]
+        runs-on: [self-hosted, Linux, ARM64]
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: "Download native libs"
+                uses: actions/download-artifact@v4
+                with:
+                    path: src/Box2DBindings/native
+                    pattern: "*"
+
+            -   name: Pack osx libs with upx
+                run: |
+                    if [ -f src/Box2DBindings/native/osx-x64/libbox2d.dylib ]; then
+                      upx --ultra-brute --debug src/Box2DBindings/native/osx-x64/libbox2d.dylib
+                    fi
+                    if [ -f src/Box2DBindings/native/osx-arm64/libbox2d.dylib ]; then
+                      upx --ultra-brute --debug src/Box2DBindings/native/osx-arm64/libbox2d.dylib
+                    fi
+
+            -   name: Setup dotnet
+                uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: 9.0.x
+
+            -   name: Build UnitTests project
+                run: dotnet build src/UnitTests --configuration Release
+
+            -   name: Copy Linux shared library to UnitTests output
+                run: cp src/Box2DBindings/native/linux-arm64/libbox2d.so src/UnitTests/bin/Release/net9.0/
+
+            -   name: Run UnitTests
+                run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
+
+            -   name: "Pack NuGet package"
+                run: |
+                    dotnet pack src/Box2DBindings \
+                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+                      -c Release
+
+            -   name: "Push to NuGet"
+                env:
+                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+                run: |
+                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+                    --api-key "$NUGET_API_KEY" \
+                    --source "$NUGET_FEED"
