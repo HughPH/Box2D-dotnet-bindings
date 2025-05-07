@@ -144,7 +144,16 @@ jobs:
                       cp box2d-build/bin/libbox2d.dylib artefact/
                     fi
                     if [ -f box2d-build/bin/box2d.dll ]; then
-                      cp box2d-build/bin/box2d.dll artefact/
+                      cp box2d-build/bin/libbox2d.dll artefact/
+                    fi
+
+            -   name: "Fail if artefact directory is empty"
+                shell: bash
+                run: |
+                    if [ -z "$(ls -A artefact/)" ]; then
+                      echo "Artefact directory is empty, aborting."
+                      tree box2d-build/bin
+                      exit 1
                     fi
 
             -   name: Upload artefacts
