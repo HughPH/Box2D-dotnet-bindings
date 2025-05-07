@@ -62,19 +62,19 @@ jobs:
                     -   target: linux-x64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-O3 -march=native -Wno-error=maybe-uninitialized"
                     
                     # Linux x86 (cross‑compile)
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-m32 -msse2 -mstackrealign -Wno-error -Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto -march=native" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-O3 -m32 -msse2 -mstackrealign -march=i686 -Wno-error=maybe-uninitialized" -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--hash-style=sysv"
                     
                     # Linux ARM64
                     -   target: linux-arm64
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
-                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-Wno-error=maybe-uninitialized" -DCMAKE_C_FLAGS_RELEASE="-O3 -flto" -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -flto" -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+                            -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-O3 -march=aarch64 -Wno-error=maybe-uninitialized" 
                     
 #                    # Windows x64
 #                    -   target: win-x64
