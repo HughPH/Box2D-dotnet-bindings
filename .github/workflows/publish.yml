@@ -157,8 +157,14 @@ jobs:
                     fi
 
             -   name: objdump for sanity
-                run: objdump -f ./libbox2d.so
-
+                run: |
+                    if [ -f box2d-build/bin/libbox2d.so ]; then
+                      objdump -f artefact/libbox2d.so
+                    fi
+                    if [ -f box2d-build/bin/libbox2d.dll ]; then
+                      objdump -f artefact/libbox2d.dll
+                    fi                   
+                    
             -   name: Strip release artifacts if not 'linux-arm64'
                 if: ${{ matrix.target != 'linux-arm64' }}
                 run: |
@@ -180,7 +186,13 @@ jobs:
                     fi
 
             -   name: extra objdump for extra sanity
-                run: objdump -f ./libbox2d.so
+                run: |
+                    if [ -f box2d-build/bin/libbox2d.so ]; then
+                      objdump -f artefact/libbox2d.so
+                    fi
+                    if [ -f box2d-build/bin/libbox2d.dll ]; then
+                      objdump -f artefact/libbox2d.dll
+                    fi
 
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
