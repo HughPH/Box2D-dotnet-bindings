@@ -222,11 +222,6 @@ jobs:
                     path: src/Box2DBindings/native
                     pattern: "*"
 
-            -   name: Setup dotnet
-                uses: actions/setup-dotnet@v4
-                with:
-                    dotnet-version: 9.0.x
-
             -   name: Build UnitTests project
                 run: dotnet build src/UnitTests --configuration Release
 
