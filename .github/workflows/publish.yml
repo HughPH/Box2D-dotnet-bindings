@@ -209,7 +209,7 @@ jobs:
     publish-bindings:
         name: Build & publish C# bindings
         needs: [ detect-tag, build-box2d ]
-        runs-on: [self-hosted, Linux, ARM64]
+        runs-on: [self-hosted, Linux, X64]
         permissions:
             contents: read
             packages: write
@@ -226,7 +226,7 @@ jobs:
                 run: dotnet build src/UnitTests --configuration Release
 
             -   name: Copy Linux shared library to UnitTests output
-                run: cp src/Box2DBindings/native/linux-arm64/libbox2d.so src/UnitTests/bin/Release/net9.0/
+                run: cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Release/net9.0/
 
             -   name: Run UnitTests
                 run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
