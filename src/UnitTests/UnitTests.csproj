@@ -25,10 +25,4 @@
       <ProjectReference Include="..\Box2DBindings\Box2DBindings.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="libbox2d.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
 </Project>

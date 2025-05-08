@@ -54,11 +54,11 @@
         <None Include="README.md" Pack="true" PackagePath="/" />
         
         <!-- Windows DLL -->
-        <None Include="native/win-x64/box2d.dll" Pack="true" PackagePath="runtimes/win-x64/native/" />
+        <None Include="native/win-x64/libbox2d.dll" Pack="true" PackagePath="runtimes/win-x64/native/" />
         <!-- Windows x86 DLL -->
-        <None Include="native/win-x86/box2d.dll" Pack="true" PackagePath="runtimes/win-x86/native/" />
+        <None Include="native/win-x86/libbox2d.dll" Pack="true" PackagePath="runtimes/win-x86/native/" />
         <!-- Windows arm64 DLL -->
-        <None Include="native/win-arm64/box2d.dll" Pack="true" PackagePath="runtimes/win-arm64/native/" />
+        <None Include="native/win-arm64/libbox2d.dll" Pack="true" PackagePath="runtimes/win-arm64/native/" />
         <!-- Linux SO -->
         <None Include="native/linux-x64/libbox2d.so" Pack="true" PackagePath="runtimes/linux-x64/native/" />
         <!-- Linux x86 SO -->
