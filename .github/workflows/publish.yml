@@ -176,6 +176,15 @@ jobs:
                     elif [[ -f artefact/libbox2d.dll ]]; then
                       strip artefact/libbox2d.dll
                     fi
+                    
+            -   name: UPX pack release artifacts if not 'win-arm64'
+                if: ${{ matrix.target != 'win-arm64' }}
+                run: |
+                    if [[ -f artefact/libbox2d.so ]]; then
+                      upx --ultra-brute artefact/libbox2d.so
+                    elif [[ -f artefact/libbox2d.dll ]]; then
+                      upx --ultra-brute artefact/libbox2d.dll
+                    fi
 
             -   name: extra objdump for extra sanity
                 if: ${{ matrix.target != 'win-arm64' }}
@@ -212,15 +221,6 @@ jobs:
                 with:
                     path: src/Box2DBindings/native
                     pattern: "*"
-
-            -   name: Pack osx libs with upx
-                run: |
-                    if [ -f src/Box2DBindings/native/osx-x64/libbox2d.dylib ]; then
-                      upx --ultra-brute --debug src/Box2DBindings/native/osx-x64/libbox2d.dylib
-                    fi
-                    if [ -f src/Box2DBindings/native/osx-arm64/libbox2d.dylib ]; then
-                      upx --ultra-brute --debug src/Box2DBindings/native/osx-arm64/libbox2d.dylib
-                    fi
 
             -   name: Setup dotnet
                 uses: actions/setup-dotnet@v4
