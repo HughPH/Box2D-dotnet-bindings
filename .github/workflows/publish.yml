@@ -176,15 +176,6 @@ jobs:
                     elif [[ -f artefact/libbox2d.dll ]]; then
                       strip artefact/libbox2d.dll
                     fi
-                    
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx --ultra-brute --debug artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx --ultra-brute --debug artefact/libbox2d.dll
-                    fi
 
             -   name: extra objdump for extra sanity
                 if: ${{ matrix.target != 'win-arm64' }}
