@@ -14,7 +14,7 @@ namespace Box2D;
 [PublicAPI]
 public static class Core
 {
-    internal const string libraryName = "box2d";
+    internal const string libraryName = "libbox2d";
 
     /// <summary>
     /// Multiply and subtract two vectors.
