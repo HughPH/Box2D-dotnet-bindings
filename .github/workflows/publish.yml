@@ -181,9 +181,9 @@ jobs:
                 if: ${{ matrix.target != 'win-arm64' }}
                 run: |
                     if [[ -f artefact/libbox2d.so ]]; then
-                      upx --ultra-brute artefact/libbox2d.so
+                      upx artefact/libbox2d.so
                     elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx --ultra-brute artefact/libbox2d.dll
+                      upx artefact/libbox2d.dll
                     fi
 
             -   name: extra objdump for extra sanity
