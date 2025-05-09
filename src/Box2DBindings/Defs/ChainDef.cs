@@ -33,6 +33,15 @@ public class ChainDef
     {
         _internal = new();
     }
+    
+    /// <summary>
+    /// Creates a chain definition with the supplied points
+    /// </summary>
+    public ChainDef(ReadOnlySpan<Vec2> points)
+    {
+        _internal = new();
+        Points = points;
+    }
 
     /// <summary>
     /// Destructor for ChainDef.
@@ -66,7 +75,7 @@ public class ChainDef
     /// <summary>
     /// An array of at least 4 points. These are cloned and may be temporary.
     /// </summary> 
-    public unsafe Span<Vec2> Points
+    public unsafe ReadOnlySpan<Vec2> Points
     {
         get
         {
@@ -97,12 +106,12 @@ public class ChainDef
     /// <summary>
     /// Surface materials for each segment. These are cloned.
     /// </summary>
-    public unsafe Span<SurfaceMaterial> Materials
+    public unsafe ReadOnlySpan<SurfaceMaterial> Materials
     {
         get
         {
             if (_internal.Materials == null)
-                return Span<SurfaceMaterial>.Empty;
+                return ReadOnlySpan<SurfaceMaterial>.Empty;
             return new(_internal.Materials, _internal.MaterialCount);
         }
         set

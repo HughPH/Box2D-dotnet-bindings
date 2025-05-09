@@ -67,7 +67,7 @@ public struct Hull
     /// <remarks>
     /// <b>Warning: Do not modify a hull once it has been computed</b>
     /// </remarks>
-    public static unsafe Hull Compute(Span<Vec2> points)
+    public static unsafe Hull Compute(ReadOnlySpan<Vec2> points)
     {
         if (points.Length > MAX_POLYGON_VERTICES)
             throw new ArgumentException($"Hull can only contain up to {MAX_POLYGON_VERTICES} points");
