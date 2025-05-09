@@ -44,7 +44,7 @@ public unsafe struct Polygon
     /// A radius greater than 0 will create a rounded polygon. A negative radius
     /// is invalid.
     /// </remarks>
-    public Polygon(Span<Vec2> points, float radius)
+    public Polygon(ReadOnlySpan<Vec2> points, float radius = 0f)
     {
         if (points.Length > MAX_POLYGON_VERTICES)
             throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {MAX_POLYGON_VERTICES}");
@@ -88,7 +88,7 @@ public unsafe struct Polygon
     /// <summary>
     /// Make a convex polygon from a set of points. This will create a hull and assert if it is not valid.
     /// </summary>
-    public static Polygon MakePolygon(Span<Vec2> points, float radius)
+    public static Polygon MakePolygon(ReadOnlySpan<Vec2> points, float radius)
     {
         if (points.Length > MAX_POLYGON_VERTICES)
             throw new ArgumentOutOfRangeException(nameof(points), $"Count must be less than {MAX_POLYGON_VERTICES}");

@@ -91,7 +91,7 @@ public static class Core
     /// Compute the closest points between two shapes represented as point clouds.
     /// SimplexCache cache is input/output. On the first call set SimplexCache.Count to zero.
     /// </summary>
-    public static unsafe DistanceOutput ShapeDistance(in DistanceInput input, ref SimplexCache cache, Span<Simplex> simplexes)
+    public static unsafe DistanceOutput ShapeDistance(in DistanceInput input, ref SimplexCache cache, ReadOnlySpan<Simplex> simplexes)
     {
         fixed (Simplex* simplexPtr = simplexes)
             return ShapeDistance(input, ref cache, simplexPtr, simplexes.Length);

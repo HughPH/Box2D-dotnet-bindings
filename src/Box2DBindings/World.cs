@@ -86,6 +86,8 @@ public sealed partial class World
         b2World_SetUserData(id, 0);
 
         b2DestroyWorld(id);
+        
+        worlds.Remove(id.index1);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
