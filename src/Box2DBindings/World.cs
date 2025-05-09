@@ -54,7 +54,6 @@ public sealed partial class World
         
         if (def is { WorkerCount: > 0, EnqueueTask: null, FinishTask: null })
         {
-            Console.WriteLine("Setting up parallelism with {0} workers", def.WorkerCount);
             def.EnqueueTask = Parallelism.DefaultEnqueue;
             def.FinishTask = Parallelism.DefaultFinish;
         }
