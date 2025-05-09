@@ -1,94 +1,157 @@
-using JetBrains.Annotations;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Threading;
+using JetBrains.Annotations;
 
 namespace Box2D;
 
-/// <summary>
-/// Parallel config for Box2D.
-/// </summary>
 [PublicAPI]
 public static class Parallelism
 {
     private static int maxWorkerCount = Environment.ProcessorCount / 2;
+    private static BlockingCollection<Job>? jobQueue;
+    private static Thread[]? workers;
+    private static readonly Dictionary<nint, TaskCallback> taskCache = new();
 
-    /// <summary>
-    /// The maximum number of worker threads to use for parallel tasks.
-    /// </summary>
-    /// <remarks>
-    /// This value is set to half the number of logical processors by default.<br/>
-    /// <b>Warning: This value cannot be changed after a world has been created.</b><br/>
-    /// <i>Note: If you want to supply your own task system, set WorldDef.MaxWorkers to your preferred value and set your own EnqueueTask and FinishTask callbacks.</i>
-    /// </remarks>
     public static int MaxWorkerCount
     {
         get => maxWorkerCount;
         set
         {
             if (World.worlds.Any())
-            {
-                throw new InvalidOperationException(
-                    "Cannot change the number of worker threads after a world has been created.");
-            }
+                throw new InvalidOperationException("Cannot change thread count after world creation.");
             maxWorkerCount = Math.Max(1, value);
         }
     }
 
-    internal static nint DefaultEnqueue(
-        TaskCallback task,
-        int itemCount,
-        int minRange,
-        nint taskContext,
-        nint userContext)
+    static Parallelism()
     {
-        int workerCount = maxWorkerCount;
-        if (workerCount <= 1 || itemCount <= minRange)
+        InitWorkerThreads();
+    }
+
+    private static void InitWorkerThreads()
+    {
+        jobQueue = new BlockingCollection<Job>();
+        workers = new Thread[maxWorkerCount];
+        for (int i = 0; i < maxWorkerCount; i++)
         {
-            task(0, itemCount, 0u, taskContext);
-            return IntPtr.Zero;
+            workers[i] = new Thread(() =>
+            {
+                foreach (var job in jobQueue!.GetConsumingEnumerable())
+                    job.Execute();
+            })
+            {
+                IsBackground = true
+            };
+            workers[i].Start();
+        }
+    }
+
+    private struct Job
+    {
+        public TaskCallback Task;
+        public int Start, End;
+        public uint Index;
+        public nint TaskContext;
+        public CountdownEvent Countdown;
+
+        public void Execute()
+        {
+            try
+            {
+                Task(Start, End, Index, TaskContext);
+            }
+            finally
+            {
+                Countdown.Signal();
+            }
+        }
+    }
+
+    internal static nint DefaultEnqueue(nint taskPtr, int itemCount, int minRange, nint taskContext, nint userContext)
+    {
+        if (!taskCache.TryGetValue(taskPtr, out var task))
+        {
+            task = Marshal.GetDelegateForFunctionPointer<TaskCallback>(taskPtr);
+            taskCache[taskPtr] = task;
         }
 
-        int chunk = Math.Max(minRange, (itemCount + workerCount - 1) / workerCount);
-        var tasks = new Task[workerCount];
-        int actualWorkers = 0;
+        if (maxWorkerCount <= 1 || itemCount <= minRange)
+        {
+            task(0, itemCount, 0u, taskContext);
+            return 0;
+        }
 
-        for (int w = 0; w < workerCount; w++)
+        int chunk = Math.Max(minRange, (itemCount + maxWorkerCount - 1) / maxWorkerCount);
+        var countdown = CountdownEventPool.Rent(1); // Pooled
+
+        for (int w = 0; w < maxWorkerCount; w++)
         {
             int start = w * chunk;
             int end = Math.Min(itemCount, start + chunk);
             if (start >= end) break;
 
-            int wi = w; // avoid access to modified closure
-            tasks[actualWorkers++] = Task.Run(() =>
-                    task(start, end, (uint)wi, taskContext)
-                );
+            countdown.AddCount(); // Call *before* enqueueing
+            jobQueue!.Add(new Job
+            {
+                Task = task,
+                Start = start,
+                End = end,
+                Index = (uint)w,
+                TaskContext = taskContext,
+                Countdown = countdown
+            });
         }
 
-        if (actualWorkers == 1)
-        {
-            tasks[0].Wait();
-            return IntPtr.Zero;
-        }
+        countdown.Signal(); // main thread's count
 
-        if (actualWorkers != tasks.Length)
-            Array.Resize(ref tasks, actualWorkers);
-
-        var gch = GCHandle.Alloc(tasks);
-        return GCHandle.ToIntPtr(gch);
+        var handle = GCHandle.Alloc(countdown, GCHandleType.Normal);
+        return GCHandle.ToIntPtr(handle);
     }
 
     internal static void DefaultFinish(nint userTask, nint userContext)
     {
-        if (userTask == IntPtr.Zero)
+        if (userTask == 0)
             return;
 
-        var gch = GCHandle.FromIntPtr(userTask);
-        var tasks = (Task[])gch.Target;
+        var handle = GCHandle.FromIntPtr(userTask);
+        var countdown = (CountdownEvent)handle.Target!;
+        countdown.Wait();
+        CountdownEventPool.Return(countdown); // Return to pool
+        handle.Free();
+    }
+}
 
-        Task.WaitAll(tasks);
+internal static class CountdownEventPool
+{
+    private static readonly ConcurrentBag<CountdownEvent> pool = new();
+    private const int MaxPoolSize = 64;
+    private static int count = 0;
 
-        gch.Free();
+    public static CountdownEvent Rent(int initialCount)
+    {
+        if (pool.TryTake(out var item))
+        {
+            Interlocked.Decrement(ref count);
+            item.Reset(initialCount);
+            return item;
+        }
+
+        return new CountdownEvent(initialCount);
+    }
+
+    public static void Return(CountdownEvent item)
+    {
+        if (Interlocked.Increment(ref count) > MaxPoolSize)
+        {
+            Interlocked.Decrement(ref count);
+            item.Dispose();
+            return;
+        }
+
+        pool.Add(item);
     }
 }

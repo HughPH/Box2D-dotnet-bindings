@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -22,7 +23,7 @@ public sealed partial class World
 {
     private WorldId id;
 
-    internal readonly Dictionary<int, Body> bodies = new();
+    internal readonly ConcurrentDictionary<int, Body> bodies = new();
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern WorldId b2CreateWorld(in WorldDefInternal def);
@@ -59,7 +60,7 @@ public sealed partial class World
         }
         
         id = b2CreateWorld(def._internal);
-        worlds.Add(id.index1, this);
+        worlds.TryAdd(id.index1, this);
     }
     
     private World()
@@ -87,7 +88,7 @@ public sealed partial class World
 
         b2DestroyWorld(id);
         
-        worlds.Remove(id.index1);
+        worlds.TryRemove(id.index1, out _);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
@@ -232,12 +233,12 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(WorldId worldId, CustomFilterNintCallback fcn, nint context);
 
-    internal static Dictionary<int, World> worlds = new();
+    internal static ConcurrentDictionary<int, World> worlds = new();
 
     internal static World GetWorld(WorldId world)
     {
         if (!worlds.TryGetValue(world.index1, out var w))
-            worlds.Add(world.index1, w = new World { id = world });
+            worlds.TryAdd(world.index1, w = new World { id = world });
         return w;
     }
 
@@ -613,7 +614,9 @@ public sealed partial class World
     public Body CreateBody(BodyDef def)
     {
         Body body = b2CreateBody(id, def._internal);
-        bodies.Add(body.index1, body);
+        if (!body.Valid)
+            return default; 
+        bodies.TryAdd(body.index1, body);
         return body;
     }
 

@@ -115,7 +115,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid) return;
         // remove self from world
-        World.bodies.Remove(index1);
+        World.bodies.TryRemove(index1, out _);
 
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);
@@ -326,7 +326,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="target">The target transform</param>
     /// <param name="timeStep">The time step</param>
-    public void SetTargetTransform(Transform target, float timeStep) => b2Body_SetTargetTransform(this, target, timeStep);
+    public void SetTargetTransform(Transform target, float timeStep)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_SetTargetTransform(this, target, timeStep);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetLocalPointVelocity")]
     private static extern Vec2 b2Body_GetLocalPointVelocity(Body bodyId, Vec2 localPoint);
@@ -337,7 +342,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="localPoint">The local point</param>
     /// <returns>The linear velocity of the local point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
-    public Vec2 GetLocalPointVelocity(Vec2 localPoint) => b2Body_GetLocalPointVelocity(this, localPoint);
+    public Vec2 GetLocalPointVelocity(Vec2 localPoint)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        return b2Body_GetLocalPointVelocity(this, localPoint);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorldPointVelocity")]
     private static extern Vec2 b2Body_GetWorldPointVelocity(Body bodyId, Vec2 worldPoint);
@@ -348,7 +358,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="worldPoint">The world point</param>
     /// <returns>The linear velocity of the world point attached to the body, usually in meters per second</returns>
     /// <remarks>Usually in meters per second</remarks>
-    public Vec2 GetWorldPointVelocity(Vec2 worldPoint) => b2Body_GetWorldPointVelocity(this, worldPoint);
+    public Vec2 GetWorldPointVelocity(Vec2 worldPoint)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        return b2Body_GetWorldPointVelocity(this, worldPoint);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForce")]
     private static extern void b2Body_ApplyForce(Body bodyId, Vec2 force, Vec2 point, byte wake);
@@ -360,7 +375,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="point">The world position of the point of application</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
-    public void ApplyForce(Vec2 force, Vec2 point, bool wake) => b2Body_ApplyForce(this, force, point, wake ? (byte)1 : (byte)0);
+    public void ApplyForce(Vec2 force, Vec2 point, bool wake)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyForce(this, force, point, wake ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyForceToCenter")]
     private static extern void b2Body_ApplyForceToCenter(Body bodyId, Vec2 force, byte wake);
@@ -372,7 +392,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This wakes up the body</remarks>
     /// <remarks>If the force is not applied at the center of mass, it will generate a torque and affect the angular velocity. The force is ignored if the body is not awake</remarks>
-    public void ApplyForceToCenter(Vec2 force, bool wake) => b2Body_ApplyForceToCenter(this, force, wake ? (byte)1 : (byte)0);
+    public void ApplyForceToCenter(Vec2 force, bool wake)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyForceToCenter(this, force, wake ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyTorque")]
     private static extern void b2Body_ApplyTorque(Body bodyId, float torque, byte wake);
@@ -383,7 +408,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="torque">The torque about the z-axis (out of the screen), usually in N*m</param>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This affects the angular velocity without affecting the linear velocity. The torque is ignored if the body is not awake</remarks>
-    public void ApplyTorque(float torque, bool wake) => b2Body_ApplyTorque(this, torque, wake ? (byte)1 : (byte)0);
+    public void ApplyTorque(float torque, bool wake)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyTorque(this, torque, wake ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulse")]
     private static extern void b2Body_ApplyLinearImpulse(Body bodyId, Vec2 impulse, Vec2 point, byte wake);
@@ -396,7 +426,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This immediately modifies the velocity. It also modifies the angular velocity if the point of application is not at the center of mass. The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake) => b2Body_ApplyLinearImpulse(this, impulse, point, wake ? (byte)1 : (byte)0);
+    public void ApplyLinearImpulse(Vec2 impulse, Vec2 point, bool wake)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyLinearImpulse(this, impulse, point, wake ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyLinearImpulseToCenter")]
     private static extern void b2Body_ApplyLinearImpulseToCenter(Body bodyId, Vec2 impulse, byte wake);
@@ -408,7 +443,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>This immediately modifies the velocity. The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    public void ApplyLinearImpulseToCenter(Vec2 impulse, bool wake) => b2Body_ApplyLinearImpulseToCenter(this, impulse, wake ? (byte)1 : (byte)0);
+    public void ApplyLinearImpulseToCenter(Vec2 impulse, bool wake)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyLinearImpulseToCenter(this, impulse, wake ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_ApplyAngularImpulse")]
     private static extern void b2Body_ApplyAngularImpulse(Body bodyId, float impulse, byte wake);
@@ -420,7 +460,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="wake">Option to wake up the body</param>
     /// <remarks>The impulse is ignored if the body is not awake
     /// <br/><br/><b>Warning: This should be used for one-shot impulses. If you need a steady force, use a force instead, which will work better with the sub-stepping solver</b></remarks>
-    public void ApplyAngularImpulse(float impulse, bool wake) => b2Body_ApplyAngularImpulse(this, impulse, wake ? (byte)1 : (byte)0);
+    public void ApplyAngularImpulse(float impulse, bool wake)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyAngularImpulse(this, impulse, wake ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetMass")]
     private static extern float b2Body_GetMass(Body bodyId);
@@ -483,7 +528,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>This normally does not need to be called unless you called SetMassData to override the mass, and you later want to reset the mass. You may also use this when automatic mass computation has been disabled. You should call this regardless of body type<br/>
     /// <i>Note: Sensor shapes may have mass.</i>
     /// </remarks>
-    public void ApplyMassFromShapes() => b2Body_ApplyMassFromShapes(this);
+    public void ApplyMassFromShapes()
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_ApplyMassFromShapes(this);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetLinearDamping")]
     private static extern void b2Body_SetLinearDamping(Body bodyId, float linearDamping);
@@ -689,7 +739,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="flag">Option to enable or disable contact events on all shapes</param>
     /// <remarks><b>Warning: Changing this at runtime may cause mismatched begin/end touch events.</b></remarks>
-    public void EnableContactEvents(bool flag) => b2Body_EnableContactEvents(this, flag ? (byte)1 : (byte)0);
+    public void EnableContactEvents(bool flag)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_EnableContactEvents(this, flag ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_EnableHitEvents")]
     private static extern void b2Body_EnableHitEvents(Body bodyId, byte flag);
@@ -698,7 +753,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// Enable/disable hit events on all shapes
     /// </summary>
     /// <param name="flag">Option to enable or disable hit events on all shapes</param>
-    public void EnableHitEvents(bool flag) => b2Body_EnableHitEvents(this, flag ? (byte)1 : (byte)0);
+    public void EnableHitEvents(bool flag)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        b2Body_EnableHitEvents(this, flag ? (byte)1 : (byte)0);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_GetWorld")]
     private static extern WorldId b2Body_GetWorld(Body bodyId);
@@ -821,7 +881,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="circle">The circle</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(in ShapeDef def, in Circle circle) => b2CreateCircleShape(this, in def._internal, circle);
+    public Shape CreateShape(in ShapeDef def, in Circle circle)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        return b2CreateCircleShape(this, in def._internal, circle);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateSegmentShape")]
     private static extern Shape b2CreateSegmentShape(Body bodyId, in ShapeDefInternal def, in Segment segment);
@@ -833,8 +898,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="segment">The segment</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(in ShapeDef def, in Segment segment) =>
-        b2CreateSegmentShape(this, in def._internal, segment);
+    public Shape CreateShape(in ShapeDef def, in Segment segment)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        return b2CreateSegmentShape(this, in def._internal, segment);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateCapsuleShape")]
     private static extern Shape b2CreateCapsuleShape(Body bodyId, in ShapeDefInternal def, in Capsule capsule);
@@ -846,8 +915,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="capsule">The capsule</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public Shape CreateShape(in ShapeDef def, in Capsule capsule) =>
-        b2CreateCapsuleShape(this, in def._internal, capsule);
+    public Shape CreateShape(in ShapeDef def, in Capsule capsule)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        return b2CreateCapsuleShape(this, in def._internal, capsule);
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePolygonShape")]
     private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);
@@ -869,5 +942,10 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="def">The chain definition</param>
     /// <returns>The chain shape</returns>
-    public ChainShape CreateChain(ChainDef def) => b2CreateChain(this, in def._internal);
+    public ChainShape CreateChain(ChainDef def)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("Body is not valid");
+        return b2CreateChain(this, in def._internal);
+    }
 }
