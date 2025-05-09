@@ -15,7 +15,8 @@ public class WorldDef
     /// </summary>
     public WorldDef()
     {
-        _internal = new WorldDefInternal();
+        _internal = new();
+        WorkerCount = Parallelism.MaxWorkerCount;
     }
     
     /// <summary>

@@ -22,7 +22,7 @@ public sealed class DebugDrawSimple : DebugDraw
         {
             var del = value;
             void Wrapper(Vec2* vertices, int vertexCount, HexColor color, nint _) =>
-                del(new ReadOnlySpan<Vec2>(vertices, vertexCount), color);
+                del(new(vertices, vertexCount), color);
             @internal.DrawPolygon = Wrapper;
         }
     }
@@ -36,7 +36,7 @@ public sealed class DebugDrawSimple : DebugDraw
         {
             var del = value;
             void Wrapper(Transform transform, Vec2* vertices, int vertexCount, float radius, HexColor color, nint _) =>
-                del(transform, new ReadOnlySpan<Vec2>(vertices, vertexCount), radius, color);
+                del(transform, new(vertices, vertexCount), radius, color);
             @internal.DrawSolidPolygon = Wrapper;
         }
     }

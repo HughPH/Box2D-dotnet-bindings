@@ -20,7 +20,7 @@ public class PrismaticJointDef
     /// </summary>
     public PrismaticJointDef()
     {
-        _internal = new PrismaticJointDefInternal();
+        _internal = new();
     }
 
     /// <summary>

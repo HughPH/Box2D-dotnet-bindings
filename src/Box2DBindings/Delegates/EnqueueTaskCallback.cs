@@ -18,4 +18,7 @@ namespace Box2D;
 /// <param name="taskContext">The task context</param>
 /// <param name="userContext">The user context</param>
 /// <returns>A pointer to the user's task object</returns>
-public delegate nint EnqueueTaskCallback(TaskCallback task, int itemCount, int minRange, nint taskContext, nint userContext);
+/// <remarks>
+/// task is passed as a `nint` because the CLR will otherwise keep calling Marshal.GetDelegateForFunctionPointer, causing heap allocations. On the Box2D side, it's a consistent `void*` pointer, so we can cache it. See <see cref="Parallelism.DefaultEnqueue"/> source for how we handle this.
+/// </remarks>
+public delegate nint EnqueueTaskCallback(nint task, int itemCount, int minRange, nint taskContext, nint userContext);
