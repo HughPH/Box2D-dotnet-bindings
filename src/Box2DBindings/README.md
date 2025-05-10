@@ -1,6 +1,8 @@
 # Box2D-dotnet-bindings
 Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)
 
+[Doxygen documentation](https://hughph.github.io/Box2D-dotnet-bindings/namespaceBox2D.html)
+
 ### Includes native binaries for:
 
 | Platform  | Architecture | Tested |
