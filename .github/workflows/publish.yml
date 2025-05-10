@@ -265,6 +265,10 @@ jobs:
                     retention-days: 7
     
     deploy-docs:
+        permissions:
+            contents: read
+            pages: write
+            id-token: write
         environment:
             name: github-pages
         runs-on: [self-hosted, Linux, X64]
