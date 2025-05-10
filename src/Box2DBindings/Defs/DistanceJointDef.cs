@@ -13,6 +13,7 @@ namespace Box2D;
 [PublicAPI]
 public class DistanceJointDef
 {
+    //! \internal
     internal DistanceJointDefInternal _internal = new();
     
     /// <summary>

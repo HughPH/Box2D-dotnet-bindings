@@ -8,6 +8,7 @@ namespace Box2D;
 [PublicAPI]
 public class WorldDef
 {
+    //! \internal
     internal WorldDefInternal _internal = new();
     
     /// <summary>

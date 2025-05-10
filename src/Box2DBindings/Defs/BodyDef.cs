@@ -12,11 +12,10 @@ namespace Box2D;
 [PublicAPI]
 public class BodyDef
 {
+    //! \internal
     internal BodyDefInternal _internal = new();
     
-    /// <summary>
-    /// Destructor for BodyDef.
-    /// </summary>
+    //! \internal
     ~BodyDef()
     {
         if (_internal.Name != 0)

@@ -13,6 +13,7 @@ namespace Box2D;
 [PublicAPI]
 public class PrismaticJointDef
 {
+    //! \internal
     internal PrismaticJointDefInternal _internal = new();
     
     /// <summary>

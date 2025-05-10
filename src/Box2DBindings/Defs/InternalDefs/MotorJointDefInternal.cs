@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+//! \internal
 [StructLayout(LayoutKind.Explicit)]
 struct MotorJointDefInternal
 {

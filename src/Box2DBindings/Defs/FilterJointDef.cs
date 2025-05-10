@@ -8,6 +8,7 @@ namespace Box2D;
 [PublicAPI]
 public class FilterJointDef
 {
+    //! \internal
     internal FilterJointDefInternal _internal = new();
 
     /// <summary>

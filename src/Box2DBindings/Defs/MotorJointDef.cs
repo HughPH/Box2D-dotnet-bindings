@@ -10,6 +10,7 @@ namespace Box2D;
 [PublicAPI]
 public class MotorJointDef
 {
+    //! \internal
     internal MotorJointDefInternal _internal = new();
     
     /// <summary>

@@ -13,6 +13,7 @@ namespace Box2D;
 [PublicAPI]
 public class WheelJointDef
 {
+    //! \internal
     internal WheelJointDefInternal _internal = new();
 
     /// <summary>

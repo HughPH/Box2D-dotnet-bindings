@@ -115,7 +115,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid) return;
         // remove self from world
-        World.bodies.TryRemove(index1, out _);
+        World.bodies.Remove(this);
 
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);

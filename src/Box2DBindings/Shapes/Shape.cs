@@ -75,7 +75,6 @@ public struct Shape : IEquatable<Shape>
     /// </summary>
     public static IEqualityComparer<Shape> DefaultEqualityComparer { get; } = ShapeComparer.Instance;
     
-    // Equals:
     /// <summary>
     /// Checks if this Shape and another Shape refer to the same shape
     /// </summary>

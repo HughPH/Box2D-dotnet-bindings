@@ -45,7 +45,7 @@ public struct ChainShape
     /// Gets the world that owns this chain shape
     /// </summary>
     /// <returns>The world that owns this chain shape</returns>
-    public World World => World.GetWorld(b2Chain_GetWorld(this));
+    public World World => Valid ? World.GetWorld(b2Chain_GetWorld(this)) : throw new InvalidOperationException("Chain shape is not valid");
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegmentCount")]
     private static extern int b2Chain_GetSegmentCount(ChainShape chainId);

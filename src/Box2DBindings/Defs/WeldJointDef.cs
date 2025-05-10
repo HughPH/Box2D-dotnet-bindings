@@ -12,6 +12,7 @@ namespace Box2D;
 [PublicAPI]
 public class WeldJointDef
 {
+    //! \internal
     internal WeldJointDefInternal _internal = new();
     
     /// <summary>

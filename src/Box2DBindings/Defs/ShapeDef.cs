@@ -12,6 +12,7 @@ namespace Box2D;
 [PublicAPI]
 public class ShapeDef
 {
+    //! \internal
     internal ShapeDefInternal _internal = new();
     
     /// <summary>

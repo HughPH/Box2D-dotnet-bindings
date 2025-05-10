@@ -24,6 +24,7 @@ namespace Box2D;
 [PublicAPI]
 public class ChainDef
 {
+    //! \internal
     internal ChainDefInternal _internal = new();
 
     /// <summary>

@@ -14,6 +14,7 @@ namespace Box2D;
 [PublicAPI]
 public class RevoluteJointDef
 {
+    //! \internal
     internal RevoluteJointDefInternal _internal = new();
     
     /// <summary>

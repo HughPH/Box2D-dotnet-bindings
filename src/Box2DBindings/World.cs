@@ -1,3 +1,4 @@
+using Box2D.Comparers;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Concurrent;
@@ -12,49 +13,82 @@ namespace Box2D;
 [PublicAPI]
 public sealed partial class World
 {
-    private WorldId id;
+    internal readonly WorldId id;
 
-    internal readonly ConcurrentDictionary<int, Body> bodies = new();
+    /// <summary>
+    /// Default comparer for World instances. This is used for hashing and equality checks.
+    /// </summary>
+    public static IComparer<World> DefaultComparer { get; } = WorldComparer.Instance;
+
+    /// <summary>
+    /// Default equality comparer for World instances. This is used for hashing and equality checks.
+    /// </summary>
+    public static IEqualityComparer<World> DefaultEqualityComparer { get; } = WorldComparer.Instance;
+
+    // Equals:
+    /// <summary>
+    /// Checks if this World and another World refer to the same World
+    /// </summary>
+    public bool Equals(World other) => id.Equals(other.id);
+
+    /// <summary>
+    /// Checks if this World and another World refer to the same World
+    /// </summary>
+    public override bool Equals(object? obj) => obj is World other && Equals(other);
+
+    /// <summary>
+    /// Returns the hash code for this World
+    /// </summary>
+    public override int GetHashCode() => HashCode.Combine(id.index1, id.generation);
+
+    internal readonly HashSet<Body> bodies = new(Body.DefaultEqualityComparer);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern WorldId b2CreateWorld(in WorldDefInternal def);
 
     private static bool initialized;
-    
+
     /// <summary>
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
+    /// <param name="worldLock">The world lock object. This is used to synchronize access to the world from multiple threads. If null, a new lock object will be created. This parameter is supplied to support passing a dotnet 9+ Lock object.<br/>See: <see cref="WorldLock"/></param>
     /// <returns>The world</returns>
-    public static World CreateWorld(WorldDef def)
+    public static World CreateWorld(WorldDef def, object? worldLock = null)
     {
-        return new(def);
+        return new(def, worldLock);
     }
 
     /// <summary>
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
-    public World(WorldDef def)
+    /// <param name="worldLock">The world lock object. This is used to synchronize access to the world from multiple threads. If null, a new lock object will be created. This parameter is supplied to support passing a dotnet 9+ Lock object.<br/>See: <see cref="WorldLock"/></param>
+    public World(WorldDef def, object? worldLock = null)
     {
         if (!initialized)
         {
             initialized = true;
             SetAssertFunction(Assert);
         }
-        
+
         if (def is { WorkerCount: > 0, EnqueueTask: null, FinishTask: null })
         {
             def.EnqueueTask = Parallelism.DefaultEnqueue;
             def.FinishTask = Parallelism.DefaultFinish;
         }
-        
+
         id = b2CreateWorld(def._internal);
-        worlds.TryAdd(id.index1, this);
+        worlds.TryAdd(id, this);
+
+        WorldLock = worldLock ?? new();
     }
-    
-    private World()
-    { }
+
+    private World(WorldId id)
+    {
+        this.id = id;
+        WorldLock = new();
+    }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
     private static extern void b2DestroyWorld(WorldId worldId);
@@ -65,8 +99,8 @@ public sealed partial class World
     public void Destroy()
     {
         if (!Valid) return;
-        
-        foreach (var body in bodies.Values)
+
+        foreach (var body in bodies)
             body.Destroy();
         bodies.Clear();
 
@@ -77,8 +111,8 @@ public sealed partial class World
         b2World_SetUserData(id, 0);
 
         b2DestroyWorld(id);
-        
-        worlds.TryRemove(id.index1, out _);
+
+        worlds.TryRemove(id, out _);
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
@@ -108,8 +142,8 @@ public sealed partial class World
     /// <i>Note: It is your responsibility to ensure that the object is unlocked within the time required for another Step.<br/>
     /// Event handlers run within a world lock. Do not lock the world lock in a world event handler. This will cause a deadlock.</i>
     /// </remarks>
-    public object WorldLock = new();
-    
+    public object WorldLock;
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
 
@@ -122,41 +156,47 @@ public sealed partial class World
     {
         if (!Valid)
             throw new InvalidOperationException("World is not valid");
-        
+
         lock (WorldLock)
         {
             b2World_Step(id, timeStep, subStepCount);
             if (BodyMove is not null)
-                foreach(BodyMoveEvent e in BodyEvents.MoveEvents)
-                    if (e.Body.Valid) BodyMove(in e);
+                foreach (BodyMoveEvent e in BodyEvents.MoveEvents)
+                    if (e.Body.Valid)
+                        BodyMove(in e);
 
             if (SensorBeginTouch is not null || SensorEndTouch is not null)
             {
                 SensorEvents sensorEvents = SensorEvents;
                 if (SensorBeginTouch is not null)
                     foreach (SensorBeginTouchEvent e in sensorEvents.BeginEvents)
-                        if (e.SensorShape.Valid && e.VisitorShape.Valid) SensorBeginTouch.Invoke(in e);
+                        if (e.SensorShape.Valid && e.VisitorShape.Valid)
+                            SensorBeginTouch.Invoke(in e);
                 if (SensorEndTouch is not null)
                     foreach (SensorEndTouchEvent e in sensorEvents.EndEvents)
-                        if (e.SensorShape.Valid && e.VisitorShape.Valid) SensorEndTouch.Invoke(in e);
+                        if (e.SensorShape.Valid && e.VisitorShape.Valid)
+                            SensorEndTouch.Invoke(in e);
             }
-            
+
             if (ContactBeginTouch is not null || ContactEndTouch is not null || ContactHit is not null)
             {
                 ContactEvents contactEvents = ContactEvents;
                 if (ContactBeginTouch is not null)
                     foreach (ContactBeginTouchEvent e in contactEvents.BeginEvents)
-                        if (e.ShapeA.Valid && e.ShapeB.Valid) ContactBeginTouch.Invoke(in e);
+                        if (e.ShapeA.Valid && e.ShapeB.Valid)
+                            ContactBeginTouch.Invoke(in e);
                 if (ContactEndTouch is not null)
                     foreach (ContactEndTouchEvent e in contactEvents.EndEvents)
-                        if (e.ShapeA.Valid && e.ShapeB.Valid) ContactEndTouch.Invoke(in e);
+                        if (e.ShapeA.Valid && e.ShapeB.Valid)
+                            ContactEndTouch.Invoke(in e);
                 if (ContactHit is not null)
                     foreach (ContactHitEvent e in contactEvents.HitEvents)
-                        if (e.ShapeA.Valid && e.ShapeB.Valid) ContactHit.Invoke(in e);
+                        if (e.ShapeA.Valid && e.ShapeB.Valid)
+                            ContactHit.Invoke(in e);
             }
         }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
     private static extern void b2World_Draw(WorldId worldId, ref DebugDrawInternal draw);
 
@@ -280,12 +320,13 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
     private static extern void b2World_SetCustomFilterCallback(WorldId worldId, CustomFilterNintCallback fcn, nint context);
 
-    internal static ConcurrentDictionary<int, World> worlds = new();
+    internal static ConcurrentDictionary<WorldId, World> worlds = new(WorldId.DefaultEqualityComparer);
 
     internal static World GetWorld(WorldId world)
     {
-        if (!worlds.TryGetValue(world.index1, out var w))
-            worlds.TryAdd(world.index1, w = new World { id = world });
+        if (b2World_IsValid(world) == 0) throw new InvalidOperationException("World is not valid");
+        if (!worlds.TryGetValue(world, out var w))
+            worlds.TryAdd(world, w = new World(world));
         return w;
     }
 
@@ -662,8 +703,8 @@ public sealed partial class World
     {
         Body body = b2CreateBody(id, def._internal);
         if (!body.Valid)
-            return default; 
-        bodies.TryAdd(body.index1, body);
+            return default;
+        bodies.Add(body);
         return body;
     }
 
@@ -756,5 +797,5 @@ public sealed partial class World
     /// <summary>
     /// Gets the bodies in this world
     /// </summary>
-    public IEnumerable<Body> Bodies => Valid ? bodies.Values : throw new InvalidOperationException("World is not valid");
+    public IEnumerable<Body> Bodies => Valid ? bodies : throw new InvalidOperationException("World is not valid");
 }

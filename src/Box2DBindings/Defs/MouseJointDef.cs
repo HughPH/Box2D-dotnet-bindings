@@ -11,6 +11,7 @@ namespace Box2D;
 [PublicAPI]
 public class MouseJointDef
 {
+    //! \internal
     internal MouseJointDefInternal _internal = new();
     
     /// <summary>
