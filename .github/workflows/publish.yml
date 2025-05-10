@@ -13,6 +13,10 @@ env:
     BOX2D_REPO: erincatto/box2d
     NUGET_FEED: https://api.nuget.org/v3/index.json
 
+
+permissions:
+    contents: write
+
 # -----------------------------------------------------------------------------
 # Job 1 ─ Detect upstream tag & compute NuGet version (no cache probe anymore)
 # -----------------------------------------------------------------------------
