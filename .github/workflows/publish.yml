@@ -275,6 +275,11 @@ jobs:
                 with:
                     fetch-depth: 0
                     ref: gh-pages
+                    
+            -   name: Download Doxygen docs
+                uses: actions/download-artifact@v4
+                with:
+                    name: doxygen-docs
 
             -   name: Copy Doxygen docs to gh-pages branch
                 run: |
