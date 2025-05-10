@@ -90,6 +90,26 @@ public sealed partial class World
     /// <returns>True if the world id is valid</returns>
     public bool Valid => b2World_IsValid(id) != 0;
 
+    /// <summary>
+    /// A lock object for the world. This is used to synchronize access to the world from multiple threads.
+    /// </summary>
+    /// <remarks>If you wish to mutate the world, you should use your own Lock object, or use a `lock` statement with this lock object, e.g.<br/>
+    /// Thread 1:
+    /// <code>
+    /// world.Step();
+    /// </code>
+    /// Thread 2:
+    /// <code>
+    /// lock (world.WorldLock)
+    /// {
+    ///     // update world, e.g. add bodies, remove bodies, etc.
+    /// }
+    /// </code>
+    /// <i>Note: It is your responsibility to ensure that the object is unlocked within the time required for another Step.<br/>
+    /// Event handlers run within a world lock. Do not lock the world lock in a world event handler. This will cause a deadlock.</i>
+    /// </remarks>
+    public object WorldLock = new();
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
 
@@ -98,8 +118,45 @@ public sealed partial class World
     /// </summary>
     /// <param name="timeStep">The amount of time to simulate, this should be a fixed number. Usually 1/60.</param>
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
-    public void Step(float timeStep = 0.016666668f, int subStepCount = 4) => b2World_Step(id, timeStep, subStepCount);
+    public void Step(float timeStep = 0.016666668f, int subStepCount = 4)
+    {
+        if (!Valid)
+            throw new InvalidOperationException("World is not valid");
+        
+        lock (WorldLock)
+        {
+            b2World_Step(id, timeStep, subStepCount);
+            if (BodyMove is not null)
+                foreach(BodyMoveEvent e in BodyEvents.MoveEvents)
+                    if (e.Body.Valid) BodyMove(in e);
 
+            if (SensorBeginTouch is not null || SensorEndTouch is not null)
+            {
+                SensorEvents sensorEvents = SensorEvents;
+                if (SensorBeginTouch is not null)
+                    foreach (SensorBeginTouchEvent e in sensorEvents.BeginEvents)
+                        if (e.SensorShape.Valid && e.VisitorShape.Valid) SensorBeginTouch.Invoke(in e);
+                if (SensorEndTouch is not null)
+                    foreach (SensorEndTouchEvent e in sensorEvents.EndEvents)
+                        if (e.SensorShape.Valid && e.VisitorShape.Valid) SensorEndTouch.Invoke(in e);
+            }
+            
+            if (ContactBeginTouch is not null || ContactEndTouch is not null || ContactHit is not null)
+            {
+                ContactEvents contactEvents = ContactEvents;
+                if (ContactBeginTouch is not null)
+                    foreach (ContactBeginTouchEvent e in contactEvents.BeginEvents)
+                        if (e.ShapeA.Valid && e.ShapeB.Valid) ContactBeginTouch.Invoke(in e);
+                if (ContactEndTouch is not null)
+                    foreach (ContactEndTouchEvent e in contactEvents.EndEvents)
+                        if (e.ShapeA.Valid && e.ShapeB.Valid) ContactEndTouch.Invoke(in e);
+                if (ContactHit is not null)
+                    foreach (ContactHitEvent e in contactEvents.HitEvents)
+                        if (e.ShapeA.Valid && e.ShapeB.Valid) ContactHit.Invoke(in e);
+            }
+        }
+    }
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
     private static extern void b2World_Draw(WorldId worldId, ref DebugDrawInternal draw);
 
