@@ -233,7 +233,6 @@ jobs:
                 run: doxygen
             
             -   name: Upload artefact
-                id: deployment
                 uses: actions/upload-pages-artifact@v3
                 with:
                     name: github-pages
@@ -241,5 +240,4 @@ jobs:
                     retention-days: 7
     
             -   name: Deploy to GitHub Pages
-                id: deployment
                 uses: actions/deploy-pages@v4
