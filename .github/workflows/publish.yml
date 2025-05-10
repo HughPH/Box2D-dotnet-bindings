@@ -270,6 +270,8 @@ jobs:
                     cd gh-pages
                     git config user.name "github-actions[bot]"
                     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                    git config github.token "${GITHUB_TOKEN}"
+                    git config github.user "${GITHUB_ACTOR}"
                     
                     git add .
                     git commit -m "Update Doxygen docs for ${{ github.sha }}" || echo "No changes to commit."
