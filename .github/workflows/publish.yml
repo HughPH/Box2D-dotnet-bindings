@@ -260,7 +260,7 @@ jobs:
                 id: deployment
                 uses: actions/upload-pages-artifact@v3
                 with:
-                    name: doxygen-docs
+                    name: github-pages
                     path: docs/html
                     retention-days: 7
     
@@ -269,8 +269,6 @@ jobs:
             contents: read
             pages: write
             id-token: write
-        environment:
-            name: doxygen-docs
         runs-on: [self-hosted, Linux, X64]
         needs: generate-docs
         steps:
