@@ -203,7 +203,7 @@ jobs:
                     path: artefact/
                     retention-days: 7
                     compression-level: '0'
-                    if-no-files-found: 'fail'
+                    if-no-files-found: 'error'
                     
     
     # -----------------------------------------------------------------------------
