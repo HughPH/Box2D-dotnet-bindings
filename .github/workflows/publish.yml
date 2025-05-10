@@ -251,10 +251,11 @@ jobs:
             -   name: Generate Doxygen Documentation
                 run: doxygen
             
-            -   name: Deploy Doxygen Docs to GitHub Pages
-                uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
+            -   name: Publish Doxygen docs to GitHub Pages
+                if: github.ref == 'refs/heads/main'
+                uses: peaceiris/actions-gh-pages@v4
                 with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  branch: gh-pages
-                  folder: docs/html
-                  config_file: ./Doxyfile
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    publish_dir: ./docs/html
+                    publish_branch: gh-pages
+                    force_orphan: true
