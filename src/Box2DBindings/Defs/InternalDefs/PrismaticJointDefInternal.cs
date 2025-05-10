@@ -127,7 +127,7 @@ struct PrismaticJointDefInternal
     /// <summary>
     /// The default prismatic joint definition.
     /// </summary>
-    internal static PrismaticJointDefInternal Default => GetDefault();
+    private static PrismaticJointDefInternal Default => GetDefault();
     
     /// <summary>
     /// Creates a prismatic joint definition with the default values.

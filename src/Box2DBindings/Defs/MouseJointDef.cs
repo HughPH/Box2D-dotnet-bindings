@@ -11,16 +11,8 @@ namespace Box2D;
 [PublicAPI]
 public class MouseJointDef
 {
-    internal MouseJointDefInternal _internal;
-
-    /// <summary>
-    /// Creates a mouse joint definition with the default values.
-    /// </summary>
-    public MouseJointDef()
-    {
-        _internal = MouseJointDefInternal.Default;
-    }
-
+    internal MouseJointDefInternal _internal = new();
+    
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>

@@ -23,7 +23,7 @@ public static class Parallelism
         {
             if (World.worlds.Any())
                 throw new InvalidOperationException("Cannot change thread count after world creation.");
-            maxWorkerCount = Math.Max(1, value);
+            maxWorkerCount = Math.Min(Math.Max(1, value), Environment.ProcessorCount);
         }
     }
 
@@ -123,35 +123,35 @@ public static class Parallelism
         CountdownEventPool.Return(countdown); // Return to pool
         handle.Free();
     }
-}
-
-internal static class CountdownEventPool
-{
-    private static readonly ConcurrentBag<CountdownEvent> pool = new();
-    private const int MaxPoolSize = 64;
-    private static int count = 0;
-
-    public static CountdownEvent Rent(int initialCount)
+    
+    static class CountdownEventPool
     {
-        if (pool.TryTake(out var item))
+        private static readonly ConcurrentBag<CountdownEvent> pool = new();
+        private const int MaxPoolSize = 64;
+        private static int count = 0;
+
+        public static CountdownEvent Rent(int initialCount)
         {
-            Interlocked.Decrement(ref count);
-            item.Reset(initialCount);
-            return item;
+            if (pool.TryTake(out var item))
+            {
+                Interlocked.Decrement(ref count);
+                item.Reset(initialCount);
+                return item;
+            }
+
+            return new CountdownEvent(initialCount);
         }
 
-        return new CountdownEvent(initialCount);
-    }
-
-    public static void Return(CountdownEvent item)
-    {
-        if (Interlocked.Increment(ref count) > MaxPoolSize)
+        public static void Return(CountdownEvent item)
         {
-            Interlocked.Decrement(ref count);
-            item.Dispose();
-            return;
-        }
+            if (Interlocked.Increment(ref count) > MaxPoolSize)
+            {
+                Interlocked.Decrement(ref count);
+                item.Dispose();
+                return;
+            }
 
-        pool.Add(item);
+            pool.Add(item);
+        }
     }
 }

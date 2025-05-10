@@ -12,15 +12,7 @@ namespace Box2D;
 [PublicAPI]
 public class WeldJointDef
 {
-    internal WeldJointDefInternal _internal;
-    
-    /// <summary>
-    /// Creates a weld joint definition with the default values.
-    /// </summary>
-    public WeldJointDef()
-    {
-        _internal = new();
-    }
+    internal WeldJointDefInternal _internal = new();
     
     /// <summary>
     /// The first attached body

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -58,40 +57,4 @@ public readonly struct TreeNode
     /// </summary>
     [FieldOffset(38)]
     public readonly TreeNodeFlags Flags;
-}
-
-/// <summary>
-/// The children of a <see cref="TreeNode"/>.
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct TreeChildren
-{
-    /// <summary>
-    /// The first child of the node.
-    /// </summary>
-    public readonly int Child1;
-    /// <summary>
-    /// The second child of the node.
-    /// </summary>
-    public readonly int Child2;
-}
-
-/// <summary>
-/// Flags for a <see cref="TreeNode"/>.
-/// </summary>
-[Flags]
-public enum TreeNodeFlags : ushort
-{
-    /// <summary>
-    /// The node is allocated.
-    /// </summary>
-    AllocatedNode = 0x0001,
-    /// <summary>
-    /// The node is enlarged.
-    /// </summary>
-    EnlargedNode = 0x0002,
-    /// <summary>
-    /// The node is a leaf node.
-    /// </summary>
-    LeafNode = 0x0004,
 }

@@ -12,16 +12,8 @@ namespace Box2D;
 [PublicAPI]
 public class BodyDef
 {
-    internal BodyDefInternal _internal;
-
-    /// <summary>
-    /// Constructor for BodyDef.
-    /// </summary>
-    public BodyDef()
-    {
-        _internal = new();
-    }
-
+    internal BodyDefInternal _internal = new();
+    
     /// <summary>
     /// Destructor for BodyDef.
     /// </summary>
@@ -149,8 +141,8 @@ public class BodyDef
     /// <summary>
     /// Treat this body as high speed object that performs continuous collision detection
     /// against dynamic and kinematic bodies, but not other bullet bodies.
-    /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic</b>
-    /// continuous collision. They may interfere with joint constraints.
+    /// <b>Warning: Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic
+    /// continuous collision. They may interfere with joint constraints.</b>
     /// </summary>
     public bool IsBullet
     {

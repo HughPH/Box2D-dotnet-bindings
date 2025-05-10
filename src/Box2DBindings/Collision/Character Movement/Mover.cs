@@ -19,6 +19,7 @@ public static class Mover
     /// <param name="planes">The collision planes</param>
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
+    /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
     [PublicAPI]
     public static PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes)
     {
@@ -35,12 +36,12 @@ public static class Mover
     /// <param name="planeCount">The number of planes to use</param>
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
+    /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
     [PublicAPI]
     public static PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes, int planeCount)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-
         return b2SolvePlanes(position, planes, planeCount);
     }
 
@@ -55,6 +56,7 @@ public static class Mover
     /// <param name="planes">The collision planes</param>
     /// <returns>The clipped vector</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
+    /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga64bf3e04de538c317bc377a2d2c22370">b2ClipVector</a></remarks>
     [PublicAPI]
     public static Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes)
     {
@@ -72,7 +74,8 @@ public static class Mover
     /// <param name="planes">The collision planes</param>
     /// <param name="planeCount">The number of planes to use</param>
     /// <returns>The clipped vector</returns>
-    /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>S
+    /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
+    /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga64bf3e04de538c317bc377a2d2c22370">b2ClipVector</a></remarks>
     [PublicAPI]
     public static Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes, int planeCount)
     {

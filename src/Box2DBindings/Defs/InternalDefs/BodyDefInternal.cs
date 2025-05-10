@@ -134,7 +134,7 @@ struct BodyDefInternal
     /// <summary>
     /// Default body definition.
     /// </summary>
-    public static BodyDefInternal Default => GetDefault();
+    private static BodyDefInternal Default => GetDefault();
 
     /// <summary>
     /// Creates a body definition with the default values.

@@ -27,7 +27,8 @@ public struct Plane
     /// </summary>
     /// <returns>True if the plane is valid, false otherwise.</returns>
     /// <remarks>
-    /// A plane is valid if its normal is a unit vector and it is not NaN or infinity.
+    /// A plane is valid if its normal is a unit vector and it is not NaN or infinity.<br/>
+    /// This wraps <a href="https://box2d.org/documentation/group__math.html#ga36ebb9b030a14db7747a419a5bd0d29c">b2IsValidPlane</a>.
     /// </remarks>
     [PublicAPI]
     public bool Valid => IsValidPlane(this) != 0;

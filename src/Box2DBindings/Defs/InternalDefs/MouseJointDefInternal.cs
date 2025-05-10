@@ -71,7 +71,7 @@ struct MouseJointDefInternal
     /// <summary>
     /// The default mouse joint definition.
     /// </summary>
-    public static MouseJointDefInternal Default => GetDefault();
+    private static MouseJointDefInternal Default => GetDefault();
     
     /// <summary>
     /// Creates a mouse joint definition with the default values.

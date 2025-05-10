@@ -34,7 +34,7 @@ struct FilterJointDefInternal
     /// <summary>
     /// The default null joint definition.
     /// </summary>
-    public static FilterJointDefInternal Default => GetDefault();
+    private static FilterJointDefInternal Default => GetDefault();
     
     public FilterJointDefInternal()
     {

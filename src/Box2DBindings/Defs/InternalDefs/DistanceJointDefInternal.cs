@@ -114,7 +114,7 @@ struct DistanceJointDefInternal
     /// <summary>
     /// The default distance joint definition.
     /// </summary>
-    internal static DistanceJointDefInternal Default => GetDefault();
+    private static DistanceJointDefInternal Default => GetDefault();
 
     /// <summary>
     /// Creates a distance joint definition with the default values.

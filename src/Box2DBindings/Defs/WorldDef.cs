@@ -8,14 +8,13 @@ namespace Box2D;
 [PublicAPI]
 public class WorldDef
 {
-    internal WorldDefInternal _internal;
+    internal WorldDefInternal _internal = new();
     
     /// <summary>
     /// Creates a world definition with the default values.
     /// </summary>
     public WorldDef()
     {
-        _internal = new();
         WorkerCount = Parallelism.MaxWorkerCount;
     }
     

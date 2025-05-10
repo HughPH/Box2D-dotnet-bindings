@@ -44,13 +44,11 @@ public struct ExplosionDef
     /// <summary>
     /// The default explosion definition.
     /// </summary>
-    [PublicAPI]
-    public static ExplosionDef Default => GetDefault();
+    private static ExplosionDef Default => GetDefault();
     
     /// <summary>
     /// Creates a new explosion definition with the default values.
     /// </summary>
-    [PublicAPI]
     public ExplosionDef()
     {
         this = Default;

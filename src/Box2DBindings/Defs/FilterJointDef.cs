@@ -8,16 +8,8 @@ namespace Box2D;
 [PublicAPI]
 public class FilterJointDef
 {
-    internal FilterJointDefInternal _internal;
+    internal FilterJointDefInternal _internal = new();
 
-    /// <summary>
-    /// Creates a filter joint definition with the default values.
-    /// </summary>
-    public FilterJointDef()
-    {
-        _internal = FilterJointDefInternal.Default;
-    }
-    
     /// <summary>
     /// The first attached body.
     /// </summary>

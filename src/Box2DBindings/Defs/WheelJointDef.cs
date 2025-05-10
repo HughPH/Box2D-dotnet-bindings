@@ -13,15 +13,7 @@ namespace Box2D;
 [PublicAPI]
 public class WheelJointDef
 {
-    internal WheelJointDefInternal _internal;
-    
-    /// <summary>
-    /// Creates a wheel joint definition with the default values.
-    /// </summary>
-    public WheelJointDef()
-    {
-        _internal = new();
-    }
+    internal WheelJointDefInternal _internal = new();
 
     /// <summary>
     /// The first attached body

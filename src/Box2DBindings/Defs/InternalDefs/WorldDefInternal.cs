@@ -141,7 +141,7 @@ struct WorldDefInternal
     /// <summary>
     /// The default world definition.
     /// </summary>
-    public static WorldDefInternal Default => GetDefault();
+    private static WorldDefInternal Default => GetDefault();
     
     /// <summary>
     /// Creates a world definition with the default values.

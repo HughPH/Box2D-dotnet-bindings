@@ -14,15 +14,7 @@ namespace Box2D;
 [PublicAPI]
 public class RevoluteJointDef
 {
-    internal RevoluteJointDefInternal _internal;
-    
-    /// <summary>
-    /// Creates a revolute joint definition with the default values.
-    /// </summary>
-    public RevoluteJointDef()
-    {
-        _internal = new();
-    }
+    internal RevoluteJointDefInternal _internal = new();
     
     /// <summary>
     /// The first attached body

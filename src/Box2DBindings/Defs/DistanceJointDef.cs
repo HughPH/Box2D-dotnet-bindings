@@ -13,16 +13,8 @@ namespace Box2D;
 [PublicAPI]
 public class DistanceJointDef
 {
-    internal DistanceJointDefInternal _internal;
-
-    /// <summary>
-    /// Creates a distance joint definition with the default values.
-    /// </summary>
-    public DistanceJointDef()
-    {
-        _internal = new();
-    }
-
+    internal DistanceJointDefInternal _internal = new();
+    
     /// <summary>
     /// The first attached body
     /// </summary>

@@ -10,16 +10,8 @@ namespace Box2D;
 [PublicAPI]
 public class MotorJointDef
 {
-    internal MotorJointDefInternal _internal;
-
-    /// <summary>
-    /// Creates a motor joint definition with the default values.
-    /// </summary>
-    public MotorJointDef()
-    {
-        _internal = new();
-    }
-
+    internal MotorJointDefInternal _internal = new();
+    
     /// <summary>
     /// The first attached body
     /// </summary>

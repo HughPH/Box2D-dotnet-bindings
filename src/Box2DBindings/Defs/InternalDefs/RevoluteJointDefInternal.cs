@@ -133,7 +133,7 @@ struct RevoluteJointDefInternal
     /// <summary>
     /// The default revolute joint definition.
     /// </summary>
-    internal static RevoluteJointDefInternal Default => GetDefault();
+    private static RevoluteJointDefInternal Default => GetDefault();
     
     public RevoluteJointDefInternal()
     {

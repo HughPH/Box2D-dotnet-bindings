@@ -12,16 +12,8 @@ namespace Box2D;
 [PublicAPI]
 public class ShapeDef
 {
-    internal ShapeDefInternal _internal;
-
-    /// <summary>
-    /// Creates a shape definition with the default values.
-    /// </summary>
-    public ShapeDef()
-    {
-        _internal = ShapeDefInternal.Default;
-    }
-
+    internal ShapeDefInternal _internal = new();
+    
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>

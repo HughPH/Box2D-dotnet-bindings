@@ -90,7 +90,7 @@ struct WeldJointDefInternal
     /// <summary>
     /// The default weld joint definition.
     /// </summary>
-    public static WeldJointDefInternal Default => GetDefault();
+    private static WeldJointDefInternal Default => GetDefault();
     
     public WeldJointDefInternal()
     {

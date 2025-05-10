@@ -13,16 +13,8 @@ namespace Box2D;
 [PublicAPI]
 public class PrismaticJointDef
 {
-    internal PrismaticJointDefInternal _internal;
-
-    /// <summary>
-    /// Creates a prismatic joint definition with the default values.
-    /// </summary>
-    public PrismaticJointDef()
-    {
-        _internal = new();
-    }
-
+    internal PrismaticJointDefInternal _internal = new();
+    
     /// <summary>
     /// The first attached body
     /// </summary>

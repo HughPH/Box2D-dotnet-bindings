@@ -96,7 +96,7 @@ struct ShapeDefInternal
     /// <summary>
     /// The default shape definition.
     /// </summary>
-    public static ShapeDefInternal Default => GetDefault();
+    private static ShapeDefInternal Default => GetDefault();
     
     public ShapeDefInternal()
     {

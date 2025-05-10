@@ -121,7 +121,7 @@ struct WheelJointDefInternal
     /// <summary>
     /// The default wheel joint definition.
     /// </summary>
-    public static WheelJointDefInternal Default => GetDefault();
+    private static WheelJointDefInternal Default => GetDefault();
     
     /// <summary>
     /// Creates a wheel joint definition with the default values.

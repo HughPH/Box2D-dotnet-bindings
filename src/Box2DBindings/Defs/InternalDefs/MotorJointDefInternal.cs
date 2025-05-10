@@ -66,12 +66,12 @@ struct MotorJointDefInternal
     internal readonly int internalValue;
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
-    internal static extern MotorJointDefInternal GetDefault();
+    private static extern MotorJointDefInternal GetDefault();
     
     /// <summary>
     /// The default motor joint definition.
     /// </summary>
-    internal static MotorJointDefInternal Default => GetDefault();
+    private static MotorJointDefInternal Default => GetDefault();
     
     /// <summary>
     /// Creates a motor joint definition with the default values.

@@ -48,7 +48,7 @@ unsafe struct ChainDefInternal
     /// <summary>
     /// The default chain definition.
     /// </summary>
-    internal static ChainDefInternal Default => GetDefault();
+    private static ChainDefInternal Default => GetDefault();
     
     public ChainDefInternal()
     {

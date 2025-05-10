@@ -244,3 +244,17 @@ jobs:
                   dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
                     --api-key "$NUGET_API_KEY" \
                     --source "$NUGET_FEED"
+                    
+            -   name: Generate Doxygen Documentation
+                uses: mattnotmitt/doxygen-action@v1.9.8
+                with:
+                  doxyfile-path: ./Doxyfile
+                  working-directory: .
+            
+            -   name: Deploy Doxygen Docs to GitHub Pages
+                uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
+                with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: gh-pages
+                  folder: docs/html
+                  config_file: ./Doxyfile

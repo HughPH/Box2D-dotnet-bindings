@@ -24,14 +24,13 @@ namespace Box2D;
 [PublicAPI]
 public class ChainDef
 {
-    internal ChainDefInternal _internal;
+    internal ChainDefInternal _internal = new();
 
     /// <summary>
     /// Creates a chain definition with the default values.
     /// </summary>
     public ChainDef()
     {
-        _internal = new();
     }
     
     /// <summary>
@@ -39,7 +38,6 @@ public class ChainDef
     /// </summary>
     public ChainDef(ReadOnlySpan<Vec2> points)
     {
-        _internal = new();
         Points = points;
     }
 
