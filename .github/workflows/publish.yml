@@ -197,26 +197,14 @@ jobs:
                     fi
 
             -   name: Upload artefacts
-                shell: bash
-                env:
-                    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                run: |
-                    tries=0
-                    until gh api \
-                    -H "Accept: application/vnd.github+json" \
-                    -X POST \
-                    -F name="${{ matrix.target }}" \
-                    -F retention_days=7 \
-                    --raw-field file=@artefact/* \
-                    /repos/${{ github.repository }}/actions/artifacts; do
-                     tries=$((tries + 1))
-                     if [ $tries -ge 3 ]; then
-                       echo "Upload failed after 3 tries"
-                       exit 1
-                     fi
-                     echo "Upload failed, retrying in 5s..."
-                     sleep 5
-                    done
+                uses: actions/upload-artifact@v4
+                with:
+                    name: ${{ matrix.target }}
+                    path: artefact/
+                    retention-days: 7
+                    compression-level: '0'
+                    if-no-files-found: 'fail'
+                    
     
     # -----------------------------------------------------------------------------
     # Job 3 ─ Build & publish the managed C# bindings package
