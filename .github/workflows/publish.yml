@@ -257,36 +257,19 @@ jobs:
                 run: doxygen
             
             -   name: Upload artefacts
-                uses: actions/upload-artifact@v4
+                id: deployment
+                uses: actions/upload-pages-artifact@v3
                 with:
                     name: doxygen-docs
                     path: docs/html
                     retention-days: 7
-                    compression-level: '0'
-                    if-no-files-found: 'error'
-
+    
     deploy-docs:
-        name: Deploy Doxygen docs
+        environment:
+            name: github-pages
         runs-on: [self-hosted, Linux, X64]
         needs: generate-docs
         steps:
-            -   name: Checkout gh-pages branch
-                uses: actions/checkout@v4
-                with:
-                    fetch-depth: 0
-                    ref: gh-pages
-                    
-            -   name: Download Doxygen docs
-                uses: actions/download-artifact@v4
-                with:
-                    name: doxygen-docs
-
-            -   name: Copy Doxygen docs to gh-pages branch
-                run: |
-                    mv doxygen-docs docs/html                    
-                    git config user.name "github-actions[bot]"
-                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-                    git add docs/html
-                    git commit -m "Update Doxygen docs for ${{ needs.detect-tag.outputs.box2d_tag }}"
-                    git push origin gh-pages
-            
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
