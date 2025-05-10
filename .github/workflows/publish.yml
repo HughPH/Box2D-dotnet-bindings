@@ -255,11 +255,20 @@ jobs:
             -   name: Generate Doxygen Documentation
                 run: doxygen
             
-            -   name: Publish Doxygen docs to GitHub Pages
-                if: github.ref == 'refs/heads/main'
-                uses: peaceiris/actions-gh-pages@v4
-                with:
-                    github_token: ${{ secrets.GITHUB_TOKEN }}
-                    publish_dir: ./docs/html
-                    publish_branch: gh-pages
-                    force_orphan: true
+            -   name: Push Doxygen HTML to gh-pages
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                run: |
+                    rm -rf gh-pages
+                    git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" gh-pages
+                    
+                    rm -rf gh-pages/*
+                    cp -r docs/html/* gh-pages/
+                    
+                    cd gh-pages
+                    git config user.name "github-actions"
+                    git config user.email "github-actions@github.com"
+                    
+                    git add .
+                    git commit -m "Update Doxygen docs for ${{ github.sha }}" || echo "No changes to commit."
+                    git push origin gh-pages
