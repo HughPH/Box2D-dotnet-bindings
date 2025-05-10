@@ -7,6 +7,7 @@ namespace Box2D;
 /// A solid circle
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Circle
 {
     /// <summary>
@@ -22,7 +23,6 @@ public struct Circle
     /// <summary>
     /// Construct a circle shape with a center and radius
     /// </summary>
-    [PublicAPI]
     public Circle(Vec2 center, float radius)
     {
         Center = center;
@@ -38,7 +38,6 @@ public struct Circle
     /// <summary>
     /// Compute mass properties of this circle
     /// </summary>
-    [PublicAPI]
     public MassData ComputeMass(float density) => ComputeCircleMass(this, density);
     
     /// <summary>
@@ -50,7 +49,6 @@ public struct Circle
     /// <summary>
     /// Compute the bounding box of this transformed circle
     /// </summary>
-    [PublicAPI]
     public AABB ComputeAABB(in Transform transform) => ComputeCircleAABB(this, transform);
     
     /// <summary>
@@ -62,7 +60,6 @@ public struct Circle
     /// <summary>
     /// Test a point for overlap with this circle in local space
     /// </summary>
-    [PublicAPI]
     public bool TestPoint(in Vec2 point) => PointInCircle(point, this) != 0;
 
     /// <summary>
@@ -74,7 +71,6 @@ public struct Circle
     /// <summary>
     /// Ray cast versus this circle shape in local space. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput RayCast(in RayCastInput input) => RayCast(input, this); 
 
     /// <summary>
@@ -86,6 +82,5 @@ public struct Circle
     /// <summary>
     /// Shape cast versus this circle. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCircle(input, this);
 }

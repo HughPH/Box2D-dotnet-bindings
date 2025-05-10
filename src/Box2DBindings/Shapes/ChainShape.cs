@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -63,7 +64,7 @@ public struct ChainShape
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
             int needed = b2Chain_GetSegmentCount(this);
-            Shape[] buffer = new Shape[needed];
+            Shape[] buffer = ArrayPool<Shape>.Shared.Rent(needed);
             int written;
             fixed (Shape* p = buffer)
                 written = b2Chain_GetSegments(this, p, buffer.Length);

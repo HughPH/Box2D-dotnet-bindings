@@ -6,7 +6,7 @@ namespace Box2D;
 /// Results of a Box2D raycast query, including intersection details and traversal statistics.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct RayResult
+public readonly ref struct RayResult
 {
     /// <summary>
     /// Reference to the shape hit by the ray.

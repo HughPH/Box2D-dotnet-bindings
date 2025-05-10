@@ -7,6 +7,7 @@ namespace Box2D.Character_Movement;
 /// <summary>
 /// Functions for solving planes and clipping vectors.
 /// </summary>
+[PublicAPI]
 public static class Mover
 {
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SolvePlanes")]
@@ -20,7 +21,6 @@ public static class Mover
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
-    [PublicAPI]
     public static PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes)
     {
         if (planes is not { Length: not 0 })
@@ -37,7 +37,6 @@ public static class Mover
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
-    [PublicAPI]
     public static PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes, int planeCount)
     {
         if (planes is not { Length: not 0 })
@@ -57,7 +56,6 @@ public static class Mover
     /// <returns>The clipped vector</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga64bf3e04de538c317bc377a2d2c22370">b2ClipVector</a></remarks>
-    [PublicAPI]
     public static Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes)
     {
         if (planes is not { Length: not 0 })
@@ -76,7 +74,6 @@ public static class Mover
     /// <returns>The clipped vector</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga64bf3e04de538c317bc377a2d2c22370">b2ClipVector</a></remarks>
-    [PublicAPI]
     public static Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes, int planeCount)
     {
         if (planes is not { Length: not 0 })

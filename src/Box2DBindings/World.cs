@@ -4,6 +4,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+#if NET9_0_OR_GREATER
+using System.Threading;
+#endif
 
 namespace Box2D;
 
@@ -52,11 +55,10 @@ public sealed partial class World
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
-    /// <param name="worldLock">The world lock object. This is used to synchronize access to the world from multiple threads. If null, a new lock object will be created. This parameter is supplied to support passing a dotnet 9+ Lock object.<br/>See: <see cref="WorldLock"/></param>
     /// <returns>The world</returns>
-    public static World CreateWorld(WorldDef def, object? worldLock = null)
+    public static World CreateWorld(WorldDef def)
     {
-        return new(def, worldLock);
+        return new(def);
     }
 
     /// <summary>
@@ -64,7 +66,7 @@ public sealed partial class World
     /// </summary>
     /// <param name="def">The world definition</param>
     /// <param name="worldLock">The world lock object. This is used to synchronize access to the world from multiple threads. If null, a new lock object will be created. This parameter is supplied to support passing a dotnet 9+ Lock object.<br/>See: <see cref="WorldLock"/></param>
-    public World(WorldDef def, object? worldLock = null)
+    public World(WorldDef def)
     {
         if (!initialized)
         {
@@ -80,14 +82,11 @@ public sealed partial class World
 
         id = b2CreateWorld(def._internal);
         worlds.TryAdd(id, this);
-
-        WorldLock = worldLock ?? new();
     }
 
     private World(WorldId id)
     {
         this.id = id;
-        WorldLock = new();
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
@@ -142,7 +141,11 @@ public sealed partial class World
     /// <i>Note: It is your responsibility to ensure that the object is unlocked within the time required for another Step.<br/>
     /// Event handlers run within a world lock. Do not lock the world lock in a world event handler. This will cause a deadlock.</i>
     /// </remarks>
-    public object WorldLock;
+#if NET9_0_OR_GREATER
+    public Lock WorldLock = new();
+#else
+    public object WorldLock = new();
+#endif
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
@@ -650,7 +653,6 @@ public sealed partial class World
     /// <summary>
     /// The user data object for this world.
     /// </summary>
-    [PublicAPI]
     public object? UserData
     {
         get => Valid ? GetObjectAtPointer(b2World_GetUserData, id) : throw new InvalidOperationException("World is not valid");

@@ -9,6 +9,7 @@ namespace Box2D;
 /// </summary>
 /// <remarks>Box2D uses speculative collision so some contact points may be separated.</remarks>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public readonly unsafe struct Manifold
 {
     /// <summary>
@@ -32,7 +33,6 @@ public readonly unsafe struct Manifold
     /// <summary>
     /// The manifold points, up to two are possible in 2D
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<ManifoldPoint> Points
     {
         get

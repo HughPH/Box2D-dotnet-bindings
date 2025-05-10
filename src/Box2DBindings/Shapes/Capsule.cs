@@ -8,6 +8,7 @@ namespace Box2D;
 /// by a rectangle.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Capsule
 {
     /// <summary>
@@ -50,7 +51,6 @@ public struct Capsule
     /// <summary>
     /// Compute mass properties of this capsule
     /// </summary>
-    [PublicAPI]
     public MassData ComputeMass(float density) => ComputeCapsuleMass(in this, density);
     
     /// <summary>
@@ -62,7 +62,6 @@ public struct Capsule
     /// <summary>
     /// Compute the bounding box of this transformed capsule
     /// </summary>
-    [PublicAPI]
     public AABB ComputeAABB(in Transform transform) => ComputeCapsuleAABB(in this, transform);
     
     /// <summary>
@@ -74,7 +73,6 @@ public struct Capsule
     /// <summary>
     /// Test a point for overlap with this capsule in local space
     /// </summary>
-    [PublicAPI]
     public bool TestPoint(in Vec2 point) => PointInCapsule(point, in this) != 0;
     
     /// <summary>
@@ -86,7 +84,6 @@ public struct Capsule
     /// <summary>
     /// Ray cast versus this capsule shape in local space. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput RayCast(in RayCastInput input) => RayCastCapsule(in input, in this);
 
     /// <summary>
@@ -98,7 +95,6 @@ public struct Capsule
     /// <summary>
     /// Shape cast versus this capsule. Initial overlap is treated as a miss.
     /// </summary>
-    [PublicAPI]
     public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCapsule(in input, in this);
 
 }

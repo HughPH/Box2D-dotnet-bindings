@@ -7,6 +7,7 @@ namespace Box2D.Character_Movement;
 /// A plane in 2D space.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Plane
 {
     /// <summary>
@@ -30,6 +31,5 @@ public struct Plane
     /// A plane is valid if its normal is a unit vector and it is not NaN or infinity.<br/>
     /// This wraps <a href="https://box2d.org/documentation/group__math.html#ga36ebb9b030a14db7747a419a5bd0d29c">b2IsValidPlane</a>.
     /// </remarks>
-    [PublicAPI]
     public bool Valid => IsValidPlane(this) != 0;
 }

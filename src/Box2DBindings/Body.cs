@@ -1,6 +1,7 @@
 using Box2D.Comparers;
 using JetBrains.Annotations;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -788,12 +789,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (shapeCount == 0)
                 return [];
 
-            Shape[] shapes = new Shape[shapeCount];
+            Shape[] shapes = ArrayPool<Shape>.Shared.Rent(shapeCount);
 
             fixed (Shape* shapeArrayPtr = shapes)
                 b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
 
-            return shapes;
+            return shapes.AsSpan(0, shapeCount);
         }
     }
 
@@ -817,15 +818,14 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (jointCount == 0)
                 return [];
 
-            JointId[] jointIds = new JointId[jointCount];
-            fixed (JointId* jointIdsArrayPtr = jointIds)
-                b2Body_GetJoints(this, jointIdsArrayPtr, jointCount);
+            JointId* jointIds = stackalloc JointId[jointCount];
+            b2Body_GetJoints(this, jointIds, jointCount);
 
-            Joint[] jointObjects = new Joint[jointCount];
+            Joint[] jointObjects = ArrayPool<Joint>.Shared.Rent(jointCount);
             for (int i = 0; i < jointCount; i++)
                 jointObjects[i] = Joint.GetJoint(jointIds[i]);
 
-            return jointObjects;
+            return jointObjects.AsSpan(0, jointCount);
         }
     }
 
@@ -852,7 +852,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (needed == 0)
                 return [];
 
-            ContactData[] contactData = new ContactData[needed];
+            ContactData[] contactData = ArrayPool<ContactData>.Shared.Rent(needed);
             int written;
             fixed (ContactData* p = contactData)
             {

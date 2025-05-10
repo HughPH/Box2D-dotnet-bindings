@@ -15,6 +15,7 @@ namespace Box2D;
 /// intersect or are within an axis-aligned rectangle.
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct AABB : IEquatable<AABB>
 {
     /// <summary>
@@ -41,14 +42,12 @@ public struct AABB : IEquatable<AABB>
     /// The width of the AABB
     /// </summary>
     /// <remarks>This is not an editable property. You must modify the lower and upper bounds to change the width.</remarks>
-    [PublicAPI]
     public float Width => UpperBound.X - LowerBound.X;
     
     /// <summary>
     /// The height of the AABB
     /// </summary>
     /// <remarks>This is not an editable property. You must modify the lower and upper bounds to change the height.</remarks>
-    [PublicAPI]
     public float Height => UpperBound.Y - LowerBound.Y;
     
     /// <summary>
@@ -85,7 +84,6 @@ public struct AABB : IEquatable<AABB>
     /// <summary>
     /// Compute the bounding box of an array of circles
     /// </summary>
-    [PublicAPI]
     public static AABB MakeAABB(ReadOnlySpan<Vec2> points, float radius)
     {
         if (points is not { Length: not 0 })

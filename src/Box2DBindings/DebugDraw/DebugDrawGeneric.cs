@@ -1,6 +1,5 @@
 using Box2D.Delegates.Generic;
 using JetBrains.Annotations;
-using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -13,6 +12,7 @@ public sealed class DebugDrawGeneric<TContext> : DebugDraw where TContext:class
 {
     private TContext context;
 
+    //! \internal
     internal override ref DebugDrawInternal Internal => ref @internal;
 
     /// <summary>

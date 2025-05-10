@@ -36,6 +36,7 @@ public abstract class DebugDrawGenericBase<TContext> : DebugDraw where TContext 
         DrawMass = true;
     }
     
+    //! \internal
     internal override unsafe ref DebugDrawInternal Internal
     {
         get

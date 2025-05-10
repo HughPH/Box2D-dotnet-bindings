@@ -8,6 +8,7 @@ namespace Box2D;
 /// Rotation expressed as a cosine and sine.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct Rotation : IEquatable<Rotation>
 {
     /// <summary>
@@ -74,7 +75,6 @@ public struct Rotation : IEquatable<Rotation>
     /// <summary>
     /// Returns the angle of the rotation in radians.
     /// </summary>
-    [PublicAPI]
     public float GetAngle() =>
         MathF.Atan2(Sin, Cos);
 

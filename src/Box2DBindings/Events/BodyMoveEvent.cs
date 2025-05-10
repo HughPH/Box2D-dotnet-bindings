@@ -34,7 +34,6 @@ public readonly struct BodyMoveEvent
     /// <summary>
     /// The user data associated with the body
     /// </summary>
-    [PublicAPI]
     public object? UserData => GetObjectAtPointer(userData);
 
     /// <summary>

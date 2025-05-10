@@ -12,6 +12,7 @@ struct FilterJointDefInternal
 
     internal nint UserData;
 
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly int internalValue;
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultNullJointDef")]

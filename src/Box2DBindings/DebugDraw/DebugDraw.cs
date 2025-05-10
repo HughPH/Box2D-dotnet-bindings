@@ -20,8 +20,10 @@ namespace Box2D;
 /// </remarks>
 public abstract class DebugDraw
 {
+    //! \internal
     internal DebugDrawInternal @internal = new();
 
+    //! \internal
     internal abstract ref DebugDrawInternal Internal { get; }
 
     /// <summary>

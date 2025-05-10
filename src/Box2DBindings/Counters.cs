@@ -6,7 +6,7 @@ namespace Box2D;
 /// Counters that give details of the simulation size.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct Counters
+public unsafe ref struct Counters
 {
     /// <summary>
     /// The number of bodies in the world.

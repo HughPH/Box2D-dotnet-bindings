@@ -5,7 +5,7 @@ namespace Box2D;
 /// Box2D version information.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct Box2DVersion
+public readonly ref struct Box2DVersion
 {
     /// <summary>
     /// Significant changes

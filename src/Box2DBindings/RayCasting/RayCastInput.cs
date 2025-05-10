@@ -7,6 +7,7 @@ namespace Box2D;
 /// Low level ray cast input data
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[PublicAPI]
 public struct RayCastInput
 {
     /// <summary>
@@ -33,6 +34,5 @@ public struct RayCastInput
     /// <summary>
     /// Validate this ray cast input data (NaN, etc)
     /// </summary>
-    [PublicAPI]
     public bool Valid => IsValidRay(this) != 0;
 }

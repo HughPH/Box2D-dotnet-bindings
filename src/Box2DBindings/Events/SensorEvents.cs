@@ -10,25 +10,24 @@ namespace Box2D;
 /// Note: these may become invalid if bodies and/or shapes are destroyed
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct SensorEvents
+[PublicAPI]
+public readonly unsafe ref struct SensorEvents
 {
-    private SensorBeginTouchEvent* beginEvents;
+    private readonly SensorBeginTouchEvent* beginEvents;
 
-    private SensorEndTouchEvent* endEvents;
+    private readonly SensorEndTouchEvent* endEvents;
 
-    private int beginCount;
+    private readonly int beginCount;
 	
-    private int endCount;
+    private readonly int endCount;
 	
     /// <summary>
     /// Array of sensor begin touch events
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<SensorBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
     /// <summary>
     /// Array of sensor end touch events
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<SensorEndTouchEvent> EndEvents => new(endEvents, endCount);
 }

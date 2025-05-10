@@ -9,6 +9,7 @@ namespace Box2D;
 /// The wheel joint restricts body B to move along a local axis in body A. Body B is free to
 /// rotate. Supports a linear spring, linear limits, and a rotational motor.
 /// </summary>
+[PublicAPI]
 public class WheelJoint : Joint
 {
     internal WheelJoint(JointId id) : base(id)
@@ -21,7 +22,6 @@ public class WheelJoint : Joint
     /// Enable/disable the wheel joint spring
     /// </summary>
     /// <param name="enableSpring">True to enable the spring, false to disable the spring</param>
-    [PublicAPI]
     public void EnableSpring(bool enableSpring) => b2WheelJoint_EnableSpring(id, enableSpring ? (byte)1 : (byte)0);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_IsSpringEnabled")]
@@ -31,7 +31,6 @@ public class WheelJoint : Joint
     /// Gets or sets wheel joint spring enabled state
     /// </summary>
     /// <returns>True if the spring is enabled</returns>
-    [PublicAPI]
     public bool SpringEnabled
     {
         get => b2WheelJoint_IsSpringEnabled(id) != 0;
@@ -47,7 +46,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// Set the wheel joint spring frequency in hertz
     /// </summary>
-    [PublicAPI]
     public float SpringHertz
     {
         get => b2WheelJoint_GetSpringHertz(id);
@@ -63,7 +61,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The wheel joint damping ratio, non-dimensional
     /// </summary>
-    [PublicAPI]
     public float SpringDampingRatio
     {
         get => b2WheelJoint_GetSpringDampingRatio(id);
@@ -79,7 +76,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The wheel joint limit enabled flag
     /// </summary>
-    [PublicAPI]
     public bool LimitEnabled
     {
         get => b2WheelJoint_IsLimitEnabled(id) != 0;
@@ -94,7 +90,6 @@ public class WheelJoint : Joint
     /// </summary>
     /// <param name="lower">The lower limit</param>
     /// <param name="upper">The upper limit</param>
-    [PublicAPI]
     public void SetLimits(float lower, float upper) => b2WheelJoint_SetLimits(id, lower, upper);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetLowerLimit")]
@@ -103,7 +98,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The lower wheel joint limit
     /// </summary>
-    [PublicAPI]
     public float LowerLimit => b2WheelJoint_GetLowerLimit(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_GetUpperLimit")]
@@ -112,7 +106,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The upper wheel joint limit
     /// </summary>
-    [PublicAPI]
     public float UpperLimit => b2WheelJoint_GetUpperLimit(id);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WheelJoint_EnableMotor")]
@@ -124,7 +117,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The wheel joint motor enabled flag
     /// </summary>
-    [PublicAPI]
     public bool MotorEnabled
     {
         get => b2WheelJoint_IsMotorEnabled(id) != 0;
@@ -140,7 +132,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The wheel joint motor speed in radians per second
     /// </summary>
-    [PublicAPI]
     public float MotorSpeed
     {
         get => b2WheelJoint_GetMotorSpeed(id);
@@ -156,7 +147,6 @@ public class WheelJoint : Joint
     /// <summary>
     /// The wheel joint maximum motor torque, usually in newton-meters
     /// </summary>
-    [PublicAPI]
     public float MaxMotorTorque
     {
         get => b2WheelJoint_GetMaxMotorTorque(id);
@@ -169,6 +159,5 @@ public class WheelJoint : Joint
     /// <summary>
     /// The current wheel joint motor torque, usually in newton-meters
     /// </summary>
-    [PublicAPI]
     public float MotorTorque => b2WheelJoint_GetMotorTorque(id);
 }

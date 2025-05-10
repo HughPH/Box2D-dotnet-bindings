@@ -207,7 +207,6 @@ public unsafe struct Polygon
     /// <summary>
     /// Compute the bounding box of this transformed polygon
     /// </summary>
-    [PublicAPI]
     public AABB ComputeAABB(in Transform transform) => ComputePolygonAABB(in this, transform);
     
     /// <summary>

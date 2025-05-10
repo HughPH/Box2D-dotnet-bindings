@@ -6,7 +6,7 @@ namespace Box2D;
 /// Output for ShapeDistance
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct DistanceOutput
+public readonly ref struct DistanceOutput
 {
     /// <summary>
     /// Closest point on shape A

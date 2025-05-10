@@ -1,6 +1,7 @@
 using Box2D.Comparers;
 using JetBrains.Annotations;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -518,7 +519,7 @@ public struct Shape : IEquatable<Shape>
             if (!Valid)
                 throw new InvalidOperationException("Shape is not valid");
             int needed = b2Shape_GetContactCapacity(this);
-            ContactData[] buffer = new ContactData[needed];
+            ContactData[] buffer = ArrayPool<ContactData>.Shared.Rent(needed);
             int written;
             fixed (ContactData* p = buffer)
             {
@@ -541,7 +542,6 @@ public struct Shape : IEquatable<Shape>
     /// Overlaps may contain destroyed shapes so use <see cref="Valid"/> to confirm each overlap.<br/><br/>
     /// <b>Warning: Do not fetch this property during the contact callbacks</b>
     /// </remarks>
-    [PublicAPI]
     public unsafe ReadOnlySpan<Shape> SensorOverlaps
     {
         get
@@ -549,7 +549,7 @@ public struct Shape : IEquatable<Shape>
             if (!Valid)
                 throw new InvalidOperationException("Shape is not valid");
             int needed = b2Shape_GetSensorCapacity(this);
-            Shape[] buffer = new Shape[needed];
+            Shape[] buffer = ArrayPool<Shape>.Shared.Rent(needed);
             int written;
             fixed (Shape* p = buffer)
             {

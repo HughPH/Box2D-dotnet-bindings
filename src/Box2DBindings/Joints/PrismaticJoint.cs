@@ -84,7 +84,6 @@ public class PrismaticJoint : Joint
     /// </summary>
     /// <param name="lower">The lower prismatic joint limit</param>
     /// <param name="upper">The upper prismatic joint limit</param>
-    [PublicAPI]
     public void SetLimits(float lower, float upper) => b2PrismaticJoint_SetLimits(id, lower, upper);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetLowerLimit")]

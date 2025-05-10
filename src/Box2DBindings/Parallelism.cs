@@ -128,7 +128,7 @@ public static class Parallelism
     {
         private static readonly ConcurrentBag<CountdownEvent> pool = new();
         private const int MaxPoolSize = 64;
-        private static int count = 0;
+        private static int count;
 
         public static CountdownEvent Rent(int initialCount)
         {

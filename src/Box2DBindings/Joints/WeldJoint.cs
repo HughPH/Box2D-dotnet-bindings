@@ -44,7 +44,6 @@ public class WeldJoint : Joint
     /// <summary>
     /// The weld joint linear stiffness in Hertz.
     /// </summary>
-    [PublicAPI]
     public float LinearHertz
     {
         get => b2WeldJoint_GetLinearHertz(id);
@@ -60,7 +59,6 @@ public class WeldJoint : Joint
     /// <summary>
     /// The weld joint linear damping ratio.
     /// </summary>
-    [PublicAPI]
     public float LinearDampingRatio
     {
         get => b2WeldJoint_GetLinearDampingRatio(id);
@@ -76,7 +74,6 @@ public class WeldJoint : Joint
     /// <summary>
     /// The weld joint angular stiffness in Hertz.
     /// </summary>
-    [PublicAPI]
     public float AngularHertz
     {
         get => b2WeldJoint_GetAngularHertz(id);
@@ -92,7 +89,6 @@ public class WeldJoint : Joint
     /// <summary>
     /// The weld joint angular damping ratio.
     /// </summary>
-    [PublicAPI]
     public float AngularDampingRatio
     {
         get => b2WeldJoint_GetAngularDampingRatio(id);

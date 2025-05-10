@@ -10,38 +10,36 @@ namespace Box2D;
 /// <i>Note: these may become invalid if bodies and/or shapes are destroyed</i>
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct ContactEvents
+[PublicAPI]
+public readonly unsafe struct ContactEvents
 {
-    private ContactBeginTouchEvent* beginEvents;
+    private readonly ContactBeginTouchEvent* beginEvents;
 	
     /// <summary>
     /// Array of begin touch events
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
-    private ContactEndTouchEvent* endEvents;
+    private readonly ContactEndTouchEvent* endEvents;
 	
     /// <summary>
     /// Array of end touch events
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new(endEvents, endCount);
 
-    private ContactHitEvent* hitEvents;
+    private readonly ContactHitEvent* hitEvents;
 	
     /// <summary>
     /// Array of hit events
     /// </summary>
-    [PublicAPI]
     public ReadOnlySpan<ContactHitEvent> HitEvents => new(hitEvents, hitCount);
 
     /// Number of begin touch events
-    private int beginCount;
+    private readonly int beginCount;
 
     /// Number of end touch events
-    private int endCount;
+    private readonly int endCount;
 
     /// Number of hit events
-    private int hitCount;
+    private readonly int hitCount;
 }

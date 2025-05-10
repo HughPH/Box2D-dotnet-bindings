@@ -12,7 +12,7 @@ namespace Box2D;
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct Hull
+public ref struct Hull
 {
     private unsafe fixed float points[MAX_POLYGON_VERTICES * 2];
 
@@ -27,7 +27,6 @@ public struct Hull
     /// <remarks>
     /// This is a copy constructor. The hull will be computed and stored in this instance.
     /// </remarks>
-    [PublicAPI]
     public Hull(Span<Vec2> points)
     {
         this = Compute(points);

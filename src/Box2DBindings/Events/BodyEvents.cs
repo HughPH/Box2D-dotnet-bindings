@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
 
@@ -9,14 +10,15 @@ namespace Box2D;
 /// <i>Note: this data becomes invalid if bodies are destroyed</i>
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct BodyEvents
+[PublicAPI]
+public readonly unsafe ref struct BodyEvents
 {
-    private BodyMoveEvent* moveEvents;
+    private readonly BodyMoveEvent* moveEvents;
 
     /// <summary>
     /// Array of move events
     /// </summary>
     public ReadOnlySpan<BodyMoveEvent> MoveEvents => new(moveEvents, moveCount);
     
-    private int moveCount;
+    private readonly int moveCount;
 }

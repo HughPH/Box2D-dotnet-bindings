@@ -6,7 +6,7 @@ namespace Box2D;
 /// Profiling data for Box2D. All times are in milliseconds.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct Profile
+public readonly ref struct Profile
 {
     /// <summary>
     /// Total time for the entire physics step <see cref="World.Step"/>.

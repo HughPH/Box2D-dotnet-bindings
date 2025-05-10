@@ -170,5 +170,4 @@ struct DebugDrawInternal
     /// </summary>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
     private static extern DebugDrawInternal DefaultDebugDraw();
-
 }

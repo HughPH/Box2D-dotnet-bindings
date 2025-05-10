@@ -10,7 +10,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct QueryFilter
+public ref struct QueryFilter
 {
     /// <summary>
     /// The collision category bits of this query. Normally you would just set one bit.
