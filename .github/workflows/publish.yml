@@ -231,19 +231,19 @@ jobs:
             -   name: Run UnitTests
                 run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
 
-            -   name: "Pack NuGet package"
-                run: |
-                    dotnet pack src/Box2DBindings \
-                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
-                      -c Release
-
-            -   name: "Push to NuGet"
-                env:
-                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-                run: |
-                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-                    --api-key "$NUGET_API_KEY" \
-                    --source "$NUGET_FEED"
+#            -   name: "Pack NuGet package"
+#                run: |
+#                    dotnet pack src/Box2DBindings \
+#                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+#                      -c Release
+#
+#            -   name: "Push to NuGet"
+#                env:
+#                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+#                run: |
+#                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+#                    --api-key "$NUGET_API_KEY" \
+#                    --source "$NUGET_FEED"
                     
             -   name: Generate Doxygen Documentation
                 uses: mattnotmitt/doxygen-action@v1.9.8
