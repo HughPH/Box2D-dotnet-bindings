@@ -197,6 +197,9 @@ jobs:
         name: Build & publish C# bindings
         needs: [ detect-tag, build-box2d ]
         runs-on: [self-hosted, Linux, X64]
+        permissions:
+            id-token: write
+            pages: write
         steps:
             -   uses: actions/checkout@v4
 
