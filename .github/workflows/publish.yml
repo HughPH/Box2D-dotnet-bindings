@@ -249,10 +249,7 @@ jobs:
 #                    --source "$NUGET_FEED"
                     
             -   name: Generate Doxygen Documentation
-                uses: mattnotmitt/doxygen-action@v1.9.8
-                with:
-                  doxyfile-path: ./Doxyfile
-                  working-directory: .
+                run: doxygen
             
             -   name: Deploy Doxygen Docs to GitHub Pages
                 uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
