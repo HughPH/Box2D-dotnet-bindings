@@ -17,9 +17,12 @@ public partial class World
 
     private unsafe void BodyMoveTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
     {
-        var bodyMoveEvent = ((BodyMoveEvent*)events)[workerIndex];
-        if (bodyMoveEvent.Body.Valid)
-            BodyMove?.Invoke(bodyMoveEvent);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var bodyMoveEvent = ((BodyMoveEvent*)events)[i];
+            if (bodyMoveEvent.Body.Valid)
+                BodyMove?.Invoke(bodyMoveEvent);
+        }
     }
     
     /// <summary>
@@ -37,9 +40,12 @@ public partial class World
 
     private unsafe void SensorBeginTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
     {
-        var sensorBeginTouchEvent = ((SensorBeginTouchEvent*)events)[workerIndex];
-        if (sensorBeginTouchEvent.SensorShape.Valid && sensorBeginTouchEvent.VisitorShape.Valid)
-            SensorBeginTouch?.Invoke(sensorBeginTouchEvent);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var sensorBeginTouchEvent = ((SensorBeginTouchEvent*)events)[i];
+            if (sensorBeginTouchEvent.SensorShape.Valid && sensorBeginTouchEvent.VisitorShape.Valid)
+                SensorBeginTouch?.Invoke(sensorBeginTouchEvent);
+        }
     }
     
     /// <summary>
@@ -57,9 +63,12 @@ public partial class World
 
     private unsafe void SensorEndTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
     {
-        var sensorEndTouchEvent = ((SensorEndTouchEvent*)events)[workerIndex];
-        if (sensorEndTouchEvent.SensorShape.Valid && sensorEndTouchEvent.VisitorShape.Valid)
-            SensorEndTouch?.Invoke(sensorEndTouchEvent);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var sensorEndTouchEvent = ((SensorEndTouchEvent*)events)[i];
+            if (sensorEndTouchEvent.SensorShape.Valid && sensorEndTouchEvent.VisitorShape.Valid)
+                SensorEndTouch?.Invoke(sensorEndTouchEvent);
+        }
     }
     
     /// <summary>
@@ -77,9 +86,12 @@ public partial class World
 
     private unsafe void ContactBeginTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
     {
-        var contactBeginTouchEvent = ((ContactBeginTouchEvent*)events)[workerIndex];
-        if (contactBeginTouchEvent.ShapeA.Valid && contactBeginTouchEvent.ShapeB.Valid)
-            ContactBeginTouch?.Invoke(contactBeginTouchEvent);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var contactBeginTouchEvent = ((ContactBeginTouchEvent*)events)[i];
+            if (contactBeginTouchEvent.ShapeA.Valid && contactBeginTouchEvent.ShapeB.Valid)
+                ContactBeginTouch?.Invoke(contactBeginTouchEvent);
+        }
     }
     
     /// <summary>
@@ -97,9 +109,12 @@ public partial class World
     
     private unsafe void ContactEndTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
     {
-        var contactEndTouchEvent = ((ContactEndTouchEvent*)events)[workerIndex];
-        if (contactEndTouchEvent.ShapeA.Valid && contactEndTouchEvent.ShapeB.Valid)
-            ContactEndTouch?.Invoke(contactEndTouchEvent);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var contactEndTouchEvent = ((ContactEndTouchEvent*)events)[i];
+            if (contactEndTouchEvent.ShapeA.Valid && contactEndTouchEvent.ShapeB.Valid)
+                ContactEndTouch?.Invoke(contactEndTouchEvent);
+        }
     }
     
     /// <summary>
@@ -117,8 +132,11 @@ public partial class World
     
     private unsafe void ContactHitTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
     {
-        var contactHitEvent = ((ContactHitEvent*)events)[workerIndex];
-        if (contactHitEvent.ShapeA.Valid && contactHitEvent.ShapeB.Valid)
-            ContactHit?.Invoke(contactHitEvent);
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var contactHitEvent = ((ContactHitEvent*)events)[i];
+            if (contactHitEvent.ShapeA.Valid && contactHitEvent.ShapeB.Valid)
+                ContactHit?.Invoke(contactHitEvent);
+        }
     }
 }
