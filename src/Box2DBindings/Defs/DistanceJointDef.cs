@@ -4,7 +4,6 @@ namespace Box2D;
 
 /// <summary>
 /// Distance joint definition<br/>
-///
 /// This requires defining an anchor point on both
 /// bodies and the non-zero distance of the distance joint. The definition uses
 /// local anchor points so that the initial configuration can violate the

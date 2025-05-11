@@ -789,7 +789,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (shapeCount == 0)
                 return [];
 
-            Shape[] shapes = ArrayPool<Shape>.Shared.Rent(shapeCount);
+            Shape[] shapes = 
+#if NET5_0_OR_GREATER                
+                GC.AllocateUninitializedArray<Shape>(shapeCount);
+#else
+                new Shape[shapeCount];
+#endif
 
             fixed (Shape* shapeArrayPtr = shapes)
                 b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
@@ -821,7 +826,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             JointId* jointIds = stackalloc JointId[jointCount];
             b2Body_GetJoints(this, jointIds, jointCount);
 
-            Joint[] jointObjects = ArrayPool<Joint>.Shared.Rent(jointCount);
+            Joint[] jointObjects =
+#if NET5_0_OR_GREATER
+                GC.AllocateUninitializedArray<Joint>(jointCount);
+#else
+                new Joint[jointCount];
+#endif
             for (int i = 0; i < jointCount; i++)
                 jointObjects[i] = Joint.GetJoint(jointIds[i]);
 
@@ -852,7 +862,12 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (needed == 0)
                 return [];
 
-            ContactData[] contactData = ArrayPool<ContactData>.Shared.Rent(needed);
+            ContactData[] contactData = 
+#if NET5_0_OR_GREATER                
+                GC.AllocateUninitializedArray<ContactData>(needed);
+#else
+                new ContactData[needed];
+#endif
             int written;
             fixed (ContactData* p = contactData)
             {

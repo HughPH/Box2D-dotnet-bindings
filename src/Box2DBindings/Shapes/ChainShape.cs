@@ -64,7 +64,12 @@ public struct ChainShape
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
             int needed = b2Chain_GetSegmentCount(this);
-            Shape[] buffer = ArrayPool<Shape>.Shared.Rent(needed);
+            Shape[] buffer = 
+#if NET5_0_OR_GREATER
+                GC.AllocateUninitializedArray<Shape>(needed);
+#else
+                new Shape[needed];
+#endif
             int written;
             fixed (Shape* p = buffer)
                 written = b2Chain_GetSegments(this, p, buffer.Length);

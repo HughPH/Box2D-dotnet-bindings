@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Box2D;
 
 /// <summary>
-/// A distance joint definition.<br/>
+/// A distance joint.<br/>
 /// This requires defining an anchor point on both
 /// bodies and the non-zero distance of the distance joint. The definition uses
 /// local anchor points so that the initial configuration can violate the

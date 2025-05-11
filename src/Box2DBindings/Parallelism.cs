@@ -22,7 +22,7 @@ public static class Parallelism
         set
         {
             if (World.worlds.Any())
-                throw new InvalidOperationException("Cannot change thread count after world creation.");
+                throw new InvalidOperationException("Cannot change thread count while worlds exist.");
             maxWorkerCount = Math.Min(Math.Max(1, value), Environment.ProcessorCount);
         }
     }

@@ -519,7 +519,12 @@ public struct Shape : IEquatable<Shape>
             if (!Valid)
                 throw new InvalidOperationException("Shape is not valid");
             int needed = b2Shape_GetContactCapacity(this);
-            ContactData[] buffer = ArrayPool<ContactData>.Shared.Rent(needed);
+            ContactData[] buffer = 
+#if NET5_0_OR_GREATER
+                GC.AllocateUninitializedArray<ContactData>(needed);
+#else
+                new ContactData[needed];
+#endif
             int written;
             fixed (ContactData* p = buffer)
             {
@@ -549,7 +554,12 @@ public struct Shape : IEquatable<Shape>
             if (!Valid)
                 throw new InvalidOperationException("Shape is not valid");
             int needed = b2Shape_GetSensorCapacity(this);
-            Shape[] buffer = ArrayPool<Shape>.Shared.Rent(needed);
+            Shape[] buffer = 
+#if NET5_0_OR_GREATER
+                GC.AllocateUninitializedArray<Shape>(needed);
+#else
+                new Shape[needed];
+#endif
             int written;
             fixed (Shape* p = buffer)
             {
