@@ -243,4 +243,5 @@ jobs:
                     retention-days: 7
     
             -   name: Deploy to GitHub Pages
+                if: github.ref == 'refs/heads/main'
                 uses: actions/deploy-pages@v4
