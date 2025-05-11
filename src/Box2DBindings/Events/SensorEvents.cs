@@ -13,13 +13,13 @@ namespace Box2D;
 [PublicAPI]
 public readonly unsafe ref struct SensorEvents
 {
-    private readonly SensorBeginTouchEvent* beginEvents;
+    internal readonly SensorBeginTouchEvent* beginEvents;
 
-    private readonly SensorEndTouchEvent* endEvents;
+    internal readonly SensorEndTouchEvent* endEvents;
 
-    private readonly int beginCount;
+    internal readonly int beginCount;
 	
-    private readonly int endCount;
+    internal readonly int endCount;
 	
     /// <summary>
     /// Array of sensor begin touch events

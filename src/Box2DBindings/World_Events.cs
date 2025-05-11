@@ -15,6 +15,13 @@ public partial class World
     /// </remarks>
     public BodyMoveEventHandler? BodyMove;
 
+    private unsafe void BodyMoveTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
+    {
+        var bodyMoveEvent = ((BodyMoveEvent*)events)[workerIndex];
+        if (bodyMoveEvent.Body.Valid)
+            BodyMove?.Invoke(bodyMoveEvent);
+    }
+    
     /// <summary>
     /// Event handler for sensor begin touch events
     /// </summary>
@@ -28,6 +35,13 @@ public partial class World
     /// </remarks>
     public SensorBeginTouchEventHandler? SensorBeginTouch;
 
+    private unsafe void SensorBeginTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
+    {
+        var sensorBeginTouchEvent = ((SensorBeginTouchEvent*)events)[workerIndex];
+        if (sensorBeginTouchEvent.SensorShape.Valid && sensorBeginTouchEvent.VisitorShape.Valid)
+            SensorBeginTouch?.Invoke(sensorBeginTouchEvent);
+    }
+    
     /// <summary>
     /// Event handler for sensor end touch events
     /// </summary>
@@ -41,6 +55,13 @@ public partial class World
     /// </remarks>
     public SensorEndTouchEventHandler? SensorEndTouch;
 
+    private unsafe void SensorEndTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
+    {
+        var sensorEndTouchEvent = ((SensorEndTouchEvent*)events)[workerIndex];
+        if (sensorEndTouchEvent.SensorShape.Valid && sensorEndTouchEvent.VisitorShape.Valid)
+            SensorEndTouch?.Invoke(sensorEndTouchEvent);
+    }
+    
     /// <summary>
     /// Event handler for contact begin touch events
     /// </summary>
@@ -54,6 +75,13 @@ public partial class World
     /// </remarks>
     public ContactBeginTouchEventHandler? ContactBeginTouch;
 
+    private unsafe void ContactBeginTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
+    {
+        var contactBeginTouchEvent = ((ContactBeginTouchEvent*)events)[workerIndex];
+        if (contactBeginTouchEvent.ShapeA.Valid && contactBeginTouchEvent.ShapeB.Valid)
+            ContactBeginTouch?.Invoke(contactBeginTouchEvent);
+    }
+    
     /// <summary>
     /// Event handler for contact end touch events
     /// </summary>
@@ -67,6 +95,13 @@ public partial class World
     /// </remarks>
     public ContactEndTouchEventHandler? ContactEndTouch;
     
+    private unsafe void ContactEndTouchTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
+    {
+        var contactEndTouchEvent = ((ContactEndTouchEvent*)events)[workerIndex];
+        if (contactEndTouchEvent.ShapeA.Valid && contactEndTouchEvent.ShapeB.Valid)
+            ContactEndTouch?.Invoke(contactEndTouchEvent);
+    }
+    
     /// <summary>
     /// Event handler for contact hit events
     /// </summary>
@@ -79,4 +114,11 @@ public partial class World
     /// <i>Note: This is not called for all contact shapes, only for those that are valid. The number of events may be different to those found in the world's ContactEvents.</i>
     /// </remarks>
     public ContactHitEventHandler? ContactHit;
+    
+    private unsafe void ContactHitTaskCallback(int startIndex, int endIndex, uint workerIndex, nint events)
+    {
+        var contactHitEvent = ((ContactHitEvent*)events)[workerIndex];
+        if (contactHitEvent.ShapeA.Valid && contactHitEvent.ShapeB.Valid)
+            ContactHit?.Invoke(contactHitEvent);
+    }
 }

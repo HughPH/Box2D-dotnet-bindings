@@ -233,9 +233,11 @@ jobs:
                     --source "$NUGET_FEED"
 
             -   name: Generate Doxygen Documentation
+                if: github.ref == 'refs/heads/main'
                 run: doxygen
             
             -   name: Upload artefact
+                if: github.ref == 'refs/heads/main'
                 uses: actions/upload-pages-artifact@v3
                 with:
                     name: github-pages
