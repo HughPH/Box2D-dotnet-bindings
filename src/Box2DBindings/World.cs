@@ -65,7 +65,6 @@ public sealed partial class World
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
-    /// <param name="worldLock">The world lock object. This is used to synchronize access to the world from multiple threads. If null, a new lock object will be created. This parameter is supplied to support passing a dotnet 9+ Lock object.<br/>See: <see cref="WorldLock"/></param>
     public World(WorldDef def)
     {
         if (!initialized)
