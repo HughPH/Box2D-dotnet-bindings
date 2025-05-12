@@ -212,9 +212,8 @@ public class CreationTests
         bodyB.CreateShape(shapeDef, circle);
         
         world.Step(0.1f,4,true);
-        
-        
     }
+    
     private void OnWorldBodyMove(in BodyMoveEvent args)
     {
         Assert.False(args.FellAsleep);
