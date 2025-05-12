@@ -21,8 +21,8 @@ jobs:
             box2d_ref: ${{ steps.ref.outputs.ref }}
             pkg_ver: ${{ steps.version.outputs.value }}
         steps:
-            -   id: tag
-                name: "Fetch latest Box2D release tag"
+            -   id: ref
+                name: "Fetch latest Box2D tag or commit"
                 run: |
                     if [[ "${GITHUB_REF_NAME}" == "vnext" ]]; then
                         # Get the latest commit hash for main
@@ -113,11 +113,11 @@ jobs:
                 uses: actions/cache@v4
                 with:
                     path: box2d-build
-                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_ref }}
+                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.ref }}
                     restore-keys: |
-                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_ref }}
+                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.ref }}
 
-            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_ref }}"
+            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.ref }}"
                 if: steps.cache.outputs.cache-hit != 'true'
                 run: |
                     git clone https://github.com/${{ env.BOX2D_REPO }} box2d-src
