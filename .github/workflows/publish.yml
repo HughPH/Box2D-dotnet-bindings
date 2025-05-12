@@ -108,8 +108,6 @@ jobs:
             cancel-in-progress: false
 
         steps:
-            -   uses: actions/checkout@v4
-
             -   id: cache
                 name: Restore native build cache
                 uses: actions/cache@v4
@@ -121,7 +119,10 @@ jobs:
 
             -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_ref }}"
                 if: steps.cache.outputs.cache-hit != 'true'
-                run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_ref }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                run: |
+                    git clone https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                    cd box2d-src
+                    git checkout ${{ needs.detect-tag.outputs.box2d_ref }}
 
             -   name: "Configure & compile Box2D"
                 if: steps.cache.outputs.cache-hit != 'true'
