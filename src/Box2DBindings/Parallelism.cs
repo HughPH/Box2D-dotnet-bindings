@@ -7,14 +7,26 @@ using JetBrains.Annotations;
 
 namespace Box2D;
 
+/// <summary>
+/// Parallelism class, manages worker threads for parallel task execution.
+/// </summary>
+/// <remarks>
+/// The only public member is <see cref="MaxWorkerCount"/>. This is the maximum number of worker threads that can be used, which defaults to Environment.ProcessorCount / 2. It will be clamped to the number of logical processors available on the system. It cannot be changed while worlds exist.
+/// </remarks>
 [PublicAPI]
 public static class Parallelism
 {
     private static int maxWorkerCount = Environment.ProcessorCount / 2;
     private static BlockingCollection<Job>? jobQueue;
     private static Thread[]? workers;
-    private static readonly ConcurrentDictionary<nint, TaskCallback> taskCache = new();
+    private static readonly ConcurrentDictionary<nint, TaskCallback> TaskCache = new();
 
+    /// <summary>
+    /// Maximum number of worker threads to use for parallel task execution.
+    /// </summary>
+    /// <remarks>
+    /// This is the maximum number of worker threads that can be used, defaults to Environment.ProcessorCount / 2. It will be clamped to the number of logical processors available on the system. It cannot be changed while worlds exist.
+    /// </remarks>
     public static int MaxWorkerCount
     {
         get => maxWorkerCount;
@@ -23,6 +35,17 @@ public static class Parallelism
             if (World.worlds.Any())
                 throw new InvalidOperationException("Cannot change thread count while worlds exist.");
             maxWorkerCount = Math.Min(Math.Max(1, value), Environment.ProcessorCount);
+            //terminate old threads
+            if (workers != null)
+            {
+                foreach (var worker in workers)
+                {
+                    worker.Interrupt();
+                    worker.Join();
+                }
+            }
+            //create new threads
+            InitWorkerThreads();
         }
     }
 
@@ -69,10 +92,10 @@ public static class Parallelism
 
     internal static nint DefaultEnqueue(nint taskPtr, int itemCount, int minRange, nint taskContext, nint userContext)
     {
-        if (!taskCache.TryGetValue(taskPtr, out var task))
+        if (!TaskCache.TryGetValue(taskPtr, out var task))
         {
             task = Marshal.GetDelegateForFunctionPointer<TaskCallback>(taskPtr);
-            taskCache[taskPtr] = task;
+            TaskCache[taskPtr] = task;
         }
 
         if (maxWorkerCount <= 1 || itemCount <= minRange)
