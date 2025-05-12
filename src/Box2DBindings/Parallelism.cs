@@ -29,7 +29,10 @@ public static class Parallelism
     /// </remarks>
     public static int MaxWorkerCount
     {
-        get => maxWorkerCount;
+        get
+        {
+            return maxWorkerCount;
+        }
         set
         {
             if (World.worlds.Any())
@@ -62,8 +65,19 @@ public static class Parallelism
         {
             workers[i] = new Thread(() =>
             {
-                foreach (var job in jobQueue!.GetConsumingEnumerable())
-                    job.Execute();
+                try
+                {
+                    foreach (var job in jobQueue!.GetConsumingEnumerable())
+                        job.Execute();
+                }catch (ThreadInterruptedException)
+                {
+                    // Thread was interrupted, exit gracefully
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions from worker threads
+                    Console.WriteLine($"Worker thread exception: {ex}");
+                }
             }) { IsBackground = true };
             workers[i].Start();
         }

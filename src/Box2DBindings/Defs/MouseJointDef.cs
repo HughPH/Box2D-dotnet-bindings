@@ -54,11 +54,50 @@ public class MouseJointDef
     }
 
     /// <summary>
-    /// User data pointer
+    /// User data
     /// </summary>
     public object? UserData
     {
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
+    }
+    
+    /// <summary>
+    /// Construct a mouse joint definition with the supplied values
+    /// </summary>
+    /// <param name="bodyA">The first attached body</param>
+    /// <param name="bodyB">The second attached body</param>
+    /// <param name="target">The target point in world space</param>
+    /// <param name="hertz">Stiffness in hertz</param>
+    /// <param name="dampingRatio">Damping ratio, non-dimensional</param>
+    /// <param name="maxForce">Maximum force, typically in newtons</param>
+    /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
+    /// <param name="userData">User data</param>
+    public MouseJointDef(
+        Body bodyA,
+        Body bodyB,
+        Vec2 target,
+        float hertz = 0.0f,
+        float dampingRatio = 0.0f,
+        float maxForce = 0.0f,
+        bool collideConnected = false,
+        object? userData = null)
+    {
+        BodyA = bodyA;
+        BodyB = bodyB;
+        Target = target;
+        Hertz = hertz;
+        DampingRatio = dampingRatio;
+        MaxForce = maxForce;
+        CollideConnected = collideConnected;
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Construct a mouse joint definition with the default values
+    /// </summary>
+    public MouseJointDef()
+    {
+        _internal = new();
     }
 }

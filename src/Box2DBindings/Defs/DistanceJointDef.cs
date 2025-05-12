@@ -115,4 +115,69 @@ public class DistanceJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
+    
+    /// <summary>
+    /// Construct a distance joint definition with the supplied values
+    /// </summary>
+    /// <param name="bodyA">The first attached body</param>
+    /// <param name="bodyB">The second attached body</param>
+    /// <param name="anchorA">The local anchor point on the first body</param>
+    /// <param name="anchorB">The local anchor point on the second body</param>
+    /// <param name="length">The rest length of the joint</param>
+    /// <param name="enableSpring">Enable the spring</param>
+    /// <param name="hertz">The spring frequency in Hertz</param>
+    /// <param name="dampingRatio">The damping ratio</param>
+    /// <param name="enableLimit">Enable the joint limit</param>
+    /// <param name="minLength">The minimum length of the joint</param>
+    /// <param name="maxLength">The maximum length of the joint</param>
+    /// <param name="enableMotor">Enable the joint motor</param>
+    /// <param name="maxMotorForce">The maximum motor force</param>
+    /// <param name="motorSpeed">The desired motor speed</param>
+    /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
+    /// <param name="userData">User data</param>
+    public DistanceJointDef(
+        Body bodyA,
+        Body bodyB,
+        Vec2 anchorA,
+        Vec2 anchorB,
+        float length = 0.0f,
+        bool enableSpring = false,
+        float hertz = 0.0f,
+        float dampingRatio = 0.0f,
+        bool enableLimit = false,
+        float minLength = 0.0f,
+        float maxLength = 0.0f,
+        bool enableMotor = false,
+        float maxMotorForce = 0.0f,
+        float motorSpeed = 0.0f,
+        bool collideConnected = false,
+        object? userData = null)
+    {
+        BodyA = bodyA;
+        BodyB = bodyB;
+        LocalAnchorA = anchorA;
+        LocalAnchorB = anchorB;
+        Length = length;
+        EnableSpring = enableSpring;
+        Hertz = hertz;
+        DampingRatio = dampingRatio;
+        EnableLimit = enableLimit;
+        MinLength = minLength;
+        MaxLength = maxLength;
+        EnableMotor = enableMotor;
+        MaxMotorForce = maxMotorForce;
+        MotorSpeed = motorSpeed;
+        CollideConnected = collideConnected;
+        
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Construct a distance joint definition with the default values
+    /// </summary>
+    public DistanceJointDef()
+    {
+        _internal = new();
+    }
+    
 }

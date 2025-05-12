@@ -120,4 +120,70 @@ public class PrismaticJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
+    
+    /// <summary>
+    /// Construct a prismatic joint definition with the supplied values
+    /// </summary>
+    /// <param name="bodyA">The first attached body</param>
+    /// <param name="bodyB">The second attached body</param>
+    /// <param name="localAnchorA">The local anchor point relative to bodyA's origin</param>
+    /// <param name="localAnchorB">The local anchor point relative to bodyB's origin</param>
+    /// <param name="localAxisA">The local translation unit axis in bodyA</param>
+    /// <param name="referenceAngle">The constrained angle between the bodies: bodyB_angle - bodyA_angle</param>
+    /// <param name="enableSpring">Enable a linear spring along the prismatic joint axis</param>
+    /// <param name="hertz">The spring stiffness Hertz, cycles per second</param>
+    /// <param name="dampingRatio">The spring damping ratio, non-dimensional</param>
+    /// <param name="enableLimit">Enable/disable the joint limit</param>
+    /// <param name="lowerTranslation">The lower translation limit</param>
+    /// <param name="upperTranslation">The upper translation limit</param>
+    /// <param name="enableMotor">Enable/disable the joint motor</param>
+    /// <param name="maxMotorForce">The maximum motor force, typically in newtons</param>
+    /// <param name="motorSpeed">The desired motor speed, typically in meters per second</param>
+    /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
+    /// <param name="userData">User data</param>
+    public PrismaticJointDef(
+        Body bodyA,
+        Body bodyB,
+        Vec2 localAnchorA,
+        Vec2 localAnchorB,
+        Vec2 localAxisA,
+        float referenceAngle = 0.0f,
+        bool enableSpring = false,
+        float hertz = 0.0f,
+        float dampingRatio = 0.0f,
+        bool enableLimit = false,
+        float lowerTranslation = 0.0f,
+        float upperTranslation = 0.0f,
+        bool enableMotor = false,
+        float maxMotorForce = 0.0f,
+        float motorSpeed = 0.0f,
+        bool collideConnected = false,
+        object? userData = null)
+    {
+        BodyA = bodyA;
+        BodyB = bodyB;
+        LocalAnchorA = localAnchorA;
+        LocalAnchorB = localAnchorB;
+        LocalAxisA = localAxisA;
+        ReferenceAngle = referenceAngle;
+        EnableSpring = enableSpring;
+        Hertz = hertz;
+        DampingRatio = dampingRatio;
+        EnableLimit = enableLimit;
+        LowerTranslation = lowerTranslation;
+        UpperTranslation = upperTranslation;
+        EnableMotor = enableMotor;
+        MaxMotorForce = maxMotorForce;
+        MotorSpeed = motorSpeed;
+        CollideConnected = collideConnected;
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Construct a prismatic joint definition with the default values
+    /// </summary>
+    public PrismaticJointDef()
+    {
+        _internal = new();
+    }
 }
