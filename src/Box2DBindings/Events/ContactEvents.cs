@@ -13,21 +13,21 @@ namespace Box2D;
 [PublicAPI]
 public readonly unsafe struct ContactEvents
 {
-    private readonly ContactBeginTouchEvent* beginEvents;
+    internal readonly ContactBeginTouchEvent* beginEvents;
 	
     /// <summary>
     /// Array of begin touch events
     /// </summary>
     public ReadOnlySpan<ContactBeginTouchEvent> BeginEvents => new(beginEvents, beginCount);
 
-    private readonly ContactEndTouchEvent* endEvents;
+    internal readonly ContactEndTouchEvent* endEvents;
 	
     /// <summary>
     /// Array of end touch events
     /// </summary>
     public ReadOnlySpan<ContactEndTouchEvent> EndEvents => new(endEvents, endCount);
 
-    private readonly ContactHitEvent* hitEvents;
+    internal readonly ContactHitEvent* hitEvents;
 	
     /// <summary>
     /// Array of hit events
@@ -35,11 +35,11 @@ public readonly unsafe struct ContactEvents
     public ReadOnlySpan<ContactHitEvent> HitEvents => new(hitEvents, hitCount);
 
     /// Number of begin touch events
-    private readonly int beginCount;
+    internal readonly int beginCount;
 
     /// Number of end touch events
-    private readonly int endCount;
+    internal readonly int endCount;
 
     /// Number of hit events
-    private readonly int hitCount;
+    internal readonly int hitCount;
 }

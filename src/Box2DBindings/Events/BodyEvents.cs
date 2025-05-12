@@ -13,12 +13,12 @@ namespace Box2D;
 [PublicAPI]
 public readonly unsafe ref struct BodyEvents
 {
-    private readonly BodyMoveEvent* moveEvents;
+    internal readonly BodyMoveEvent* moveEvents;
 
     /// <summary>
     /// Array of move events
     /// </summary>
     public ReadOnlySpan<BodyMoveEvent> MoveEvents => new(moveEvents, moveCount);
     
-    private readonly int moveCount;
+    internal readonly int moveCount;
 }

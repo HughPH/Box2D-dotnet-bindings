@@ -64,10 +64,7 @@ public static class Parallelism
             {
                 foreach (var job in jobQueue!.GetConsumingEnumerable())
                     job.Execute();
-            })
-            {
-                IsBackground = true
-            };
+            }) { IsBackground = true };
             workers[i].Start();
         }
     }

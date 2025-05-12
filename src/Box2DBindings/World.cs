@@ -149,55 +149,111 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
 
+
     /// <summary>
     /// Simulate a world for one time step. This performs collision detection, integration, and constraint solution.
     /// </summary>
     /// <param name="timeStep">The amount of time to simulate, this should be a fixed number. Usually 1/60.</param>
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
-    public void Step(float timeStep = 0.016666668f, int subStepCount = 4)
+    /// <param name="parallelEvents">If true, the events will be processed in parallel.</param>
+    public unsafe void Step(float timeStep = 0.016666668f, int subStepCount = 4, bool parallelEvents = false)
     {
         if (!Valid)
             throw new InvalidOperationException("World is not valid");
-
+        
+        Span<nint> tasks = stackalloc nint[6];
+        
         lock (WorldLock)
         {
             b2World_Step(id, timeStep, subStepCount);
             if (BodyMove is not null)
-                foreach (BodyMoveEvent e in BodyEvents.MoveEvents)
-                    if (e.Body.Valid)
-                        BodyMove(in e);
+            {
+                var events = BodyEvents;
+                if (parallelEvents)
+                {
+                    nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)BodyMoveTaskCallback);
+                    int minRange = Math.Max(events.moveCount / Parallelism.MaxWorkerCount, 1);
+                    tasks[0] = Parallelism.DefaultEnqueue(tcPtr, events.moveCount, minRange, (nint)events.moveEvents, 0);
+                }
+                else
+                    foreach (BodyMoveEvent e in events.MoveEvents)
+                        if (e.Body.Valid)
+                            BodyMove(in e);
+            }
 
             if (SensorBeginTouch is not null || SensorEndTouch is not null)
             {
                 SensorEvents sensorEvents = SensorEvents;
                 if (SensorBeginTouch is not null)
-                    foreach (SensorBeginTouchEvent e in sensorEvents.BeginEvents)
-                        if (e.SensorShape.Valid && e.VisitorShape.Valid)
-                            SensorBeginTouch.Invoke(in e);
+                    if (parallelEvents)
+                    {
+                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorBeginTouchTaskCallback);
+                        int minRange = Math.Max(sensorEvents.beginCount / Parallelism.MaxWorkerCount, 1);
+                        tasks[1] = Parallelism.DefaultEnqueue(tcPtr, sensorEvents.beginCount, minRange, (nint)sensorEvents.beginEvents, 0);
+                    }
+                    else
+                        foreach (SensorBeginTouchEvent e in sensorEvents.BeginEvents)
+                            if (e.SensorShape.Valid && e.VisitorShape.Valid)
+                            {
+                                SensorBeginTouch.Invoke(in e);
+                            }
                 if (SensorEndTouch is not null)
-                    foreach (SensorEndTouchEvent e in sensorEvents.EndEvents)
-                        if (e.SensorShape.Valid && e.VisitorShape.Valid)
-                            SensorEndTouch.Invoke(in e);
+                    if (parallelEvents)
+                    {
+                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorEndTouchTaskCallback);
+                        int minRange = Math.Max(sensorEvents.endCount / Parallelism.MaxWorkerCount, 1);
+                        tasks[2] = Parallelism.DefaultEnqueue(tcPtr, sensorEvents.endCount, minRange, (nint)sensorEvents.endEvents, 0);
+                    }
+                    else
+                        foreach (SensorEndTouchEvent e in sensorEvents.EndEvents)
+                            if (e.SensorShape.Valid && e.VisitorShape.Valid)
+                                SensorEndTouch.Invoke(in e);
             }
 
             if (ContactBeginTouch is not null || ContactEndTouch is not null || ContactHit is not null)
             {
                 ContactEvents contactEvents = ContactEvents;
                 if (ContactBeginTouch is not null)
-                    foreach (ContactBeginTouchEvent e in contactEvents.BeginEvents)
-                        if (e.ShapeA.Valid && e.ShapeB.Valid)
-                            ContactBeginTouch.Invoke(in e);
+                    if (parallelEvents)
+                    {
+                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactBeginTouchTaskCallback);
+                        int minRange = Math.Max(contactEvents.beginCount / Parallelism.MaxWorkerCount, 1);
+                        tasks[3] = Parallelism.DefaultEnqueue(tcPtr, contactEvents.beginCount, minRange, (nint)contactEvents.beginEvents, 0);
+                    }
+                    else
+                        foreach (ContactBeginTouchEvent e in contactEvents.BeginEvents)
+                            if (e.ShapeA.Valid && e.ShapeB.Valid)
+                                ContactBeginTouch.Invoke(in e);
                 if (ContactEndTouch is not null)
-                    foreach (ContactEndTouchEvent e in contactEvents.EndEvents)
-                        if (e.ShapeA.Valid && e.ShapeB.Valid)
-                            ContactEndTouch.Invoke(in e);
+                    if (parallelEvents)
+                    {
+                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactEndTouchTaskCallback);
+                        int minRange = Math.Max(contactEvents.endCount / Parallelism.MaxWorkerCount, 1);
+                        tasks[4] = Parallelism.DefaultEnqueue(tcPtr, contactEvents.endCount, minRange, (nint)contactEvents.endEvents, 0);
+                    }
+                    else
+                        foreach (ContactEndTouchEvent e in contactEvents.EndEvents)
+                            if (e.ShapeA.Valid && e.ShapeB.Valid)
+                                ContactEndTouch.Invoke(in e);
                 if (ContactHit is not null)
-                    foreach (ContactHitEvent e in contactEvents.HitEvents)
-                        if (e.ShapeA.Valid && e.ShapeB.Valid)
-                            ContactHit.Invoke(in e);
+                    if (parallelEvents)
+                    {
+                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactHitTaskCallback);
+                        int minRange = Math.Max(contactEvents.hitCount / Parallelism.MaxWorkerCount, 1);
+                        tasks[5] = Parallelism.DefaultEnqueue(tcPtr, contactEvents.hitCount, minRange, (nint)contactEvents.hitEvents, 0);
+                    }
+                    else
+                        foreach (ContactHitEvent e in contactEvents.HitEvents)
+                            if (e.ShapeA.Valid && e.ShapeB.Valid)
+                                ContactHit.Invoke(in e);
             }
         }
+        
+        foreach (nint t in tasks)
+            if (t != 0) Parallelism.DefaultFinish(t, 0);
     }
+
+
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
     private static extern void b2World_Draw(WorldId worldId, ref DebugDrawInternal draw);
