@@ -210,13 +210,13 @@ jobs:
                     pattern: "*"
 
             -   name: Build UnitTests project
-                run: dotnet build src/UnitTests --configuration Release
+                run: dotnet build src/UnitTests --configuration Debug
 
             -   name: Copy Linux shared library to UnitTests output
-                run: cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Release/net8.0/
+                run: cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net8.0/
 
             -   name: Run UnitTests
-                run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
+                run: dotnet test src/UnitTests --configuration Debug --no-build --logger trx --results-directory TestResults
 
             -   name: "Pack NuGet package"
                 run: |

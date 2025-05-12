@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -14,7 +13,7 @@ public static class Parallelism
     private static int maxWorkerCount = Environment.ProcessorCount / 2;
     private static BlockingCollection<Job>? jobQueue;
     private static Thread[]? workers;
-    private static readonly Dictionary<nint, TaskCallback> taskCache = new();
+    private static readonly ConcurrentDictionary<nint, TaskCallback> taskCache = new();
 
     public static int MaxWorkerCount
     {
