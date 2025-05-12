@@ -47,7 +47,7 @@ struct MotorJointDefInternal
     internal byte CollideConnected;
 
     /// <summary>
-    /// User data pointer
+    /// User data
     /// </summary>
     internal nint UserData;
 

@@ -35,4 +35,27 @@ public struct RayCastInput
     /// Validate this ray cast input data (NaN, etc)
     /// </summary>
     public bool Valid => IsValidRay(this) != 0;
+    
+    /// <summary>
+    /// Constructs a new RayCastInput object with the given parameters.
+    /// </summary>
+    /// <param name="origin">Start point of the ray cast</param>
+    /// <param name="translation">Translation of the ray cast</param>
+    /// <param name="maxFraction">The maximum fraction of the translation to consider, typically 1</param>
+    public RayCastInput(Vec2 origin, Vec2 translation, float maxFraction)
+    {
+        Origin = origin;
+        Translation = translation;
+        MaxFraction = maxFraction;
+    }
+    
+    /// <summary>
+    /// Constructs a new RayCastInput object with default values.
+    /// </summary>
+    public RayCastInput()
+    {
+        Origin = new Vec2(0, 0);
+        Translation = new Vec2(0, 0);
+        MaxFraction = 1;
+    }
 }

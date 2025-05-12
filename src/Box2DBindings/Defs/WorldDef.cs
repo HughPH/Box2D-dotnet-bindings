@@ -16,7 +16,7 @@ public class WorldDef
     /// </summary>
     public WorldDef()
     {
-        WorkerCount = Parallelism.MaxWorkerCount;
+        
     }
     
     /// <summary>
@@ -110,7 +110,11 @@ public class WorldDef
     /// <b>Warning: Do not modify the default value unless you are also providing a task system and providing
     /// task callbacks (enqueueTask and finishTask).</b>
     /// </summary>
-    public ref int WorkerCount => ref _internal.WorkerCount;
+    public int WorkerCount
+    {
+        get => Parallelism.MaxWorkerCount;
+        set => Parallelism.MaxWorkerCount = value;
+    }
 
     /// <summary>
     /// Callback function to spawn tasks
@@ -123,7 +127,7 @@ public class WorldDef
     public ref FinishTaskCallback FinishTask => ref _internal.FinishTask;
 
     /// <summary>
-    /// User data pointer
+    /// User data
     /// </summary>
     public object? UserData
     {
@@ -138,5 +142,69 @@ public class WorldDef
     {
         get => GetObjectAtPointer(_internal.UserTaskContext);
         set => SetObjectAtPointer(ref _internal.UserTaskContext, value);
+    }
+    
+    /// <summary>
+    /// Construct a new world definition with the supplied values
+    /// </summary>
+    /// <param name="gravity">The gravity vector</param>
+    /// <param name="restitutionThreshold">Restitution speed threshold</param>
+    /// <param name="hitEventThreshold">Hit event threshold</param>
+    /// <param name="contactHertz">Contact stiffness</param>
+    /// <param name="contactDampingRatio">Contact bounciness</param>
+    /// <param name="maxContactPushSpeed">Overlap resolution speed</param>
+    /// <param name="jointHertz">Joint stiffness</param>
+    /// <param name="jointDampingRatio">Joint bounciness</param>
+    /// <param name="maximumLinearSpeed">Maximum linear speed</param>
+    /// <param name="enableSleep">Enable sleep</param>
+    /// <param name="enableContinuous">Enable continuous collision</param>
+    /// <param name="userData">User data</param>
+    /// <param name="frictionCallback">Friction callback</param>
+    /// <param name="restitutionCallback">Restitution callback</param>
+    /// <param name="enqueueTask">Enqueue task callback</param>
+    /// <param name="finishTask">Finish task callback</param>
+    /// <param name="userTaskContext">User task context</param>
+    public  WorldDef(  
+        Vec2 gravity,
+        float restitutionThreshold = 0.0f,
+        float hitEventThreshold = 0.0f,
+        float contactHertz = 0.0f,
+        float contactDampingRatio = 0.0f,
+        float maxContactPushSpeed = 0.0f,
+        float jointHertz = 0.0f,
+        float jointDampingRatio = 0.0f,
+        float maximumLinearSpeed = 0.0f,
+        bool enableSleep = true,
+        bool enableContinuous = true,
+        object? userData = null,
+        FrictionCallback? frictionCallback = null,
+        RestitutionCallback? restitutionCallback = null,
+        EnqueueTaskCallback? enqueueTask = null,
+        FinishTaskCallback? finishTask = null,
+        object? userTaskContext = null)
+    {
+        Gravity = gravity;
+        RestitutionThreshold = restitutionThreshold;
+        HitEventThreshold = hitEventThreshold;
+        ContactHertz = contactHertz;
+        ContactDampingRatio = contactDampingRatio;
+        MaxContactPushSpeed = maxContactPushSpeed;
+        JointHertz = jointHertz;
+        JointDampingRatio = jointDampingRatio;
+        MaximumLinearSpeed = maximumLinearSpeed;
+        EnableSleep = enableSleep;
+        EnableContinuous = enableContinuous;
+        UserData = userData;
+        if (frictionCallback != null)
+            FrictionCallback = frictionCallback;
+        if (restitutionCallback != null)
+            RestitutionCallback = restitutionCallback;
+        
+        if (enqueueTask != null)
+            EnqueueTask = enqueueTask;
+        if (finishTask != null)
+            FinishTask = finishTask;
+        
+        UserTaskContext = userTaskContext;
     }
 }

@@ -22,11 +22,35 @@ public class FilterJointDef
     public ref Body BodyB => ref _internal.BodyB;
 
     /// <summary>
-    /// User data pointer
+    /// User data
     /// </summary>
     public object? UserData
     {
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
+    }
+    
+    /// <summary>
+    /// Constructs a new filter joint definition with the supplied values.
+    /// </summary>
+    /// <param name="bodyA">The first attached body.</param>
+    /// <param name="bodyB">The second attached body.</param>
+    /// <param name="userData">User data</param>
+    public FilterJointDef(
+        Body bodyA,
+        Body bodyB,
+        object? userData = null)
+    {
+        BodyA = bodyA;
+        BodyB = bodyB;
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Constructs a filter joint definition with the default values.
+    /// </summary>
+    public FilterJointDef()
+    {
+        _internal = new ();
     }
 }

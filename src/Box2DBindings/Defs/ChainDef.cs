@@ -79,7 +79,7 @@ public class ChainDef
         get
         {
             if (_internal.Points == null)
-                return Span<Vec2>.Empty;
+                return ReadOnlySpan<Vec2>.Empty;
             return new(_internal.Points, _internal.Count);
         }
         set

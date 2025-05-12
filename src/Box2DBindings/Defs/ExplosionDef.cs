@@ -53,4 +53,23 @@ public struct ExplosionDef
     {
         this = Default;
     }
+    
+    /// <summary>
+    /// Creates a new explosion definition with the specified values.
+    /// </summary>
+    /// <param name="maskBits">Mask bits to filter shapes</param>
+    /// <param name="position">The center of the explosion in world space</param>
+    /// <param name="radius">The radius of the explosion</param>
+    /// <param name="falloff">The falloff distance beyond the radius. Impulse is reduced to zero at this distance.</param>
+    /// <param name="impulsePerLength">Impulse per unit length. This applies an impulse according to the shape perimeter that is facing the explosion. Explosions only apply to circles, capsules, and polygons. This may be negative for implosions.</param>
+    public ExplosionDef(ulong maskBits, Vec2 position, float radius, float falloff, float impulsePerLength)
+    {
+        this = Default;
+        MaskBits = maskBits;
+        Position = position;
+        Radius = radius;
+        Falloff = falloff;
+        ImpulsePerLength = impulsePerLength;
+    }
+    
 }

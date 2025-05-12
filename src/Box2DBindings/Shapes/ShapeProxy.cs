@@ -35,10 +35,39 @@ public unsafe struct ShapeProxy
             if (value.Length > MAX_POLYGON_VERTICES)
                 throw new ArgumentException($"Cannot set more than {MAX_POLYGON_VERTICES} points");
             count = value.Length;
-            for (int i = 0; i < count; i++)
-                points[i * 2] = value[i].X;
-            for (int i = 0; i < count; i++)
-                points[i * 2 + 1] = value[i].Y;
+            fixed (float* ptr = points)
+                value.CopyTo(new(ptr, count * 2));
         }
+    }
+    
+    
+    /// <summary>
+    /// Constructs a new ShapeProxy object with the given parameters.
+    /// </summary>
+    /// <param name="points">The points of the shape in local coordinates.</param>
+    /// <param name="radius">The radius of the shape.</param>
+    /// <exception cref="ArgumentException">Thrown when the number of points exceeds the maximum allowed.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the points array is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the number of points is less than 1.</exception>
+    public ShapeProxy(ReadOnlySpan<Vec2> points, float radius)
+    {
+        if (points.Length > MAX_POLYGON_VERTICES)
+            throw new ArgumentException($"Cannot set more than {MAX_POLYGON_VERTICES} points");
+        if (points.Length < 1)
+            throw new ArgumentOutOfRangeException(nameof(points), "Must have at least 1 point");
+        if (points == null)
+            throw new ArgumentNullException(nameof(points));
+        
+        Points = points;
+        Radius = radius;
+    }
+    
+    /// <summary>
+    /// Constructs a new ShapeProxy object with default values.
+    /// </summary>
+    public ShapeProxy()
+    {
+        count = 0;
+        Radius = 0;
     }
 }

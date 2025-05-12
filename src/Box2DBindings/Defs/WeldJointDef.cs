@@ -77,4 +77,52 @@ public class WeldJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
+    
+    /// <summary>
+    /// Construct a weld joint definition with the supplied values
+    /// </summary>
+    /// <param name="bodyA">The first attached body</param>
+    /// <param name="bodyB">The second attached body</param>
+    /// <param name="anchorA">The local anchor point relative to bodyA's origin</param>
+    /// <param name="anchorB">The local anchor point relative to bodyB's origin</param>
+    /// <param name="referenceAngle">The bodyB angle minus bodyA angle in the reference state (radians)</param>
+    /// <param name="linearHertz">Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness</param>
+    /// <param name="angularHertz">Angular stiffness as Hertz (cycles per second). Use zero for maximum stiffness</param>
+    /// <param name="linearDampingRatio">Linear damping ratio, non-dimensional. Use 1 for critical damping</param>
+    /// <param name="angularDampingRatio">Angular damping ratio, non-dimensional. Use 1 for critical damping</param>
+    /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
+    /// <param name="userData">User data</param>
+    public WeldJointDef(
+        Body bodyA,
+        Body bodyB,
+        Vec2 anchorA,
+        Vec2 anchorB,
+        float referenceAngle = 0.0f,
+        float linearHertz = 0.0f,
+        float angularHertz = 0.0f,
+        float linearDampingRatio = 0.0f,
+        float angularDampingRatio = 0.0f,
+        bool collideConnected = false,
+        object? userData = null)
+    {
+        BodyA = bodyA;
+        BodyB = bodyB;
+        LocalAnchorA = anchorA;
+        LocalAnchorB = anchorB;
+        ReferenceAngle = referenceAngle;
+        LinearHertz = linearHertz;
+        AngularHertz = angularHertz;
+        LinearDampingRatio = linearDampingRatio;
+        AngularDampingRatio = angularDampingRatio;
+        CollideConnected = collideConnected;
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Construct a weld joint definition with the default values
+    /// </summary>
+    public WeldJointDef()
+    {
+        _internal = new();
+    }
 }

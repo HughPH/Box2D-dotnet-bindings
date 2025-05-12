@@ -108,7 +108,7 @@ public class WheelJointDef
     }
 
     /// <summary>
-    /// User data pointer
+    /// User data
     /// </summary>
     public object? UserData
     {
@@ -116,5 +116,67 @@ public class WheelJointDef
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
 
-
+    /// <summary>
+    /// Construct a wheel joint definition with the supplied values
+    /// </summary>
+    /// <param name="bodyA">The first attached body</param>
+    /// <param name="bodyB">The second attached body</param>
+    /// <param name="anchorA">The local anchor point relative to bodyA's origin</param>
+    /// <param name="anchorB">The local anchor point relative to bodyB's origin</param>
+    /// <param name="axisA">The local translation unit axis in bodyA</param>
+    /// <param name="enableSpring">Enable a linear spring along the local axis</param>
+    /// <param name="hertz">Spring stiffness in Hertz</param>
+    /// <param name="dampingRatio">Spring damping ratio, non-dimensional</param>
+    /// <param name="enableLimit">Enable/disable the joint linear limit</param>
+    /// <param name="lowerTranslation">The lower translation limit</param>
+    /// <param name="upperTranslation">The upper translation limit</param>
+    /// <param name="enableMotor">Enable/disable the joint rotational motor</param>
+    /// <param name="maxMotorTorque">The maximum motor torque, typically in newton-meters</param>
+    /// <param name="motorSpeed">The desired motor speed in radians per second</param>
+    /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
+    /// <param name="userData">User data</param>
+    public WheelJointDef(
+        Body bodyA,
+        Body bodyB,
+        Vec2 anchorA,
+        Vec2 anchorB,
+        Vec2 axisA,
+        bool enableSpring = false,
+        float hertz = 0.0f,
+        float dampingRatio = 0.0f,
+        bool enableLimit = false,
+        float lowerTranslation = 0.0f,
+        float upperTranslation = 0.0f,
+        bool enableMotor = false,
+        float maxMotorTorque = 0.0f,
+        float motorSpeed = 0.0f,
+        bool collideConnected = false,
+        object? userData = null)
+    {
+        _internal.BodyA = bodyA;
+        _internal.BodyB = bodyB;
+        _internal.LocalAnchorA = anchorA;
+        _internal.LocalAnchorB = anchorB;
+        _internal.LocalAxisA = axisA;
+        EnableSpring = enableSpring;
+        Hertz = hertz;
+        DampingRatio = dampingRatio;
+        EnableLimit = enableLimit;
+        LowerTranslation = lowerTranslation;
+        UpperTranslation = upperTranslation;
+        EnableMotor = enableMotor;
+        MaxMotorTorque = maxMotorTorque;
+        MotorSpeed = motorSpeed;
+        CollideConnected = collideConnected;
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Construct a wheel joint definition with the default values
+    /// </summary>
+    public WheelJointDef()
+    {
+        _internal = new();
+    }
+    
 }
