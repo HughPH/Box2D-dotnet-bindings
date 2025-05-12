@@ -93,10 +93,11 @@ public class RevoluteJoint : Joint
     private static extern void b2RevoluteJoint_SetLimits(JointId jointId, float lower, float upper);
 
     /// <summary>
-    /// Sets the revolute joint limits in radians
+    /// Sets the revolute joint limits in radians. 
     /// </summary>
     /// <param name="lower">The lower limit in radians</param>
     /// <param name="upper">The upper limit in radians</param>
+    /// <remarks>It is expected that lower &lt;= upper and that -0.99 * <see cref="System.Math.PI"/> &lt;= lower &amp;&amp; upper &lt;= -0.99 * <see cref="System.Math.PI"/>.</remarks>
     public void SetLimits(float lower, float upper) => b2RevoluteJoint_SetLimits(id, lower, upper);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_GetLowerLimit")]

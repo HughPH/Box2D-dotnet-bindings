@@ -323,6 +323,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// Set the velocity to reach the given transform after a given time step.
     /// The result will be close but maybe not exact. This is meant for kinematic bodies.
+    /// The target is not applied if the velocity would be below the sleep threshold.
     /// This will automatically wake the body if asleep.
     /// </summary>
     /// <param name="target">The target transform</param>

@@ -287,9 +287,8 @@ public struct Shape : IEquatable<Shape>
     private static extern int b2Shape_GetMaterial(Shape shape);
 
     /// <summary>
-    /// The material for this shape
+    /// Gets/sets the material ID for this shape - this does not affect the shape's physical properties
     /// </summary>
-    /// <remarks>This is just for convenience. It is not used in the Box2D engine. There is no register of materials, and modifying this property does not modify the behaviour of the shape.</remarks>
     public int Material
     {
         get => Valid ? b2Shape_GetMaterial(this) : throw new InvalidOperationException("Shape is not valid");
@@ -301,6 +300,26 @@ public struct Shape : IEquatable<Shape>
         }
     }
 
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetSurfaceMaterial")]
+    private static extern void b2Shape_SetSurfaceMaterial(Shape shape, SurfaceMaterial surfaceMaterial);
+    
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSurfaceMaterial")]
+    private static extern SurfaceMaterial b2Shape_GetSurfaceMaterial(Shape shape);
+    
+    /// <summary>
+    /// Gets/sets the surface material for this shape
+    /// </summary>
+    public SurfaceMaterial SurfaceMaterial
+    {
+        get => Valid ? b2Shape_GetSurfaceMaterial(this) : throw new InvalidOperationException("Shape is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Shape is not valid");
+            b2Shape_SetSurfaceMaterial(this, value);
+        }
+    }
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetFilter")]
     private static extern Filter b2Shape_GetFilter(Shape shape);
 

@@ -72,12 +72,12 @@ public class RevoluteJointDef
     }
 
     /// <summary>
-    /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
+    /// The lower angle for the joint limit in radians. Minimum of -0.99*pi radians.
     /// </summary>
     public ref float LowerAngle => ref _internal.LowerAngle;
 
     /// <summary>
-    /// The upper angle for the joint limit in radians. Maximum of 0.95*pi radians.
+    /// The upper angle for the joint limit in radians. Maximum of 0.99*pi radians.
     /// </summary>
     public ref float UpperAngle => ref _internal.UpperAngle;
 

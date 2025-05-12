@@ -18,14 +18,22 @@ jobs:
         permissions:
             contents: read
         outputs:
-            box2d_tag: ${{ steps.tag.outputs.tag }}
+            box2d_ref: ${{ steps.ref.outputs.ref }}
             pkg_ver: ${{ steps.version.outputs.value }}
         steps:
             -   id: tag
                 name: "Fetch latest Box2D release tag"
                 run: |
-                    tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
-                    echo "tag=$tag" >> "$GITHUB_OUTPUT"
+                    if [[ "${GITHUB_REF_NAME}" == "vnext" ]]; then
+                        # Get the latest commit hash for main
+                        sha=$(gh api /repos/$BOX2D_REPO/commits/main --jq .sha)
+                        echo "Using Box2D commit hash from main: $sha"
+                        echo "ref=$sha" >> "$GITHUB_OUTPUT"
+                    else
+                        tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
+                        echo "Using Box2D ref: $tag"
+                        echo "ref=$tag" >> "$GITHUB_OUTPUT"
+                    fi
 
             -   id: version
                 name: "Compute managed package version string"
@@ -107,13 +115,13 @@ jobs:
                 uses: actions/cache@v4
                 with:
                     path: box2d-build
-                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_ref }}
                     restore-keys: |
                         ${{ matrix.target }}-
 
-            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
+            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_ref }}"
                 if: steps.cache.outputs.cache-hit != 'true'
-                run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_tag }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_ref }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
 
             -   name: "Configure & compile Box2D"
                 if: steps.cache.outputs.cache-hit != 'true'

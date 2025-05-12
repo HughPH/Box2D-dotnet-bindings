@@ -19,7 +19,7 @@ public readonly ref struct DistanceOutput
     public readonly Vec2 PointB;
 
     /// <summary>
-    /// Normal vector that points from A to B
+    /// Normal vector that points from A to B. Invalid if distance is zero.
     /// </summary>
     public readonly Vec2 Normal;
     

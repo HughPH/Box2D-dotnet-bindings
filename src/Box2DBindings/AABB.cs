@@ -107,4 +107,24 @@ public struct AABB : IEquatable<AABB>
 
         return aabb;
     }
+
+    /// <summary>
+    /// Checks if this AABB overlaps with another AABB
+    /// </summary>
+    /// <param name="other">The other AABB to check for overlap with</param>
+    /// <returns>True if the AABBs overlap, false otherwise</returns>
+    public bool Overlaps(AABB other)
+    {
+        return Overlaps(this, other);
+    }
+
+    /// <summary>
+    /// Checks if two AABBs overlap
+    /// </summary>
+    /// <param name="a">The first AABB</param>
+    /// <param name="b">The second AABB</param>
+    /// <returns>True if the AABBs overlap, false otherwise</returns>
+    public static bool Overlaps(AABB a, AABB b) =>
+        !( b.LowerBound.X > a.UpperBound.X || b.LowerBound.Y > a.UpperBound.Y ||
+            a.LowerBound.X > b.UpperBound.X || a.LowerBound.Y > b.UpperBound.Y );
 }

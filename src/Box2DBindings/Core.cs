@@ -100,6 +100,9 @@ public static class Core
     /// <summary>
     /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
     /// </summary>
+    /// <remarks>
+    /// Initially touching shapes are treated as a miss.
+    /// </remarks>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCast")]
     public static extern CastOutput ShapeCast(in ShapeCastPairInput input);
 
