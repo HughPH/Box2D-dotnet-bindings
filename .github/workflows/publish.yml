@@ -108,8 +108,9 @@ jobs:
             cancel-in-progress: false
 
         steps:
-            -   name: Check git version
-                run: which git && git --version
+            -   name: Find git and export path
+                id: gitpath
+                run: echo "git_exec=$(which git)" >> "$GITHUB_OUTPUT"
 
             -   id: cache
                 name: Restore native build cache
@@ -130,7 +131,7 @@ jobs:
             -   name: "Configure & compile Box2D"
                 if: steps.cache.outputs.cache-hit != 'true'
                 run: |
-                    cmake -S box2d-src -B box2d-build ${{ matrix.cmake_flags }}
+                    cmake -S box2d-src -B box2d-build ${{ matrix.cmake_flags }} -DGIT_EXECUTABLE=${{ steps.gitpath.outputs.git_exec }}
                     cmake --build box2d-build --config Release --parallel
 
             -   name: Prepare artefact directory
