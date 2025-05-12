@@ -94,13 +94,13 @@ jobs:
                     -   target: osx-x64
                         runs_on: macos-latest
                         cmake_flags: >
-                            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=x86_64"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -arch x86_64" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -arch x86_64"
 
                     # macOS ARM64
                     -   target: osx-arm64
                         runs_on: macos-latest
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3" -DCMAKE_CXX_FLAGS_RELEASE="-O3"
         runs-on: ${{ matrix.runs_on }}
 
         concurrency:
@@ -108,8 +108,6 @@ jobs:
             cancel-in-progress: false
 
         steps:
-            -   uses: actions/checkout@v4
-
             -   id: cache
                 name: Restore native build cache
                 uses: actions/cache@v4
