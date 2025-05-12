@@ -210,13 +210,20 @@ jobs:
                     pattern: "*"
 
             -   name: Build UnitTests project
-                run: dotnet build src/UnitTests --configuration Release
+                run: |
+                    dotnet build src/UnitTests --configuration Debug --framework net8.0
+                    dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
-                run: cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Release/net8.0/
+                run: |
+                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net8.0/
+                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net9.0/
 
-            -   name: Run UnitTests
-                run: dotnet test src/UnitTests --configuration Release --no-build --logger trx --results-directory TestResults
+            -   name: Run UnitTests (net8.0)
+                run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
+
+            -   name: Run UnitTests (net9.0)
+                run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
             -   name: "Pack NuGet package"
                 run: |
@@ -233,9 +240,11 @@ jobs:
                     --source "$NUGET_FEED"
 
             -   name: Generate Doxygen Documentation
+                if: ${{ github.ref == 'refs/heads/main' }}
                 run: doxygen
             
             -   name: Upload artefact
+                if: ${{ github.ref == 'refs/heads/main' }}
                 uses: actions/upload-pages-artifact@v3
                 with:
                     name: github-pages
