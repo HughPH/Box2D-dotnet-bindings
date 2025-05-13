@@ -28,14 +28,14 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     {
         this = world.CreateBody(def);
     }
-    
+
     /// <summary>
     /// Default comparer for Body instances. This is used for sorting and
     /// comparing Body instances. Using the default comparer is recommended
     /// to avoid boxing and unboxing overhead.
     /// </summary>
     public static IComparer<Body> DefaultComparer { get; } = BodyComparer.Instance;
-    
+
     /// <summary>
     /// Default equality comparer for Body instances. This is used for
     /// comparing Body instances. Using the default equality comparer is
@@ -49,14 +49,14 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="other">The other Body object to compare with</param>
     /// <returns>True if the two Body objects are equal, false otherwise</returns>
     public bool Equals(Body other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
-    
+
     /// <summary>
     /// Check if this Body object is equal to another object.
     /// </summary>
     /// <param name="obj">The object to compare with</param>
     /// <returns>True if the object is a Body and equal to this Body, false otherwise</returns>
     public override bool Equals(object? obj) => obj is Body other && Equals(other);
-    
+
     /// <summary>
     /// Get the hash code for this Body object.
     /// </summary>
@@ -71,7 +71,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="right">The second Body object</param>
     /// <returns>True if the two Body objects are equal, false otherwise</returns>
     public static bool operator ==(Body left, Body right) => left.Equals(right);
-    
+
     /// <summary>
     /// Check if two Body objects are not equal
     /// </summary>
@@ -79,7 +79,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="right">The second Body object</param>
     /// <returns>True if the two Body objects are not equal, false otherwise</returns>
     public static bool operator !=(Body left, Body right) => !(left == right);
-    
+
     /// <summary>
     /// Check if this Body object refers to the same Body as another Body object.
     /// </summary>
@@ -117,13 +117,13 @@ public struct Body : IEquatable<Body>, IComparable<Body>
         if (!Valid) return;
         // remove self from world
         World.bodies.Remove(this);
-
         // dealloc user data
         nint userDataPtr = b2Body_GetUserData(this);
         FreeHandle(ref userDataPtr);
         b2Body_SetUserData(this, 0);
 
         b2DestroyBody(this);
+
     }
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_IsValid")]
@@ -689,7 +689,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
                 b2Body_Disable(this);
         }
     }
-    
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Body_SetFixedRotation")]
     private static extern void b2Body_SetFixedRotation(Body bodyId, byte flag);
 
@@ -789,8 +789,8 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (shapeCount == 0)
                 return [];
 
-            Shape[] shapes = 
-#if NET5_0_OR_GREATER                
+            Shape[] shapes =
+#if NET5_0_OR_GREATER
                 GC.AllocateUninitializedArray<Shape>(shapeCount);
 #else
                 new Shape[shapeCount];
@@ -862,8 +862,8 @@ public struct Body : IEquatable<Body>, IComparable<Body>
             if (needed == 0)
                 return [];
 
-            ContactData[] contactData = 
-#if NET5_0_OR_GREATER                
+            ContactData[] contactData =
+#if NET5_0_OR_GREATER
                 GC.AllocateUninitializedArray<ContactData>(needed);
 #else
                 new ContactData[needed];
