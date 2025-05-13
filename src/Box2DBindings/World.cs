@@ -44,7 +44,7 @@ public sealed partial class World
     /// </summary>
     public override int GetHashCode() => HashCode.Combine(id.index1, id.generation);
 
-    internal readonly HashSet<Body> bodies = new(Body.DefaultEqualityComparer);
+    internal readonly ConcurrentHashSet<Body> bodies = new();
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
     private static extern WorldId b2CreateWorld(in WorldDefInternal def);
@@ -854,5 +854,5 @@ public sealed partial class World
     /// <summary>
     /// Gets the bodies in this world
     /// </summary>
-    public IEnumerable<Body> Bodies => Valid ? bodies : throw new InvalidOperationException("World is not valid");
+    public IEnumerable<Body> Bodies => Valid ? bodies.Items : throw new InvalidOperationException("World is not valid");
 }
