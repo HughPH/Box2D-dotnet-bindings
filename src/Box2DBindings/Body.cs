@@ -20,7 +20,7 @@ public struct Body : IEquatable<Body>, IComparable<Body>
     private ushort generation;
 
     /// <summary>
-    /// Create a body in the supplied world using the suppled BodyDef
+    /// Create a body in the supplied world using the supplied BodyDef
     /// </summary>
     /// <param name="world">The world in which to create the body</param>
     /// <param name="def">The BodyDef to use to create the body</param>
