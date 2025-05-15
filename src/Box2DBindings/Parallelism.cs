@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using JetBrains.Annotations;
@@ -35,7 +34,7 @@ public static class Parallelism
         }
         set
         {
-            if (World.worlds.Any())
+            if (World.worlds.Count > 0)
                 throw new InvalidOperationException("Cannot change thread count while worlds exist.");
             maxWorkerCount = Math.Min(Math.Max(1, value), Environment.ProcessorCount);
             //terminate old threads
