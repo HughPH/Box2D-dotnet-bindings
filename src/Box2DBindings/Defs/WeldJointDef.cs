@@ -10,7 +10,7 @@ namespace Box2D;
 /// <i>Note: The approximate solver in Box2D cannot hold many bodies together rigidly</i>.
 /// </summary>
 [PublicAPI]
-public class WeldJointDef
+public sealed class WeldJointDef
 {
     //! \internal
     internal WeldJointDefInternal _internal = new();

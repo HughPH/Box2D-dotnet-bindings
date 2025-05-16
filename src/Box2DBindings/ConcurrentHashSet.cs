@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Box2D;
 
-class ConcurrentHashSet<T> : IEnumerable<T> where T : notnull
+sealed class ConcurrentHashSet<T> : IEnumerable<T> where T : notnull
 {
     private const int StripeCount = 64; // adjust as needed
     private readonly HashSet<T>[] _sets;

@@ -22,7 +22,7 @@ namespace Box2D;
 /// <b>Warning: Do not use chain shapes unless you understand the limitations. This is an advanced feature.</b>
 /// </summary>
 [PublicAPI]
-public class ChainDef
+public sealed class ChainDef
 {
     //! \internal
     internal ChainDefInternal _internal = new();

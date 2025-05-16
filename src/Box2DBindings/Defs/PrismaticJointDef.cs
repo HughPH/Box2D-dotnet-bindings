@@ -11,7 +11,7 @@ namespace Box2D;
 /// when the local anchor points coincide in world space.
 /// </summary>
 [PublicAPI]
-public class PrismaticJointDef
+public sealed class PrismaticJointDef
 {
     //! \internal
     internal PrismaticJointDefInternal _internal = new();

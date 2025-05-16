@@ -8,7 +8,7 @@ namespace Box2D;
 /// A typical usage is to control the movement of a dynamic body with respect to the ground.
 /// </summary>
 [PublicAPI]
-public class MotorJointDef
+public sealed class MotorJointDef
 {
     //! \internal
     internal MotorJointDefInternal _internal = new();

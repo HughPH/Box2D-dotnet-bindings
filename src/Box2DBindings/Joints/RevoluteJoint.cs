@@ -10,7 +10,7 @@ namespace Box2D;
 /// Also called a <i>hinge</i> or <i>pin</i> joint.
 /// </summary>
 [PublicAPI]
-public class RevoluteJoint : Joint
+public sealed class RevoluteJoint : Joint
 {
     internal RevoluteJoint(JointId id) : base(id)
     { }

@@ -11,7 +11,7 @@ namespace Box2D;
 /// <b>Note: The accuracy of weld joint is limited by the accuracy of the solver. Long chains of weld joints may flex.</b>
 /// </summary>
 [PublicAPI]
-public class WeldJoint : Joint
+public sealed class WeldJoint : Joint
 {
     internal WeldJoint(JointId id) : base(id)
     { }

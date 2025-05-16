@@ -6,7 +6,7 @@ namespace Box2D;
 /// The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also keeps the two bodies in the same simulation island.
 /// </summary>
 [PublicAPI]
-public class FilterJointDef
+public sealed class FilterJointDef
 {
     //! \internal
     internal FilterJointDefInternal _internal = new();

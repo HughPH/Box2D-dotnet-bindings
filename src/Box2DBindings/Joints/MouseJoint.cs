@@ -8,7 +8,7 @@ namespace Box2D;
 /// the user moves a rigid body with a cursor.
 /// </summary>
 [PublicAPI]
-public class MouseJoint:Joint
+public sealed class MouseJoint:Joint
 {
     internal MouseJoint(JointId id) : base(id)
     { }

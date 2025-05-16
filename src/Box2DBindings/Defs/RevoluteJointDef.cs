@@ -12,7 +12,7 @@ namespace Box2D;
 /// 2. if you add/remove shapes from a body and recompute the mass, the joints will be broken
 /// </summary>
 [PublicAPI]
-public class RevoluteJointDef
+public sealed class RevoluteJointDef
 {
     //! \internal
     internal RevoluteJointDefInternal _internal = new();

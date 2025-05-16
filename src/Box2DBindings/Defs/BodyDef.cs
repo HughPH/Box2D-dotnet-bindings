@@ -10,7 +10,7 @@ namespace Box2D;
 /// Body definitions are temporary objects used to bundle creation parameters.
 /// </summary>
 [PublicAPI]
-public class BodyDef
+public sealed class BodyDef
 {
     //! \internal
     internal BodyDefInternal _internal = new();
