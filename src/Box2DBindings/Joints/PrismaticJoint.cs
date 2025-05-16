@@ -10,7 +10,7 @@ namespace Box2D;
 /// along an axis and have no rotation. Also called a <i>slider</i> joint.
 /// </summary>
 [PublicAPI]
-public class PrismaticJoint : Joint
+public sealed class PrismaticJoint : Joint
 {
     internal PrismaticJoint(JointId id) : base(id)
     { }

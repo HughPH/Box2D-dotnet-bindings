@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Box2D.Comparers;
 
-public class WorldComparer : IEqualityComparer<World>, IComparer<World>
+sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
 {
     public static readonly WorldComparer Instance = new();
         
@@ -13,7 +13,7 @@ public class WorldComparer : IEqualityComparer<World>, IComparer<World>
     public int Compare(World x, World y) => x.id.Equals(y.id) ? 0 : x.id.GetHashCode() - y.id.GetHashCode();
 }
     
-class WorldIdComparer : IEqualityComparer<WorldId>, IComparer<WorldId>
+sealed class WorldIdComparer : IEqualityComparer<WorldId>, IComparer<WorldId>
 {
     public static readonly WorldIdComparer Instance = new();
         

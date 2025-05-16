@@ -9,7 +9,7 @@ namespace Box2D;
 /// that relative transform over time.
 /// </summary>
 [PublicAPI]
-public class MotorJoint : Joint
+public sealed class MotorJoint : Joint
 {
     internal MotorJoint(JointId id) : base(id)
     { }

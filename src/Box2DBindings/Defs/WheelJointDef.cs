@@ -11,7 +11,7 @@ namespace Box2D;
 /// when the local anchor points coincide in world space.
 /// </summary>
 [PublicAPI]
-public class WheelJointDef
+public sealed class WheelJointDef
 {
     //! \internal
     internal WheelJointDefInternal _internal = new();

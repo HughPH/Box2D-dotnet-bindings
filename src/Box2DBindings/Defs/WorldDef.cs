@@ -6,7 +6,7 @@ namespace Box2D;
 /// World definition used to create a simulation world.
 /// </summary>
 [PublicAPI]
-public class WorldDef
+public sealed class WorldDef
 {
     //! \internal
     internal WorldDefInternal _internal = new();

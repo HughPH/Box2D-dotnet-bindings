@@ -10,7 +10,7 @@ namespace Box2D;
 /// constraint slightly. This helps when saving and loading a game.
 /// </summary>
 [PublicAPI]
-public class DistanceJointDef
+public sealed class DistanceJointDef
 {
     //! \internal
     internal DistanceJointDefInternal _internal = new();

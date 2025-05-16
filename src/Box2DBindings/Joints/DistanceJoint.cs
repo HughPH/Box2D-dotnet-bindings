@@ -11,7 +11,7 @@ namespace Box2D;
 /// constraint slightly. This helps when saving and loading a game.
 /// </summary>
 [PublicAPI]
-public class DistanceJoint : Joint
+public sealed class DistanceJoint : Joint
 {
     internal DistanceJoint(JointId id) : base(id)
     { }

@@ -1,6 +1,8 @@
+using Box2D.Comparers;
 using JetBrains.Annotations;
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -10,7 +12,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct ChainShape
+public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
 {
     private int index1;
     private ushort world0;
@@ -145,6 +147,26 @@ public struct ChainShape
     /// </summary>
     /// <returns>True if the chain shape is valid, false otherwise</returns>
     public bool Valid => b2Chain_IsValid(this) != 0;
+
+    public bool Equals(ChainShape other) =>
+        index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+    public override bool Equals(object? obj) =>
+        obj is ChainShape other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(index1, world0, generation);
     
+    public IEqualityComparer<ChainShape> DefaultEqualityComparer => ChainShapeComparer.Instance;
     
+    public IComparer<ChainShape> DefaultComparer => ChainShapeComparer.Instance;
+
+    public int CompareTo(ChainShape other)
+    {
+        int index1Comparison = index1.CompareTo(other.index1);
+        if (index1Comparison != 0)
+            return index1Comparison;
+        int world0Comparison = world0.CompareTo(other.world0);
+        if (world0Comparison != 0)
+            return world0Comparison;
+        return generation.CompareTo(other.generation);
+    }
 }

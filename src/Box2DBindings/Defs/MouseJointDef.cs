@@ -9,7 +9,7 @@ namespace Box2D;
 /// applying huge forces. This also applies rotation constraint heuristic to improve control.
 /// </summary>
 [PublicAPI]
-public class MouseJointDef
+public sealed class MouseJointDef
 {
     //! \internal
     internal MouseJointDefInternal _internal = new();

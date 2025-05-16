@@ -28,10 +28,7 @@ public static class Parallelism
     /// </remarks>
     public static int MaxWorkerCount
     {
-        get
-        {
-            return maxWorkerCount;
-        }
+        get => maxWorkerCount;
         set
         {
             if (World.worlds.Count > 0)

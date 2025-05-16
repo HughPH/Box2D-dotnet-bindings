@@ -8,7 +8,7 @@ namespace Box2D;
 /// the same shape definition to create multiple shapes.
 /// </summary>
 [PublicAPI]
-public class ShapeDef
+public sealed class ShapeDef
 {
     //! \internal
     internal ShapeDefInternal _internal = new();

@@ -10,7 +10,7 @@ namespace Box2D;
 /// rotate. Supports a linear spring, linear limits, and a rotational motor.
 /// </summary>
 [PublicAPI]
-public class WheelJoint : Joint
+public sealed class WheelJoint : Joint
 {
     internal WheelJoint(JointId id) : base(id)
     { }
