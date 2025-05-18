@@ -46,9 +46,6 @@ public sealed partial class World
 
     internal readonly ConcurrentHashSet<Body> bodies = new();
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
-    private static extern WorldId b2CreateWorld(in WorldDefInternal def);
-
     private static bool initialized;
 
     /// <summary>
