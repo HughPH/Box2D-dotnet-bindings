@@ -81,13 +81,21 @@ public sealed partial class World
 
         id = b2CreateWorld(def._internal);
         worlds.TryAdd(id, this);
+        
+        if (bodyMoveTaskCallbackPointer == 0)
+            bodyMoveTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)BodyMoveTaskCallback);
+        if (sensorBeginTouchTaskCallbackPointer == 0)
+            sensorBeginTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorBeginTouchTaskCallback);
+        if (sensorEndTouchTaskCallbackPointer == 0)
+            sensorEndTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorEndTouchTaskCallback);
+        if (contactBeginTouchTaskCallbackPointer == 0)
+            contactBeginTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactBeginTouchTaskCallback);
+        if (contactEndTouchTaskCallbackPointer == 0)
+            contactEndTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactEndTouchTaskCallback);
+        if (contactHitTaskCallbackPointer == 0)
+            contactHitTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactHitTaskCallback);
     }
-
-    private World(WorldId id)
-    {
-        this.id = id;
-    }
-
+    
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
     private static extern void b2DestroyWorld(WorldId worldId);
 
@@ -149,7 +157,13 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
 
-
+    private nint bodyMoveTaskCallbackPointer;
+    private nint sensorBeginTouchTaskCallbackPointer;
+    private nint sensorEndTouchTaskCallbackPointer;
+    private nint contactBeginTouchTaskCallbackPointer;
+    private nint contactEndTouchTaskCallbackPointer;
+    private nint contactHitTaskCallbackPointer;
+    
     /// <summary>
     /// Simulate a world for one time step. This performs collision detection, integration, and constraint solution.
     /// </summary>
@@ -171,9 +185,8 @@ public sealed partial class World
                 var events = BodyEvents;
                 if (parallelEvents)
                 {
-                    nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)BodyMoveTaskCallback);
                     int minRange = Math.Max(events.moveCount / Parallelism.MaxWorkerCount, 1);
-                    tasks[0] = Parallelism.DefaultEnqueue(tcPtr, events.moveCount, minRange, (nint)events.moveEvents, 0);
+                    tasks[0] = Parallelism.DefaultEnqueue(bodyMoveTaskCallbackPointer, events.moveCount, minRange, (nint)events.moveEvents, 0);
                 }
                 else
                     foreach (BodyMoveEvent e in events.MoveEvents)
@@ -187,9 +200,8 @@ public sealed partial class World
                 if (SensorBeginTouch is not null)
                     if (parallelEvents)
                     {
-                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorBeginTouchTaskCallback);
                         int minRange = Math.Max(sensorEvents.beginCount / Parallelism.MaxWorkerCount, 1);
-                        tasks[1] = Parallelism.DefaultEnqueue(tcPtr, sensorEvents.beginCount, minRange, (nint)sensorEvents.beginEvents, 0);
+                        tasks[1] = Parallelism.DefaultEnqueue(sensorBeginTouchTaskCallbackPointer, sensorEvents.beginCount, minRange, (nint)sensorEvents.beginEvents, 0);
                     }
                     else
                         foreach (SensorBeginTouchEvent e in sensorEvents.BeginEvents)
@@ -200,9 +212,8 @@ public sealed partial class World
                 if (SensorEndTouch is not null)
                     if (parallelEvents)
                     {
-                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorEndTouchTaskCallback);
                         int minRange = Math.Max(sensorEvents.endCount / Parallelism.MaxWorkerCount, 1);
-                        tasks[2] = Parallelism.DefaultEnqueue(tcPtr, sensorEvents.endCount, minRange, (nint)sensorEvents.endEvents, 0);
+                        tasks[2] = Parallelism.DefaultEnqueue(sensorEndTouchTaskCallbackPointer, sensorEvents.endCount, minRange, (nint)sensorEvents.endEvents, 0);
                     }
                     else
                         foreach (SensorEndTouchEvent e in sensorEvents.EndEvents)
@@ -216,9 +227,8 @@ public sealed partial class World
                 if (ContactBeginTouch is not null)
                     if (parallelEvents)
                     {
-                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactBeginTouchTaskCallback);
                         int minRange = Math.Max(contactEvents.beginCount / Parallelism.MaxWorkerCount, 1);
-                        tasks[3] = Parallelism.DefaultEnqueue(tcPtr, contactEvents.beginCount, minRange, (nint)contactEvents.beginEvents, 0);
+                        tasks[3] = Parallelism.DefaultEnqueue(contactBeginTouchTaskCallbackPointer, contactEvents.beginCount, minRange, (nint)contactEvents.beginEvents, 0);
                     }
                     else
                         foreach (ContactBeginTouchEvent e in contactEvents.BeginEvents)
@@ -227,9 +237,8 @@ public sealed partial class World
                 if (ContactEndTouch is not null)
                     if (parallelEvents)
                     {
-                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactEndTouchTaskCallback);
                         int minRange = Math.Max(contactEvents.endCount / Parallelism.MaxWorkerCount, 1);
-                        tasks[4] = Parallelism.DefaultEnqueue(tcPtr, contactEvents.endCount, minRange, (nint)contactEvents.endEvents, 0);
+                        tasks[4] = Parallelism.DefaultEnqueue(contactEndTouchTaskCallbackPointer, contactEvents.endCount, minRange, (nint)contactEvents.endEvents, 0);
                     }
                     else
                         foreach (ContactEndTouchEvent e in contactEvents.EndEvents)
@@ -238,9 +247,8 @@ public sealed partial class World
                 if (ContactHit is not null)
                     if (parallelEvents)
                     {
-                        nint tcPtr = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactHitTaskCallback);
                         int minRange = Math.Max(contactEvents.hitCount / Parallelism.MaxWorkerCount, 1);
-                        tasks[5] = Parallelism.DefaultEnqueue(tcPtr, contactEvents.hitCount, minRange, (nint)contactEvents.hitEvents, 0);
+                        tasks[5] = Parallelism.DefaultEnqueue(contactHitTaskCallbackPointer, contactEvents.hitCount, minRange, (nint)contactEvents.hitEvents, 0);
                     }
                     else
                         foreach (ContactHitEvent e in contactEvents.HitEvents)
@@ -384,7 +392,7 @@ public sealed partial class World
     {
         if (b2World_IsValid(world) == 0) throw new InvalidOperationException("World is not valid");
         if (!worlds.TryGetValue(world, out var w))
-            worlds.TryAdd(world, w = new World(world));
+            throw new InvalidOperationException("World not found");
         return w;
     }
 
