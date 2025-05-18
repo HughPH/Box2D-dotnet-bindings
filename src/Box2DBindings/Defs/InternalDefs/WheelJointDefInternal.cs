@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 struct WheelJointDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<WheelJointDefInternal> b2DefaultWheelJointDef;
+
+    static unsafe WheelJointDefInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultWheelJointDef", out var ptr);
+        b2DefaultWheelJointDef = (delegate* unmanaged[Cdecl]<WheelJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWheelJointDef")]
+    private static extern WheelJointDefInternal b2DefaultWheelJointDef();
+#endif
+    
     [FieldOffset(0)]
     internal Body BodyA;
     
@@ -57,10 +71,7 @@ struct WheelJointDefInternal
     [FieldOffset(88)]
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWheelJointDef")]
-    private static extern WheelJointDefInternal GetDefault();
-    
-    private static WheelJointDefInternal Default => GetDefault();
+    private static unsafe WheelJointDefInternal Default => b2DefaultWheelJointDef();
     
     public WheelJointDefInternal()
     {

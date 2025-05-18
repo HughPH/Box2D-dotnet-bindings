@@ -8,11 +8,8 @@ namespace Box2D.Character_Movement;
 /// Functions for solving planes and clipping vectors.
 /// </summary>
 [PublicAPI]
-public static class Mover
+public partial class Mover
 {
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SolvePlanes")]
-    private static extern PlaneSolverResult b2SolvePlanes(Vec2 position, [In] CollisionPlane[] planes, int count);
-
     /// <summary>
     /// Solves the position of a mover that satisfies the given collision planes.
     /// </summary>
@@ -21,7 +18,7 @@ public static class Mover
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
-    public static PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes)
+    public static unsafe PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
@@ -37,16 +34,13 @@ public static class Mover
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
-    public static PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes, int planeCount)
+    public static unsafe PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes, int planeCount)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
         return b2SolvePlanes(position, planes, planeCount);
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ClipVector")]
-    private static extern Vec2 b2ClipVector(Vec2 vector, [In] CollisionPlane[] planes, int count);
-
+    
     /// <summary>
     /// Clips the velocity against the given collision planes. Planes with zero push or clipVelocity
     /// set to false are skipped.
@@ -56,7 +50,7 @@ public static class Mover
     /// <returns>The clipped vector</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga64bf3e04de538c317bc377a2d2c22370">b2ClipVector</a></remarks>
-    public static Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes)
+    public static unsafe Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
@@ -74,7 +68,7 @@ public static class Mover
     /// <returns>The clipped vector</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga64bf3e04de538c317bc377a2d2c22370">b2ClipVector</a></remarks>
-    public static Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes, int planeCount)
+    public static unsafe Vec2 ClipVector(in Vec2 vector, CollisionPlane[] planes, int planeCount)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));

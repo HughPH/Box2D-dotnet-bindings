@@ -13,7 +13,7 @@
 
         <PackageReadmeFile>README.md</PackageReadmeFile>
         
-        <TargetFrameworks>netstandard2.1;net9.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;net5.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -76,6 +76,78 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Joints\DistanceJoint_Externs.cs">
+        <DependentUpon>DistanceJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\Joint_Externs.cs">
+        <DependentUpon>Joint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\MotorJoint_Externs.cs">
+        <DependentUpon>MotorJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Collision\Character Movement\Mover_Externs.cs">
+        <DependentUpon>Mover.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Collision\Character Movement\Plane_Externs.cs">
+        <DependentUpon>Plane.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Collision\DynamicTree_Externs.cs">
+        <DependentUpon>DynamicTree.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\MouseJoint_Externs.cs">
+        <DependentUpon>MouseJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\PrismaticJoint_Externs.cs">
+        <DependentUpon>PrismaticJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\RevoluteJoint_Externs.cs">
+        <DependentUpon>RevoluteJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\WeldJoint_Externs.cs">
+        <DependentUpon>WeldJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\WheelJoint_Externs.cs">
+        <DependentUpon>WheelJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Capsule_Externs.cs">
+        <DependentUpon>Capsule.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\ChainShape_Externs.cs">
+        <DependentUpon>ChainShape.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Circle_Externs.cs">
+        <DependentUpon>Circle.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Polygon_Externs.cs">
+        <DependentUpon>Polygon.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Segment_Externs.cs">
+        <DependentUpon>Segment.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Shape_Externs.cs">
+        <DependentUpon>Shape.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Body_Externs.cs">
+        <DependentUpon>Body.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Core_Externs.cs">
+        <DependentUpon>Core.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Cast.cs">
+        <DependentUpon>World.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Events.cs">
+        <DependentUpon>World.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Cast_Externs.cs">
+        <DependentUpon>World_Cast.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Externs.cs">
+        <DependentUpon>World.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 

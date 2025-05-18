@@ -10,6 +10,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 struct DebugDrawInternal
 {
+#if NET5_0_OR_GREATER
+    public static unsafe delegate* unmanaged[Cdecl]<DebugDrawInternal> b2DefaultDebugDraw;
+
+    static unsafe DebugDrawInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultDebugDraw", out var ptr);
+        b2DefaultDebugDraw = (delegate* unmanaged[Cdecl]<DebugDrawInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
+    public static extern DebugDrawInternal b2DefaultDebugDraw();
+#endif
+    
     /// <summary>
     /// Callback function to draw a closed polygon provided in CCW order.
     /// </summary>
@@ -160,14 +174,8 @@ struct DebugDrawInternal
     [FieldOffset(104)] // align to next 4 byte boundary
     internal nint context;
 
-    public DebugDrawInternal()
+    public unsafe DebugDrawInternal()
     {
-        this = DefaultDebugDraw();
+        this = b2DefaultDebugDraw();
     }
-
-    /// <summary>
-    /// The default debug draw settings.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDebugDraw")]
-    private static extern DebugDrawInternal DefaultDebugDraw();
 }

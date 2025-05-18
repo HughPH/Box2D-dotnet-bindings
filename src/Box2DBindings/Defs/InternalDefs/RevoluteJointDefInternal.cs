@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 struct RevoluteJointDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<RevoluteJointDefInternal> b2DefaultRevoluteJointDef;
+
+    static unsafe RevoluteJointDefInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultRevoluteJointDef", out var ptr);
+        b2DefaultRevoluteJointDef = (delegate* unmanaged[Cdecl]<RevoluteJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
+    private static extern RevoluteJointDefInternal b2DefaultRevoluteJointDef();
+#endif
+
     internal Body BodyA;
     
     internal Body BodyB;
@@ -43,10 +57,7 @@ struct RevoluteJointDefInternal
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultRevoluteJointDef")]
-    private static extern RevoluteJointDefInternal GetDefault();
-    
-    private static RevoluteJointDefInternal Default => GetDefault();
+    private static unsafe RevoluteJointDefInternal Default => b2DefaultRevoluteJointDef();
     
     public RevoluteJointDefInternal()
     {

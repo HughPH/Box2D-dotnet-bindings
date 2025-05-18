@@ -14,6 +14,26 @@ namespace Box2D;
 [PublicAPI]
 public ref struct Hull
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<Vec2*, int, Hull> b2ComputeHull;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<in Hull, byte> b2ValidateHull;
+
+    static unsafe Hull()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2ComputeHull", out var ptr1);
+        NativeLibrary.TryGetExport(lib, "b2ValidateHull", out var ptr2);
+        b2ComputeHull = (delegate* unmanaged[Cdecl]<Vec2*, int, Hull>)ptr1;
+        b2ValidateHull = (delegate* unmanaged[Cdecl]<in Hull, byte>)ptr2;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeHull")]
+    private static extern unsafe Hull b2ComputeHull(Vec2* points, int count);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ValidateHull")]
+    private static extern byte b2ValidateHull(in Hull hull);
+#endif
+    
     private unsafe fixed float points[MAX_POLYGON_VERTICES * 2];
 
     private int count;
@@ -49,9 +69,6 @@ public ref struct Hull
         }
     }
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeHull")]
-    private static extern unsafe Hull Compute(Vec2* points, int count);
-
     /// <summary>
     /// Compute the convex hull of a set of points. Returns an empty hull if it fails.
     /// Some failure cases:
@@ -72,19 +89,8 @@ public ref struct Hull
             throw new ArgumentException($"Hull can only contain up to {MAX_POLYGON_VERTICES} points");
         
         fixed (Vec2* pointsPtr = points)
-            return Compute(pointsPtr, points.Length);
+            return b2ComputeHull(pointsPtr, points.Length);
     }
-    
-    /// <summary>
-    /// This determines if a hull is valid. Checks for:
-    /// <ul>
-    /// <li>convexity</li>
-    /// <li>collinear points</li>
-    /// </ul>
-    /// This is expensive and should not be called at runtime.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ValidateHull")]
-    private static extern byte Validate(in Hull hull);
     
     /// <summary>
     /// Determines if this hull is valid. Checks for:
@@ -94,5 +100,6 @@ public ref struct Hull
     /// </ul>
     /// This is expensive and should not be called at runtime.
     /// </summary>
-    public bool Valid => Validate(in this) != 0;
+    [Obsolete("This is not obsolete, but is expensive and should not be called at runtime")]
+    public unsafe bool Valid => b2ValidateHull(in this) != 0;
 }

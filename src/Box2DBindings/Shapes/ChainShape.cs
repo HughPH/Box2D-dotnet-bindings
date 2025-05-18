@@ -12,7 +12,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
+public partial struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
 {
     private int index1;
     private ushort world0;
@@ -28,33 +28,21 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
         this = body.CreateChain(def);
     }
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyChain")]
-    private static extern void b2DestroyChain(ChainShape chainId);
-    
     /// <summary>
     /// Destroys this chain shape
     /// </summary>
     /// <remarks>This will remove the chain shape from the world and destroy all contacts associated with this shape</remarks>
-    public void Destroy()
+    public unsafe void Destroy()
     {
         if (!Valid) return;
         b2DestroyChain(this);
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetWorld")]
-    private static extern WorldId b2Chain_GetWorld(ChainShape chainId);
     
     /// <summary>
     /// Gets the world that owns this chain shape
     /// </summary>
     /// <returns>The world that owns this chain shape</returns>
-    public World World => Valid ? World.GetWorld(b2Chain_GetWorld(this)) : throw new InvalidOperationException("Chain shape is not valid");
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegmentCount")]
-    private static extern int b2Chain_GetSegmentCount(ChainShape chainId);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegments")]
-    private static extern unsafe int b2Chain_GetSegments(ChainShape chainId, [In] Shape* segmentArray, int capacity);
+    public unsafe World World => Valid ? World.GetWorld(b2Chain_GetWorld(this)) : throw new InvalidOperationException("Chain shape is not valid");
     
     /// <summary>
     /// The chain segments
@@ -78,17 +66,11 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
             return buffer.AsSpan(0, written);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetFriction")]
-    private static extern void b2Chain_SetFriction(ChainShape chainId, float friction);
-   
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetFriction")]
-    private static extern float b2Chain_GetFriction(ChainShape chainId);
     
     /// <summary>
     /// The chain friction
     /// </summary>
-    public float Friction
+    public unsafe float Friction
     {
         get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetFriction(this);
         set
@@ -98,17 +80,11 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
             b2Chain_SetFriction(this, value);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetRestitution")]
-    private static extern void b2Chain_SetRestitution(ChainShape chainId, float restitution);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetRestitution")]
-    private static extern float b2Chain_GetRestitution(ChainShape chainId);
     
     /// <summary>
     /// The chain restitution (bounciness)
     /// </summary>
-    public float Restitution
+    public unsafe float Restitution
     {
         get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetRestitution(this);
         set
@@ -118,17 +94,11 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
             b2Chain_SetRestitution(this, value);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetMaterial")]
-    private static extern void b2Chain_SetMaterial(ChainShape chainId, int material);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetMaterial")]
-    private static extern int b2Chain_GetMaterial(ChainShape chainId);
     
     /// <summary>
     /// The chain material
     /// </summary>
-    public int Material
+    public unsafe int Material
     {
         get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetMaterial(this);
         set
@@ -138,15 +108,12 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
             b2Chain_SetMaterial(this, value);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_IsValid")]
-    private static extern byte b2Chain_IsValid(ChainShape chainId);
     
     /// <summary>
     /// Checks if the chain shape is valid
     /// </summary>
     /// <returns>True if the chain shape is valid, false otherwise</returns>
-    public bool Valid => b2Chain_IsValid(this) != 0;
+    public unsafe bool Valid => b2Chain_IsValid(this) != 0;
 
     public bool Equals(ChainShape other) =>
         index1 == other.index1 && world0 == other.world0 && generation == other.generation;

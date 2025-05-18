@@ -8,7 +8,7 @@ namespace Box2D;
 /// Joints allow you to connect rigid bodies together while allowing various forms of relative motions.
 /// </summary>
 [PublicAPI]
-public class Joint
+public partial class Joint
 {
     internal JointId id;
 
@@ -17,7 +17,7 @@ public class Joint
         this.id = id;
     }
 
-    internal static Joint GetJoint(JointId id)
+    internal static unsafe Joint GetJoint(JointId id)
     {
         JointType t = b2Joint_GetType(id);
         switch (t)
@@ -43,14 +43,11 @@ public class Joint
 
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyJoint")]
-    private static extern void b2DestroyJoint(JointId jointId);
-
+    
     /// <summary>
     /// Destroys this joint
     /// </summary>
-    public void Destroy()
+    public unsafe void Destroy()
     {
         if (!Valid) return;
         nint userDataPtr = b2Joint_GetUserData(id);
@@ -60,79 +57,52 @@ public class Joint
         b2DestroyJoint(id);
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_IsValid")]
-    private static extern byte b2Joint_IsValid(JointId jointId);
-
     /// <summary>
     /// Checks if this joint is valid
     /// </summary>
     /// <returns>true if this joint is valid</returns>
     /// <remarks>Provides validation for up to 64K allocations</remarks>
-    public bool Valid => b2Joint_IsValid(id) != 0;
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetType")]
-    private static extern JointType b2Joint_GetType(JointId jointId);
+    public unsafe bool Valid => b2Joint_IsValid(id) != 0;
 
     /// <summary>
     /// Gets the joint type
     /// </summary>
     /// <returns>The joint type</returns>
-    public JointType Type => Valid ? b2Joint_GetType(id) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
-    private static extern Body b2Joint_GetBodyA(JointId jointId);
+    public unsafe JointType Type => Valid ? b2Joint_GetType(id) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets body A on this joint
     /// </summary>
     /// <returns>The body A on this joint</returns>
-    public Body BodyA => Valid ? b2Joint_GetBodyA(id) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
-    private static extern Body b2Joint_GetBodyB(JointId jointId);
+    public unsafe Body BodyA => Valid ? b2Joint_GetBodyA(id) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets body B on this joint
     /// </summary>
     /// <returns>The body B on this joint</returns>
-    public Body BodyB => Valid ? b2Joint_GetBodyB(id) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
-    private static extern WorldId b2Joint_GetWorld(JointId jointId);
+    public unsafe Body BodyB => Valid ? b2Joint_GetBodyB(id) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets the world that owns this joint
     /// </summary>
-    public World World => Valid ? World.GetWorld(b2Joint_GetWorld(id)) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorA")]
-    private static extern Vec2 b2Joint_GetLocalAnchorA(JointId jointId);
+    public unsafe World World => Valid ? World.GetWorld(b2Joint_GetWorld(id)) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets the local anchor on body A
     /// </summary>
     /// <returns>The local anchor on body A</returns>
-    public Vec2 LocalAnchorA => Valid ? b2Joint_GetLocalAnchorA(id) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAnchorB")]
-    private static extern Vec2 b2Joint_GetLocalAnchorB(JointId jointId);
+    public unsafe Vec2 LocalAnchorA => Valid ? b2Joint_GetLocalAnchorA(id) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets the local anchor on body B
     /// </summary>
     /// <returns>The local anchor on body B</returns>
-    public Vec2 LocalAnchorB => Valid ? b2Joint_GetLocalAnchorB(id) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetCollideConnected")]
-    private static extern void b2Joint_SetCollideConnected(JointId jointId, byte shouldCollide);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetCollideConnected")]
-    private static extern byte b2Joint_GetCollideConnected(JointId jointId);
+    public unsafe Vec2 LocalAnchorB => Valid ? b2Joint_GetLocalAnchorB(id) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
     /// </summary>
-    public bool CollideConnected
+    public unsafe bool CollideConnected
     {
         get => Valid ? b2Joint_GetCollideConnected(id) != 0 : throw new InvalidOperationException("Joint is not valid");
         set
@@ -143,16 +113,10 @@ public class Joint
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetUserData")]
-    private static extern void b2Joint_SetUserData(JointId jointId, nint userData);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetUserData")]
-    private static extern nint b2Joint_GetUserData(JointId jointId);
-
     /// <summary>
     /// The user data object for this joint.
     /// </summary>
-    public object? UserData
+    public unsafe object? UserData
     {
         get => Valid ? GetObjectAtPointer(b2Joint_GetUserData, id) : throw new InvalidOperationException("Joint is not valid");
         set
@@ -163,31 +127,22 @@ public class Joint
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_WakeBodies")]
-    private static extern void b2Joint_WakeBodies(JointId jointId);
-
     /// <summary>
     /// Wakes the bodies connected to this joint
     /// </summary>
-    public void WakeBodies() => b2Joint_WakeBodies(id);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintForce")]
-    private static extern Vec2 b2Joint_GetConstraintForce(JointId jointId);
+    public unsafe void WakeBodies() => b2Joint_WakeBodies(id);
 
     /// <summary>
     /// Gets the current constraint force for this joint
     /// </summary>
     /// <returns>The current constraint force for this joint</returns>
     /// <remarks>Usually in Newtons</remarks>
-    public Vec2 ConstraintForce => Valid ? b2Joint_GetConstraintForce(id) : throw new InvalidOperationException("Joint is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTorque")]
-    private static extern float b2Joint_GetConstraintTorque(JointId jointId);
+    public unsafe Vec2 ConstraintForce => Valid ? b2Joint_GetConstraintForce(id) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets the current constraint torque for this joint
     /// </summary>
     /// <returns>The current constraint torque for this joint</returns>
     /// <remarks>Usually in Newton * meters</remarks>
-    public float ConstraintTorque => Valid ? b2Joint_GetConstraintTorque(id) : throw new InvalidOperationException("Joint is not valid");
+    public unsafe float ConstraintTorque => Valid ? b2Joint_GetConstraintTorque(id) : throw new InvalidOperationException("Joint is not valid");
 }

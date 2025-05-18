@@ -10,6 +10,20 @@ namespace Box2D;
 [PublicAPI]
 public struct RayCastInput
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<in RayCastInput, byte> b2IsValidRay;
+
+    static unsafe RayCastInput()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2IsValidRay", out var ptr);
+        b2IsValidRay = (delegate* unmanaged[Cdecl]<in RayCastInput, byte>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
+    private static extern byte b2IsValidRay(in RayCastInput input);
+#endif
+
     /// <summary>
     /// Start point of the ray cast
     /// </summary>
@@ -24,17 +38,11 @@ public struct RayCastInput
     /// The maximum fraction of the translation to consider, typically 1
     /// </summary>
     public float MaxFraction;
-
-    /// <summary>
-    /// Validate ray cast input data (NaN, etc)
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2IsValidRay")]
-    private static extern byte IsValidRay(in RayCastInput input);
-
+    
     /// <summary>
     /// Validate this ray cast input data (NaN, etc)
     /// </summary>
-    public bool Valid => IsValidRay(this) != 0;
+    public unsafe bool Valid => b2IsValidRay(this) != 0;
     
     /// <summary>
     /// Constructs a new RayCastInput object with the given parameters.

@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 struct MotorJointDefInternal
 {
+    #if NET5_0_OR_GREATER
+    private static unsafe delegate* unmanaged[Cdecl]<MotorJointDefInternal> b2DefaultMotorJointDef;
+
+    static unsafe MotorJointDefInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultMotorJointDef", out var ptr);
+        b2DefaultMotorJointDef = (delegate* unmanaged[Cdecl]<MotorJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
+    private static extern MotorJointDefInternal b2DefaultMotorJointDef();
+#endif
+    
     /// <summary>
     /// The first attached body
     /// </summary>
@@ -55,14 +69,11 @@ struct MotorJointDefInternal
     /// Used internally to detect a valid definition. DO NOT SET.
     /// </summary>
     internal readonly int internalValue;
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMotorJointDef")]
-    private static extern MotorJointDefInternal GetDefault();
     
     /// <summary>
     /// The default motor joint definition.
     /// </summary>
-    private static MotorJointDefInternal Default => GetDefault();
+    private static unsafe MotorJointDefInternal Default => b2DefaultMotorJointDef();
     
     /// <summary>
     /// Creates a motor joint definition with the default values.
