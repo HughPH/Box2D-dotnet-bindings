@@ -70,8 +70,6 @@
         <!-- OSX ARM64 DYLIB -->
         <None Include="native/osx-arm64/libbox2d.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native/" />
         
-        <!-- XMLDoc -->
-<!--        <None Include="bin/$(Configuration)/netstandard2.1/Box2DBindings.xml" Pack="true" PackagePath="lib/netstandard2.1/" />-->
     </ItemGroup>
 
     <ItemGroup>
