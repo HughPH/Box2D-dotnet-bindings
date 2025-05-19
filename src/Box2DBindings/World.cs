@@ -81,19 +81,37 @@ public sealed partial class World
 
         id = b2CreateWorld(def._internal);
         worlds.TryAdd(id, this);
-        
+
         if (bodyMoveTaskCallbackPointer == 0)
-            bodyMoveTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)BodyMoveTaskCallback);
+        {
+            bodyMoveTaskCallback = BodyMoveTaskCallback;
+            bodyMoveTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(bodyMoveTaskCallback);
+        }
         if (sensorBeginTouchTaskCallbackPointer == 0)
-            sensorBeginTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorBeginTouchTaskCallback);
+        {
+            sensorBeginTouchTaskCallback = SensorBeginTouchTaskCallback;
+            sensorBeginTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(sensorBeginTouchTaskCallback);
+        }
         if (sensorEndTouchTaskCallbackPointer == 0)
-            sensorEndTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)SensorEndTouchTaskCallback);
+        {
+            sensorEndTouchTaskCallback = SensorEndTouchTaskCallback;
+            sensorEndTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(sensorEndTouchTaskCallback);
+        }
         if (contactBeginTouchTaskCallbackPointer == 0)
-            contactBeginTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactBeginTouchTaskCallback);
+        {
+            contactBeginTouchTaskCallback = ContactBeginTouchTaskCallback;
+            contactBeginTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(contactBeginTouchTaskCallback);
+        }
         if (contactEndTouchTaskCallbackPointer == 0)
-            contactEndTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactEndTouchTaskCallback);
+        {
+            contactEndTouchTaskCallback = ContactEndTouchTaskCallback;
+            contactEndTouchTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(contactEndTouchTaskCallback);
+        }
         if (contactHitTaskCallbackPointer == 0)
-            contactHitTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate((TaskCallback)ContactHitTaskCallback);
+        {
+            contactHitTaskCallback = ContactHitTaskCallback;
+            contactHitTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(contactHitTaskCallback);
+        }
     }
     
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
@@ -156,14 +174,20 @@ public sealed partial class World
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
-
-    private nint bodyMoveTaskCallbackPointer;
-    private nint sensorBeginTouchTaskCallbackPointer;
-    private nint sensorEndTouchTaskCallbackPointer;
-    private nint contactBeginTouchTaskCallbackPointer;
-    private nint contactEndTouchTaskCallbackPointer;
-    private nint contactHitTaskCallbackPointer;
     
+    private readonly TaskCallback bodyMoveTaskCallback; // root the task callback to avoid GC
+    private readonly nint bodyMoveTaskCallbackPointer;
+    private readonly TaskCallback sensorBeginTouchTaskCallback;
+    private readonly nint sensorBeginTouchTaskCallbackPointer;
+    private readonly TaskCallback sensorEndTouchTaskCallback;
+    private readonly nint sensorEndTouchTaskCallbackPointer;
+    private readonly TaskCallback contactBeginTouchTaskCallback;
+    private readonly nint contactBeginTouchTaskCallbackPointer;
+    private readonly TaskCallback contactEndTouchTaskCallback;
+    private readonly nint contactEndTouchTaskCallbackPointer;
+    private readonly TaskCallback contactHitTaskCallback;
+    private readonly nint contactHitTaskCallbackPointer;
+
     /// <summary>
     /// Simulate a world for one time step. This performs collision detection, integration, and constraint solution.
     /// </summary>
