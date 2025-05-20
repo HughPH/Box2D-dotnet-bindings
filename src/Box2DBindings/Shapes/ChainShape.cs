@@ -155,9 +155,9 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
     public override int GetHashCode() =>
         HashCode.Combine(index1, world0, generation);
     
-    public IEqualityComparer<ChainShape> DefaultEqualityComparer => ChainShapeComparer.Instance;
-    
-    public IComparer<ChainShape> DefaultComparer => ChainShapeComparer.Instance;
+    public static IEqualityComparer<ChainShape> DefaultEqualityComparer { get; } = ChainShapeComparer.Instance;
+
+    public static IComparer<ChainShape> DefaultComparer { get; } = ChainShapeComparer.Instance;
 
     public int CompareTo(ChainShape other)
     {
