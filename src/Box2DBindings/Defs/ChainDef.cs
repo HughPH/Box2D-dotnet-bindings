@@ -31,15 +31,26 @@ public sealed class ChainDef
     /// Creates a chain definition with the default values.
     /// </summary>
     public ChainDef()
-    {
-    }
-    
+    { }
+
     /// <summary>
     /// Creates a chain definition with the supplied points
     /// </summary>
-    public ChainDef(ReadOnlySpan<Vec2> points)
+    /// <param name="points">The points to create the chain from</param>
+    /// <param name="autoGenerateGhostVertices">If true, additional first and last points will be generated automatically. Has no effect when IsLoop is true.</param>
+    public unsafe ChainDef(ReadOnlySpan<Vec2> points, bool autoGenerateGhostVertices = false)
     {
-        Points = points;
+        if (autoGenerateGhostVertices && !IsLoop)
+        {
+            var pointsLength = points.Length + 2;
+            var newPoints = stackalloc Vec2[pointsLength];
+            newPoints[0] = points[0] + (0.5f * (points[1] - points[0]));
+            for (int i = 0; i < points.Length; i++)
+                newPoints[i + 1] = points[i];
+            newPoints[pointsLength - 1] = points[pointsLength - 1] + (0.5f * (points[pointsLength - 1] - points[pointsLength - 2]));
+        }
+        else
+            Points = points;
     }
 
     /// <summary>
@@ -51,7 +62,7 @@ public sealed class ChainDef
         if ((nint)_internal.Points != 0)
         {
             Marshal.FreeHGlobal((nint)_internal.Points);
-            _internal.Points =(Vec2*)0; 
+            _internal.Points = (Vec2*)0;
             _internal.Count = 0;
         }
         if ((nint)_internal.Materials != 0 && materialsAllocated)
@@ -101,7 +112,7 @@ public sealed class ChainDef
     }
 
     private bool materialsAllocated;
-    
+
     /// <summary>
     /// Surface materials for each segment. These are cloned.
     /// </summary>
@@ -131,7 +142,7 @@ public sealed class ChainDef
             }
         }
     }
-    
+
     /// <summary>
     /// Contact filtering data.
     /// </summary>
@@ -145,11 +156,11 @@ public sealed class ChainDef
         get => _internal.IsLoop != 0;
         set => _internal.IsLoop = value ? (byte)1 : (byte)0;
     }
-    
+
     /// <summary>
     /// Enable sensors to detect this chain. False by default.
     /// </summary>
-    public bool EnableSensorEvents 
+    public bool EnableSensorEvents
     {
         get => _internal.EnableSensorEvents != 0;
         set => _internal.EnableSensorEvents = value ? (byte)1 : (byte)0;
