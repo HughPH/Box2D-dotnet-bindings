@@ -31,7 +31,7 @@
             <Hour>$([System.DateTime]::UtcNow.ToString("HH"))</Hour>
             <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
 
-            <Version Condition="'$(Version)' == ''">$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
+            <Version Condition="'$(Version)' == ''">$(Year).$(Month).$(Day).$(Hour)$(Minute)-donotuse</Version>
             <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(Version)</AssemblyVersion>
         </PropertyGroup>
     </Target>
