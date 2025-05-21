@@ -21,18 +21,20 @@
         <LangVersion>preview</LangVersion>
 
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-        <Year>$([System.DateTime]::UtcNow.ToString("yyyy"))</Year>
-        <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
-        <Day>$([System.DateTime]::UtcNow.ToString("dd"))</Day>
-        <Hour>$([System.DateTime]::UtcNow.ToString("HH"))</Hour>
-        <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
-        
-        <Version>$(Year).$(Month).$(Day).$(Hour)$(Minute)-threading-alpha-0</Version>
-        <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
-        <Copyright>Copyright © 2025 Hugh Phoenix-Hulme</Copyright>
-        <PackageProjectUrl>https://github.com/HughPH/Box2D-dotnet-bindings/</PackageProjectUrl>
     </PropertyGroup>
+    
+    <Target Name="SetVersionDefaults" BeforeTargets="PrepareForBuild">
+        <PropertyGroup>
+            <Year>$([System.DateTime]::UtcNow.ToString("yyyy"))</Year>
+            <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
+            <Day>$([System.DateTime]::UtcNow.ToString("dd"))</Day>
+            <Hour>$([System.DateTime]::UtcNow.ToString("HH"))</Hour>
+            <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
+
+            <Version Condition="'$(Version)' == ''">$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
+            <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(Version)</AssemblyVersion>
+        </PropertyGroup>
+    </Target>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugType>none</DebugType>
