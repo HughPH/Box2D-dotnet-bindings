@@ -329,17 +329,12 @@ jobs:
                     path: src/Box2DBindings/native
                     pattern: "*"
 
-            -   name: "Build"
-                run: |
-                    dotnet build src/Box2DBindings \
-                      -c Release \
-                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
-                      -p:PackageVersion=${{ needs.detect-tag.outputs.pkg_ver }} \
-            
             -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
-                      -c Release
+                      -c Release \
+                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+                      -p:PackageVersion=${{ needs.detect-tag.outputs.pkg_ver }} \
 
             -   name: "Push to NuGet"
                 if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}

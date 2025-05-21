@@ -33,7 +33,7 @@
 
             <Version Condition="'$(Version)' == ''">$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
             <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(Version)</AssemblyVersion>
-            <PackageVersion Condition="'$(PackageVersion)' == ''">$(Version)-dnonotuse</PackageVersion>
+            <PackageVersion Condition="'$(PackageVersion)' == ''">$(Version)-donotuse</PackageVersion>
         </PropertyGroup>
     </Target>
 
