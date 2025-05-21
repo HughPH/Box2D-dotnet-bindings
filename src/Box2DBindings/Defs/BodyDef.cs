@@ -16,6 +16,7 @@ public sealed class BodyDef
     internal BodyDefInternal _internal = new();
 
     //! \internal
+    /// <summary>Finalizes unmanaged resources.</summary>
     ~BodyDef()
     {
         if (_internal.Name != 0)
