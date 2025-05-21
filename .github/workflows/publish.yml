@@ -113,46 +113,6 @@ jobs:
                       exit 1
                     fi
 
-            -   name: objdump for sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi                   
-
-            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
-                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      strip artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dylib ]]; then
-                      strip -x artefact/libbox2d.dylib
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      strip artefact/libbox2d.dll
-                    fi
-
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx artefact/libbox2d.dll
-                    fi
-
-            -   name: extra objdump for extra sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi
-
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
                 with:
@@ -265,46 +225,6 @@ jobs:
                       echo "Artefact directory is empty, aborting."
                       tree box2d-build/bin
                       exit 1
-                    fi
-
-            -   name: objdump for sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi                   
-
-            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
-                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      strip artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dylib ]]; then
-                      strip -x artefact/libbox2d.dylib
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      strip artefact/libbox2d.dll
-                    fi
-
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx artefact/libbox2d.dll
-                    fi
-
-            -   name: extra objdump for extra sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
                     fi
 
             -   name: Upload artefacts
