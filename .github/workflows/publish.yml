@@ -263,7 +263,7 @@ jobs:
                     --source "$NUGET_FEED"
 
     publish-docs:
-        name: Publish NuGet package
+        name: Publish documentation
         needs: [ run-tests ]
         if: github.ref == 'refs/heads/main'
         runs-on: [self-hosted, Linux, X64]
