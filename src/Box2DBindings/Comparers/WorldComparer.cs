@@ -12,10 +12,10 @@ sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
             return true;
         if (x is null || y is null)
             return false;
-        return x.id.Equals(y.id);
+        return EqualityComparer<WorldId>.Default.Equals(x.id, y.id);
     }
         
-    public int GetHashCode(World obj) => obj.GetHashCode();
+    public int GetHashCode(World obj) => obj.id.GetHashCode();
         
     public int Compare(World? x, World? y)
     {
@@ -25,7 +25,7 @@ sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
             return -1;
         if (y is null)
             return 1;
-        return Comparer<int>.Default.Compare(x.id, y.id);
+        return WorldId.DefaultComparer.Compare(x.id, y.id);
     }
 }
     
@@ -36,6 +36,13 @@ sealed class WorldIdComparer : IEqualityComparer<WorldId>, IComparer<WorldId>
     public bool Equals(WorldId x, WorldId y) => x.Equals(y);
         
     public int GetHashCode(WorldId obj) => obj.GetHashCode();
-        
-    public int Compare(WorldId x, WorldId y) => x.Equals(y) ? 0 : x.GetHashCode() - y.GetHashCode();
+
+    public int Compare(WorldId x, WorldId y)
+    {
+        if (x.Equals(y))
+            return 0;
+        if (x.index1 == y.index1)
+            return x.generation - y.generation;
+        return x.index1 - y.index1;
+    }
 }
