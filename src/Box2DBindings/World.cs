@@ -175,17 +175,17 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
     
-    private readonly TaskCallback bodyMoveTaskCallback; // root the task callback to avoid GC
+    private readonly TaskCallback bodyMoveTaskCallback = null!; // root the task callback to avoid GC
     private readonly nint bodyMoveTaskCallbackPointer;
-    private readonly TaskCallback sensorBeginTouchTaskCallback;
+    private readonly TaskCallback sensorBeginTouchTaskCallback = null!;
     private readonly nint sensorBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback sensorEndTouchTaskCallback;
+    private readonly TaskCallback sensorEndTouchTaskCallback = null!;
     private readonly nint sensorEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactBeginTouchTaskCallback;
+    private readonly TaskCallback contactBeginTouchTaskCallback = null!;
     private readonly nint contactBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback contactEndTouchTaskCallback;
+    private readonly TaskCallback contactEndTouchTaskCallback = null!;
     private readonly nint contactEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactHitTaskCallback;
+    private readonly TaskCallback contactHitTaskCallback = null!;
     private readonly nint contactHitTaskCallbackPointer;
 
     /// <summary>

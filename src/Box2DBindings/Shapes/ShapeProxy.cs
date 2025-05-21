@@ -55,8 +55,6 @@ public unsafe struct ShapeProxy
             throw new ArgumentException($"Cannot set more than {MAX_POLYGON_VERTICES} points");
         if (points.Length < 1)
             throw new ArgumentOutOfRangeException(nameof(points), "Must have at least 1 point");
-        if (points == null)
-            throw new ArgumentNullException(nameof(points));
         
         Points = points;
         Radius = radius;

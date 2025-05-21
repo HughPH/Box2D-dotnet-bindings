@@ -32,7 +32,6 @@ namespace UnitTests
             };
             var body = world.CreateBody(bodyDef);
 
-            Assert.NotNull(body);
             Assert.True(body.Valid);
             Assert.Contains(body, world.Bodies);
         }
@@ -127,8 +126,6 @@ namespace UnitTests
                 Type = BodyType.Dynamic
             };
             var body = world.CreateBody(bodyDef);
-
-            Assert.NotNull(body);
 
             body.Destroy();
 
