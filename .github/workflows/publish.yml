@@ -54,7 +54,7 @@ jobs:
         runs-on: ${{ matrix.runs_on }}
         
         concurrency:
-            group: box2d-${{ matrix.target }}
+            group: box2d-${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
             cancel-in-progress: false
 
         steps:
@@ -67,7 +67,7 @@ jobs:
                     path: box2d-build
                     key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
                     restore-keys: |
-                        ${{ matrix.target }}-
+                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
 
             -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
                 if: steps.cache.outputs.cache-hit != 'true'
@@ -202,7 +202,7 @@ jobs:
         runs-on: ${{ matrix.runs_on }}
         
         concurrency:
-            group: box2d-${{ matrix.target }}
+            group: box2d-${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
             cancel-in-progress: false
 
         steps:
@@ -215,7 +215,7 @@ jobs:
                     path: box2d-build
                     key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
                     restore-keys: |
-                        ${{ matrix.target }}-
+                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
 
             -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
                 if: steps.cache.outputs.cache-hit != 'true'
