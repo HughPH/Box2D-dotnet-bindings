@@ -128,7 +128,8 @@ jobs:
     build-box2d-main:
         name: Build / retrieve Box2D native libs (Dist)
         needs: detect-tag
-        if: github.ref == 'refs/heads/main'
+        if: ${{ github.event_name != 'pull_request' &&
+            !startsWith(github.ref_name, 'codex/') }}
         strategy:
             matrix:
                 include:
@@ -183,7 +184,7 @@ jobs:
             -   id: purge
                 run: |
                     rm -rf ./* 
-            
+
             -   id: cache
                 name: Restore native build cache
                 uses: actions/cache@v4
@@ -249,7 +250,7 @@ jobs:
             -   id: purge
                 run: |
                     rm -rf ./* 
-            
+
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
@@ -274,6 +275,7 @@ jobs:
                     fi
                     cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
+                    cp "$lib" .
                     
                     sync
 
@@ -318,7 +320,7 @@ jobs:
             -   id: purge
                 run: |
                     rm -rf ./*
-                    
+
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
@@ -332,13 +334,13 @@ jobs:
                     dotnet pack src/Box2DBindings \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
-#
+            #
             -   name: "Push to NuGet"
                 if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
                 env:
                     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
                 run: |
-                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-                    --api-key "$NUGET_API_KEY" \
-                    --source "$NUGET_FEED"
+                    dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+                      --api-key "$NUGET_API_KEY" \
+                      --source "$NUGET_FEED"
 
