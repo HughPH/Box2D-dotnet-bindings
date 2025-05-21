@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Box2D
@@ -62,6 +64,12 @@ namespace Box2D
 
         static unsafe Core()
         {
+#if DEBUG
+            if (!File.Exists(libraryName))
+            {
+                throw new FileNotFoundException($"The library {libraryName} was not found in current directory: {Environment.CurrentDirectory}");
+            }
+#endif
             var lib = NativeLibrary.Load(libraryName);
 
             NativeLibrary.TryGetExport(lib, "b2GetVersion", out var p0);
