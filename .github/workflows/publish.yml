@@ -66,8 +66,11 @@ jobs:
             cancel-in-progress: false
 
         steps:
-            -   uses: actions/checkout@v4
-
+            -   id: purge
+                name: Move previous run to /dev/null for safekeeping
+                run: |
+                    rm -rf ./* 
+            
             -   id: cache
                 name: Restore native build cache
                 uses: actions/cache@v4
