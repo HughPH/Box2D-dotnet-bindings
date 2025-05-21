@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 unsafe struct ChainDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static delegate* unmanaged[Cdecl]<ChainDefInternal> b2DefaultChainDef;
+
+    static ChainDefInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultChainDef", out var ptr);
+        b2DefaultChainDef = (delegate* unmanaged[Cdecl]<ChainDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
+    private static extern ChainDefInternal b2DefaultChainDef();
+#endif
+    
     internal nint UserData;
 
     internal Vec2* Points;
@@ -24,11 +38,8 @@ unsafe struct ChainDefInternal
     
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly int internalValue;
- 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultChainDef")]
-    private static extern ChainDefInternal GetDefault();
     
-    private static ChainDefInternal Default => GetDefault();
+    private static ChainDefInternal Default => b2DefaultChainDef();
     
     public ChainDefInternal()
     {

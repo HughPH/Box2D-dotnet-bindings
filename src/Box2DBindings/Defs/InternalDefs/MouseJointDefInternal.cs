@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 struct MouseJointDefInternal
 {
+    #if NET5_0_OR_GREATER
+    private static unsafe delegate* unmanaged[Cdecl]<MouseJointDefInternal> b2DefaultMouseJointDef;
+
+    static unsafe MouseJointDefInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultMouseJointDef", out var ptr);
+        b2DefaultMouseJointDef = (delegate* unmanaged[Cdecl]<MouseJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
+    private static extern MouseJointDefInternal b2DefaultMouseJointDef();
+#endif
+    
     internal Body BodyA;
     
     internal Body BodyB;
@@ -25,10 +39,7 @@ struct MouseJointDefInternal
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultMouseJointDef")]
-    private static extern MouseJointDefInternal GetDefault();
-    
-    private static MouseJointDefInternal Default => GetDefault();
+    private static unsafe MouseJointDefInternal Default => b2DefaultMouseJointDef();
     
     public MouseJointDefInternal()
     {

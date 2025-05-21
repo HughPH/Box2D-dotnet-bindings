@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 struct WorldDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<WorldDefInternal> b2DefaultWorldDef;
+
+    static unsafe WorldDefInternal()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultWorldDef", out var ptr);
+        b2DefaultWorldDef = (delegate* unmanaged[Cdecl]<WorldDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWorldDef")]
+    private static extern WorldDefInternal b2DefaultWorldDef();
+#endif
+
     [FieldOffset(0)]
     internal Vec2 Gravity;
 
@@ -63,10 +77,7 @@ struct WorldDefInternal
     [FieldOffset(96)]
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWorldDef")]
-    private static extern WorldDefInternal GetDefault();
-    
-    private static WorldDefInternal Default => GetDefault();
+    private static unsafe WorldDefInternal Default => b2DefaultWorldDef();
     
     public WorldDefInternal()
     {

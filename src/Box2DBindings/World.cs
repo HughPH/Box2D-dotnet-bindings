@@ -46,9 +46,6 @@ public sealed partial class World
 
     internal readonly ConcurrentHashSet<Body> bodies = new();
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWorld")]
-    private static extern WorldId b2CreateWorld(in WorldDefInternal def);
-
     private static bool initialized;
 
     /// <summary>
@@ -65,7 +62,7 @@ public sealed partial class World
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You may create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
-    public World(WorldDef def)
+    public unsafe World(WorldDef def)
     {
         if (!initialized)
         {
@@ -114,13 +111,10 @@ public sealed partial class World
         }
     }
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyWorld")]
-    private static extern void b2DestroyWorld(WorldId worldId);
-
     /// <summary>
     /// Destroy this world
     /// </summary>
-    public void Destroy()
+    public unsafe void Destroy()
     {
         if (!Valid) return;
 
@@ -138,15 +132,12 @@ public sealed partial class World
 
         worlds.TryRemove(id, out _);
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsValid")]
-    private static extern byte b2World_IsValid(WorldId worldId);
-
+    
     /// <summary>
     /// World id validation. Provides validation for up to 64K allocations.
     /// </summary>
     /// <returns>True if the world id is valid</returns>
-    public bool Valid => b2World_IsValid(id) != 0;
+    public unsafe bool Valid => b2World_IsValid(id) != 0;
 
     /// <summary>
     /// A lock object for the world. This is used to synchronize access to the world from multiple threads.
@@ -172,22 +163,19 @@ public sealed partial class World
     public object WorldLock = new();
 #endif
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
-    private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
-    
-    private readonly TaskCallback bodyMoveTaskCallback = null!; // root the task callback to avoid GC
+    private readonly TaskCallback bodyMoveTaskCallback; // root the task callback to avoid GC
     private readonly nint bodyMoveTaskCallbackPointer;
-    private readonly TaskCallback sensorBeginTouchTaskCallback = null!;
+    private readonly TaskCallback sensorBeginTouchTaskCallback;
     private readonly nint sensorBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback sensorEndTouchTaskCallback = null!;
+    private readonly TaskCallback sensorEndTouchTaskCallback;
     private readonly nint sensorEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactBeginTouchTaskCallback = null!;
+    private readonly TaskCallback contactBeginTouchTaskCallback;
     private readonly nint contactBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback contactEndTouchTaskCallback = null!;
+    private readonly TaskCallback contactEndTouchTaskCallback;
     private readonly nint contactEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactHitTaskCallback = null!;
+    private readonly TaskCallback contactHitTaskCallback;
     private readonly nint contactHitTaskCallbackPointer;
-
+    
     /// <summary>
     /// Simulate a world for one time step. This performs collision detection, integration, and constraint solution.
     /// </summary>
@@ -284,12 +272,7 @@ public sealed partial class World
         foreach (nint t in tasks)
             if (t != 0) Parallelism.DefaultFinish(t, 0);
     }
-
-
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Draw")]
-    private static extern void b2World_Draw(WorldId worldId, ref DebugDrawInternal draw);
-
+    
     /// <summary>
     /// Call this to draw shapes and other debug draw data
     /// </summary>
@@ -299,43 +282,28 @@ public sealed partial class World
         b2World_Draw(id, ref draw.Internal);
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetBodyEvents")]
-    private static extern BodyEvents b2World_GetBodyEvents(WorldId worldId);
-
     /// <summary>
     /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The body events</returns>
-    public BodyEvents BodyEvents => Valid ? b2World_GetBodyEvents(id) : throw new InvalidOperationException("World is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetSensorEvents")]
-    private static extern SensorEvents b2World_GetSensorEvents(WorldId worldId);
+    public unsafe BodyEvents BodyEvents => Valid ? b2World_GetBodyEvents(id) : throw new InvalidOperationException("World is not valid");
 
     /// <summary>
     /// Get sensor events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The sensor events</returns>
-    public SensorEvents SensorEvents => Valid ? b2World_GetSensorEvents(id) : throw new InvalidOperationException("World is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetContactEvents")]
-    private static extern ContactEvents b2World_GetContactEvents(WorldId worldId);
+    public unsafe SensorEvents SensorEvents => Valid ? b2World_GetSensorEvents(id) : throw new InvalidOperationException("World is not valid");
 
     /// <summary>
     /// Get the contact events for the current time step. The event data is transient. Do not store a reference to this data.
     /// </summary>
     /// <returns>The contact events</returns>
-    public ContactEvents ContactEvents => Valid ? b2World_GetContactEvents(id) : throw new InvalidOperationException("World is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableSleeping")]
-    private static extern void b2World_EnableSleeping(WorldId worldId, byte flag);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsSleepingEnabled")]
-    private static extern byte b2World_IsSleepingEnabled(WorldId worldId);
+    public unsafe ContactEvents ContactEvents => Valid ? b2World_GetContactEvents(id) : throw new InvalidOperationException("World is not valid");
 
     /// <summary>
     /// Gets or sets the sleeping enabled status of the world. If your application does not need sleeping, you can gain some performance by disabling sleep completely at the world level.
     /// </summary>
-    public bool SleepingEnabled
+    public unsafe bool SleepingEnabled
     {
         get => Valid ? b2World_IsSleepingEnabled(id) != 0 : throw new InvalidOperationException("World is not valid");
         set
@@ -346,17 +314,11 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableContinuous")]
-    private static extern void b2World_EnableContinuous(WorldId worldId, byte flag);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsContinuousEnabled")]
-    private static extern byte b2World_IsContinuousEnabled(WorldId worldId);
-
     /// <summary>
     /// Gets or sets the continuous collision enabled state of the world.
     /// </summary>
     /// <remarks>Generally you should keep continuous collision enabled to prevent fast moving objects from going through static objects. The performance gain from disabling continuous collision is minor</remarks>
-    public bool ContinuousEnabled
+    public unsafe bool ContinuousEnabled
     {
         get => Valid ? b2World_IsContinuousEnabled(id) != 0 : throw new InvalidOperationException("World is not valid");
         set
@@ -367,16 +329,10 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionThreshold")]
-    private static extern void b2World_SetRestitutionThreshold(WorldId worldId, float value);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetRestitutionThreshold")]
-    private static extern float b2World_GetRestitutionThreshold(WorldId worldId);
-
     /// <summary>
     /// The restitution speed threshold.
     /// </summary>
-    public float RestitutionThreshold
+    public unsafe float RestitutionThreshold
     {
         get => Valid ? b2World_GetRestitutionThreshold(id) : throw new InvalidOperationException("World is not valid");
         set
@@ -387,16 +343,10 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetHitEventThreshold")]
-    private static extern void b2World_SetHitEventThreshold(WorldId worldId, float value);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetHitEventThreshold")]
-    private static extern float b2World_GetHitEventThreshold(WorldId worldId);
-
     /// <summary>
     /// The hit event threshold in meters per second.
     /// </summary>
-    public float HitEventThreshold
+    public unsafe float HitEventThreshold
     {
         get => Valid ? b2World_GetHitEventThreshold(id) : throw new InvalidOperationException("World is not valid");
         set
@@ -407,12 +357,9 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetCustomFilterCallback")]
-    private static extern void b2World_SetCustomFilterCallback(WorldId worldId, CustomFilterNintCallback fcn, nint context);
-
     internal static ConcurrentDictionary<WorldId, World> worlds = new(WorldId.DefaultEqualityComparer);
 
-    internal static World GetWorld(WorldId world)
+    internal static unsafe World GetWorld(WorldId world)
     {
         if (b2World_IsValid(world) == 0) throw new InvalidOperationException("World is not valid");
         if (!worlds.TryGetValue(world, out var w))
@@ -513,9 +460,6 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetPreSolveCallback")]
-    private static extern void b2World_SetPreSolveCallback(WorldId worldId, PreSolveNintCallback fcn, nint context);
-
     private static unsafe bool PreSolveCallbackThunk<TContext>(Shape shapeA, Shape shapeB, nint manifold, nint context) where TContext : class
     {
         var contextBuffer = (nint*)context;
@@ -609,16 +553,10 @@ public sealed partial class World
         b2World_SetPreSolveCallback(id, callback, context);
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetGravity")]
-    private static extern void b2World_SetGravity(WorldId worldId, Vec2 gravity);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetGravity")]
-    private static extern Vec2 b2World_GetGravity(WorldId worldId);
-
     /// <summary>
     /// The gravity vector
     /// </summary>
-    public Vec2 Gravity
+    public unsafe Vec2 Gravity
     {
         get => Valid ? b2World_GetGravity(id) : throw new InvalidOperationException("World is not valid");
         set
@@ -629,18 +567,12 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Explode")]
-    private static extern void b2World_Explode(WorldId worldId, in ExplosionDef explosionDef);
-
     /// <summary>
     /// Apply a radial explosion
     /// </summary>
     /// <param name="explosionDef">The explosion definition</param>
     /// <remarks>Explosions are modeled as a force, not as a collision event</remarks>
-    public void Explode(in ExplosionDef explosionDef) => b2World_Explode(id, explosionDef);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetContactTuning")]
-    private static extern void b2World_SetContactTuning(WorldId worldId, float hertz, float dampingRatio, float pushSpeed);
+    public unsafe void Explode(in ExplosionDef explosionDef) => b2World_Explode(id, explosionDef);
 
     /// <summary>
     /// Adjust contact tuning parameters
@@ -649,11 +581,8 @@ public sealed partial class World
     /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
     /// <param name="pushSpeed">The maximum contact constraint push out speed (meters per second)</param>
     /// <remarks><i>Note: Advanced feature</i></remarks>
-    public void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
+    public unsafe void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
         b2World_SetContactTuning(id, hertz, dampingRatio, pushSpeed);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetJointTuning")]
-    private static extern void b2World_SetJointTuning(WorldId worldId, float hertz, float dampingRatio);
 
     /// <summary>
     /// Adjust joint tuning parameters
@@ -661,18 +590,12 @@ public sealed partial class World
     /// <param name="hertz">The contact stiffness (cycles per second)</param>
     /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
     /// <remarks>Advanced feature</remarks>
-    public void SetJointTuning(float hertz, float dampingRatio) => b2World_SetJointTuning(id, hertz, dampingRatio);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetMaximumLinearSpeed")]
-    private static extern void b2World_SetMaximumLinearSpeed(WorldId worldId, float maximumLinearSpeed);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetMaximumLinearSpeed")]
-    private static extern float b2World_GetMaximumLinearSpeed(WorldId worldId);
+    public unsafe void SetJointTuning(float hertz, float dampingRatio) => b2World_SetJointTuning(id, hertz, dampingRatio);
 
     /// <summary>
     /// The maximum linear speed.
     /// </summary>
-    public float MaximumLinearSpeed
+    public unsafe float MaximumLinearSpeed
     {
         get => Valid ? b2World_GetMaximumLinearSpeed(id) : throw new InvalidOperationException("World is not valid");
         set
@@ -682,18 +605,11 @@ public sealed partial class World
             b2World_SetMaximumLinearSpeed(id, value);
         }
     }
-
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_EnableWarmStarting")]
-    private static extern void b2World_EnableWarmStarting(WorldId worldId, byte flag);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_IsWarmStartingEnabled")]
-    private static extern byte b2World_IsWarmStartingEnabled(WorldId worldId);
-
+    
     /// <summary>
     /// Enable/disable constraint warm starting. Advanced feature for testing. Disabling warm starting greatly reduces stability and provides no performance gain.
     /// </summary>
-    public bool WarmStartingEnabled
+    public unsafe bool WarmStartingEnabled
     {
         get => Valid ? b2World_IsWarmStartingEnabled(id) != 0 : throw new InvalidOperationException("World is not valid");
         set
@@ -704,43 +620,28 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetAwakeBodyCount")]
-    private static extern int b2World_GetAwakeBodyCount(WorldId worldId);
-
     /// <summary>
     /// Get the number of awake bodies.
     /// </summary>
     /// <returns>The number of awake bodies</returns>
-    public int AwakeBodyCount => Valid ? b2World_GetAwakeBodyCount(id) : throw new InvalidOperationException("World is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetProfile")]
-    private static extern Profile b2World_GetProfile(WorldId worldId);
+    public unsafe int AwakeBodyCount => Valid ? b2World_GetAwakeBodyCount(id) : throw new InvalidOperationException("World is not valid");
 
     /// <summary>
     /// Get the current world performance profile
     /// </summary>
     /// <returns>The world performance profile</returns>
-    public Profile Profile => Valid ? b2World_GetProfile(id) : throw new InvalidOperationException("World is not valid");
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetCounters")]
-    private static extern Counters b2World_GetCounters(WorldId worldId);
+    public unsafe Profile Profile => Valid ? b2World_GetProfile(id) : throw new InvalidOperationException("World is not valid");
 
     /// <summary>
     /// Get world counters and sizes
     /// </summary>
     /// <returns>The world counters and sizes</returns>
-    public Counters Counters => b2World_GetCounters(id);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetUserData")]
-    private static extern void b2World_SetUserData(WorldId worldId, nint userData);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_GetUserData")]
-    private static extern nint b2World_GetUserData(WorldId worldId);
+    public unsafe Counters Counters => b2World_GetCounters(id);
 
     /// <summary>
     /// The user data object for this world.
     /// </summary>
-    public object? UserData
+    public unsafe object? UserData
     {
         get => Valid ? GetObjectAtPointer(b2World_GetUserData, id) : throw new InvalidOperationException("World is not valid");
         set
@@ -751,44 +652,32 @@ public sealed partial class World
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetFrictionCallback")]
-    private static extern void b2World_SetFrictionCallback(WorldId worldId, FrictionCallback callback);
-
     /// <summary>
     /// Sets the friction callback.
     /// </summary>
     /// <param name="callback">The friction callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
-    public void SetFrictionCallback(FrictionCallback callback) => b2World_SetFrictionCallback(id, callback);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_SetRestitutionCallback")]
-    private static extern void b2World_SetRestitutionCallback(WorldId worldId, RestitutionCallback callback);
+    public unsafe void SetFrictionCallback(FrictionCallback callback) => b2World_SetFrictionCallback(id, callback);
 
     /// <summary>
     /// Sets the restitution callback.
     /// </summary>
     /// <param name="callback">The restitution callback</param>
     /// <remarks>Passing NULL resets to default</remarks>
-    public void SetRestitutionCallback(RestitutionCallback callback) => b2World_SetRestitutionCallback(id, callback);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_DumpMemoryStats")]
-    private static extern void b2World_DumpMemoryStats(WorldId worldId);
+    public unsafe void SetRestitutionCallback(RestitutionCallback callback) => b2World_SetRestitutionCallback(id, callback);
 
     /// <summary>
     /// Dumps memory stats to box2d_memory.txt
     /// </summary>
     /// <remarks>Memory stats are dumped to box2d_memory.txt</remarks>
-    public void DumpMemoryStats() => b2World_DumpMemoryStats(id);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
-    private static extern Body b2CreateBody(WorldId worldId, in BodyDefInternal def);
+    public unsafe void DumpMemoryStats() => b2World_DumpMemoryStats(id);
 
     /// <summary>
     /// Creates a rigid body given a definition.
     /// </summary>
     /// <param name="def">The body definition</param>
     /// <returns>The body</returns>
-    public Body CreateBody(BodyDef def)
+    public unsafe Body CreateBody(BodyDef def)
     {
         Body body = b2CreateBody(id, def._internal);
         if (!body.Valid)
@@ -797,38 +686,26 @@ public sealed partial class World
         return body;
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
-    private static extern JointId b2CreateDistanceJoint(WorldId worldId, in DistanceJointDefInternal def);
-
     /// <summary>
     /// Creates a distance joint
     /// </summary>
     /// <param name="def">The distance joint definition</param>
     /// <returns>The distance joint</returns>
-    public DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMotorJoint")]
-    private static extern JointId b2CreateMotorJoint(WorldId worldId, in MotorJointDefInternal def);
+    public unsafe DistanceJoint CreateJoint(DistanceJointDef def) => new(b2CreateDistanceJoint(id, def._internal));
 
     /// <summary>
     /// Creates a motor joint
     /// </summary>
     /// <param name="def">The motor joint definition</param>
     /// <returns>The motor joint</returns>
-    public MotorJoint CreateJoint(MotorJointDef def) => new(b2CreateMotorJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateMouseJoint")]
-    private static extern JointId b2CreateMouseJoint(WorldId worldId, in MouseJointDefInternal def);
+    public unsafe MotorJoint CreateJoint(MotorJointDef def) => new(b2CreateMotorJoint(id, def._internal));
 
     /// <summary>
     /// Creates a mouse joint
     /// </summary>
     /// <param name="def">The mouse joint definition</param>
     /// <returns>The mouse joint</returns>
-    public MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateFilterJoint")]
-    private static extern JointId b2CreateFilterJoint(WorldId worldId, in FilterJointDefInternal def);
+    public unsafe MouseJoint CreateJoint(MouseJointDef def) => new(b2CreateMouseJoint(id, def._internal));
 
     /// <summary>
     /// Creates a filter joint. See <see cref="FilterJointDef"/> for details.
@@ -836,47 +713,35 @@ public sealed partial class World
     /// <param name="def">The filter joint definition</param>
     /// <returns>The filter joint</returns>
     /// <remarks>The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also keeps the two bodies in the same simulation island.</remarks>
-    public Joint CreateJoint(FilterJointDef def) => new(b2CreateFilterJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreatePrismaticJoint")]
-    private static extern JointId b2CreatePrismaticJoint(WorldId worldId, in PrismaticJointDefInternal def);
+    public unsafe Joint CreateJoint(FilterJointDef def) => new(b2CreateFilterJoint(id, def._internal));
 
     /// <summary>
     /// Creates a prismatic (slider) joint
     /// </summary>
     /// <param name="def">The prismatic joint definition</param>
     /// <returns>The prismatic joint</returns>
-    public PrismaticJoint CreateJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateRevoluteJoint")]
-    private static extern JointId b2CreateRevoluteJoint(WorldId worldId, in RevoluteJointDefInternal def);
+    public unsafe PrismaticJoint CreateJoint(PrismaticJointDef def) => new(b2CreatePrismaticJoint(id, def._internal));
 
     /// <summary>
     /// Creates a revolute joint
     /// </summary>
     /// <param name="def">The <see cref="RevoluteJointDef"/></param>
     /// <returns>The revolute joint</returns>
-    public RevoluteJoint CreateJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWeldJoint")]
-    private static extern JointId b2CreateWeldJoint(WorldId worldId, in WeldJointDefInternal def);
+    public unsafe RevoluteJoint CreateJoint(RevoluteJointDef def) => new(b2CreateRevoluteJoint(id, def._internal));
 
     /// <summary>
     /// Creates a weld joint
     /// </summary>
     /// <param name="def">The <see cref="WeldJointDef"/></param>
     /// <returns>The weld joint</returns>
-    public WeldJoint CreateJoint(WeldJointDef def) => new(b2CreateWeldJoint(id, def._internal));
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateWheelJoint")]
-    private static extern JointId b2CreateWheelJoint(WorldId worldId, in WheelJointDefInternal def);
+    public unsafe WeldJoint CreateJoint(WeldJointDef def) => new(b2CreateWeldJoint(id, def._internal));
 
     /// <summary>
     /// Creates a wheel joint
     /// </summary>
     /// <param name="def">The wheel joint definition</param>
     /// <returns>The wheel joint</returns>
-    public WheelJoint CreateJoint(WheelJointDef def) => new(b2CreateWheelJoint(id, def._internal));
+    public unsafe WheelJoint CreateJoint(WheelJointDef def) => new(b2CreateWheelJoint(id, def._internal));
 
     /// <summary>
     /// Returns a string representation of this world

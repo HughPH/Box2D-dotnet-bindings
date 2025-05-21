@@ -12,9 +12,19 @@ namespace Box2D;
 /// Core Box2D functions that don't fit into other categories.
 /// </summary>
 [PublicAPI]
-public static class Core
+public static partial class Core
 {
+    #if NET5_0_OR_GREATER
+    internal static string libraryName = "libbox2d." + Environment.OSVersion.Platform switch
+        {
+            PlatformID.Win32NT => "dll",
+            PlatformID.Unix => "so",
+            PlatformID.MacOSX => "dylib",
+            _ => ""
+        };
+    #else
     internal const string libraryName = "libbox2d";
+    #endif
 
     /// <summary>
     /// Multiply and subtract two vectors.
@@ -34,58 +44,12 @@ public static class Core
 
         return new(x, y);
     }
-    
-    /// <summary>
-    /// Get the current version of Box2D
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetVersion")]
-    public static extern Box2DVersion GetVersion();
-    
-    /// <summary>
-    /// Get the absolute number of system ticks. The value is platform specific.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetTicks")]
-    public static extern ulong GetTicks();
-    
-    /// <summary>
-    /// Get the milliseconds passed from an initial tick value.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMilliseconds")]
-    public static extern float GetMilliseconds(ulong ticks);
-    
-    /// <summary>
-    /// Get the milliseconds passed from an initial tick value. Resets the passed in
-    /// value to the current tick value.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetMillisecondsAndReset")]
-    public static extern float GetMillisecondsAndReset(ref ulong ticks);
-    
-    /// <summary>
-    /// Yield to be used in a busy loop.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Yield")]
-    public static extern void Yield();
-
-    /// <summary>
-    /// Simple djb2 hash function for determinism testing
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Hash")]
-    public static extern uint Hash(uint hash, byte[] data, int count);
-    
-    /// <summary>
-    /// Compute the distance between two line segments, clamping at the end points if needed.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SegmentDistance")]
-    public static extern SegmentDistanceResult SegmentDistance(in Vec2 p1, in Vec2 q1, in Vec2 p2, in Vec2 q2);
 
     /// <summary>
     /// Compute the distance between two line segments, clamping at the end points if needed.
     /// </summary>
-    public static SegmentDistanceResult SegmentDistance(in Segment segmentA, in Segment segmentB) =>
+    public static unsafe SegmentDistanceResult SegmentDistance(in Segment segmentA, in Segment segmentB) =>
         SegmentDistance(segmentA.Point1, segmentA.Point2, segmentB.Point1, segmentB.Point2);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeDistance")]
-    private static extern unsafe DistanceOutput ShapeDistance(in DistanceInput input, ref SimplexCache cache, Simplex* simplexes, int simplexCapacity);
     
     /// <summary>
     /// Compute the closest points between two shapes represented as point clouds.
@@ -94,20 +58,8 @@ public static class Core
     public static unsafe DistanceOutput ShapeDistance(in DistanceInput input, ref SimplexCache cache, ReadOnlySpan<Simplex> simplexes)
     {
         fixed (Simplex* simplexPtr = simplexes)
-            return ShapeDistance(input, ref cache, simplexPtr, simplexes.Length);
+            return b2ShapeDistance(input, ref cache, simplexPtr, simplexes.Length);
     }
-
-    /// <summary>
-    /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
-    /// </summary>
-    /// <remarks>
-    /// Initially touching shapes are treated as a miss.
-    /// </remarks>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCast")]
-    public static extern CastOutput ShapeCast(in ShapeCastPairInput input);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakeProxy")]
-    private static extern unsafe ShapeProxy MakeProxy(Vec2* points, int count, float radius);
     
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
@@ -115,7 +67,7 @@ public static class Core
     public static unsafe ShapeProxy MakeProxy(ReadOnlySpan<Vec2> vertices, float radius)
     {
         fixed (Vec2* p = vertices)
-            return MakeProxy(p, vertices.Length, radius);
+            return b2MakeProxy(p, vertices.Length, radius);
     }
     
     /// <summary>
@@ -130,7 +82,7 @@ public static class Core
     public static unsafe ShapeProxy MakeProxy(Vec2 vertex)
     {
         Vec2* vertices = &vertex;
-        return MakeProxy(vertices, 1, 0.0f);
+        return b2MakeProxy(vertices, 1, 0.0f);
     }
 
     /// <summary>
@@ -139,7 +91,7 @@ public static class Core
     public static unsafe ShapeProxy MakeProxy(Shape shape, float radius)
     {
         Vec2* vertices = shape.GetVertices(out int count);
-        return MakeProxy(vertices, count, radius);
+        return b2MakeProxy(vertices, count, radius);
     }
     
     /// <summary>
@@ -148,7 +100,7 @@ public static class Core
     public static unsafe ShapeProxy MakeProxy(Segment segment)
     {
         Vec2* vertices = &segment.Point1;
-        return MakeProxy(vertices, 2, 0.0f);
+        return b2MakeProxy(vertices, 2, 0.0f);
     }
     
     /// <summary>
@@ -157,7 +109,7 @@ public static class Core
     public static unsafe ShapeProxy MakeProxy(Circle circle)
     {
         Vec2* vertices = &circle.Center;
-        return MakeProxy(vertices, 1, circle.Radius);
+        return b2MakeProxy(vertices, 1, circle.Radius);
     }
     
     /// <summary>
@@ -174,7 +126,7 @@ public static class Core
     /// </summary>
     public static unsafe ShapeProxy MakeProxy(Capsule capsule, float radius)
     {
-        return MakeProxy(&capsule.Center1,2, radius);
+        return b2MakeProxy(&capsule.Center1,2, radius);
     }
     
     /// <summary>
@@ -182,46 +134,18 @@ public static class Core
     /// </summary>
     public static unsafe ShapeProxy MakeProxy(ChainSegment segment, float radius)
     {
-        return MakeProxy(&segment.Segment.Point1, 2, radius);
+        return b2MakeProxy(&segment.Segment.Point1, 2, radius);
     }
-    
-    /// <summary>
-    /// Compute the upper bound on time before two shapes penetrate. Time is represented as
-    /// a fraction between [0,tMax]. This uses a swept separating axis and may miss some intermediate,
-    /// non-tunneling collisions. If you change the time interval, you should call this function
-    /// again.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2TimeOfImpact")]
-    public static extern TOIOutput TimeOfImpact(in TOIInput input);
-    
-    /// <summary>
-    /// Set LengthUnitsPerMeter. By default, 1.0 corresponds to 1 meter.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SetLengthUnitsPerMeter")]
-    private static extern void SetLengthUnitsPerMeter(float lengthUnitsPerMeter);
-
-    /// <summary>
-    /// Get LengthUnitsPerMeter. By default, 1.0 corresponds to 1 meter.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetLengthUnitsPerMeter")]
-    private static extern float GetLengthUnitsPerMeter();
 
     /// <summary>
     /// Length units per meter. By default 1.0 corresponds to 1 meter.
     /// </summary>
-    public static float LengthUnitsPerMeter
+    public static unsafe float LengthUnitsPerMeter
     {
-        get => GetLengthUnitsPerMeter();
-        set => SetLengthUnitsPerMeter(value);
+        get => b2GetLengthUnitsPerMeter();
+        set => b2SetLengthUnitsPerMeter(value);
     }
 
-    /// <summary>
-    /// Set assert function
-    /// </summary>
-    /// <param name="assertFcn">Pointer to the assert function</param>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SetAssertFcn")]
-    public static extern void SetAssertFunction(AssertFunction assertFcn);
-    
     /// <summary>
     /// Assert function. This is called when an assertion fails.
     /// </summary>
@@ -255,6 +179,34 @@ public static class Core
         }
     }
 
+    
+#if NET5_0_OR_GREATER
+    internal static unsafe object? GetObjectAtPointer<T>(delegate* unmanaged[Cdecl]<T, nint> getFunc, T param)
+    {
+        return GetObjectAtPointer(getFunc(param));
+    }
+    
+    internal static unsafe void SetObjectAtPointer<T>(delegate* unmanaged[Cdecl]<T, nint> getFunc, delegate* unmanaged[Cdecl]<T, nint, void> setFunc, T param, object? value)
+    {
+        // dealloc previous user data
+        nint userDataPtr = getFunc(param);
+        GCHandle handle;
+        if (userDataPtr != 0)
+        {
+            handle = GCHandle.FromIntPtr(userDataPtr);
+            if (handle.IsAllocated) handle.Free();
+        }
+        if (value == null)
+        {
+            setFunc(param, 0);
+            return;
+        }
+        handle = GCHandle.Alloc(value);
+        userDataPtr = GCHandle.ToIntPtr(handle);
+        setFunc(param, userDataPtr);
+    }
+
+#else
     internal static object? GetObjectAtPointer<T>(Func<T, nint> getFunc, T param)
     {
         return GetObjectAtPointer(getFunc(param));
@@ -278,6 +230,27 @@ public static class Core
         handle = GCHandle.Alloc(value);
         userDataPtr = GCHandle.ToIntPtr(handle);
         setFunc(param, userDataPtr);
+    }
+
+#endif
+    
+    private static GCHandle assertFunctionHandle;
+        
+    /// <summary>
+    /// Set assert function
+    /// </summary>
+    /// <param name="assertFcn">Pointer to the assert function</param>
+    public static unsafe void SetAssertFunction(AssertFunction assertFcn)
+    {
+        if (assertFunctionHandle is { IsAllocated: true }) // free
+        {
+            assertFunctionHandle.Free();
+            assertFunctionHandle = default;
+        }
+            
+        assertFunctionHandle = GCHandle.Alloc(assertFcn);
+        var ptr = Marshal.GetFunctionPointerForDelegate(assertFcn);
+        b2SetAssertFcn(ptr);
     }
     
     internal static int Assert(string condition, string fileName, int lineNumber)

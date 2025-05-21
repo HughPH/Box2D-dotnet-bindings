@@ -3,7 +3,7 @@ namespace UnitTests;
 public class Box2DVersionTest
 {
     [Fact]
-    public void CheckVersion()
+    public unsafe void CheckVersion()
     {
         string? error = null;
         Box2D.Core.SetAssertFunction((condition, name, number) =>

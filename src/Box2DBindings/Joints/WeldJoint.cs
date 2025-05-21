@@ -11,21 +11,15 @@ namespace Box2D;
 /// <b>Note: The accuracy of weld joint is limited by the accuracy of the solver. Long chains of weld joints may flex.</b>
 /// </summary>
 [PublicAPI]
-public sealed class WeldJoint : Joint
+public sealed partial class WeldJoint : Joint
 {
     internal WeldJoint(JointId id) : base(id)
     { }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetReferenceAngle")]
-    private static extern float b2WeldJoint_GetReferenceAngle(JointId jointId);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetReferenceAngle")]
-    private static extern void b2WeldJoint_SetReferenceAngle(JointId jointId, float angleInRadians);
-
     /// <summary>
     /// The reference angle in radians on this weld joint
     /// </summary>
-    public float ReferenceAngle
+    public unsafe float ReferenceAngle
     {
         get => b2WeldJoint_GetReferenceAngle(id);
         set
@@ -34,62 +28,38 @@ public sealed class WeldJoint : Joint
             b2WeldJoint_SetReferenceAngle(id, angleInRadians);
         }
     }
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearHertz")]
-    private static extern void b2WeldJoint_SetLinearHertz(JointId jointId, float hertz);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearHertz")]
-    private static extern float b2WeldJoint_GetLinearHertz(JointId jointId);
 
     /// <summary>
     /// The weld joint linear stiffness in Hertz.
     /// </summary>
-    public float LinearHertz
+    public unsafe float LinearHertz
     {
         get => b2WeldJoint_GetLinearHertz(id);
         set => b2WeldJoint_SetLinearHertz(id, value);
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearDampingRatio")]
-    private static extern void b2WeldJoint_SetLinearDampingRatio(JointId jointId, float dampingRatio);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetLinearDampingRatio")]
-    private static extern float b2WeldJoint_GetLinearDampingRatio(JointId jointId);
-
     /// <summary>
     /// The weld joint linear damping ratio.
     /// </summary>
-    public float LinearDampingRatio
+    public unsafe float LinearDampingRatio
     {
         get => b2WeldJoint_GetLinearDampingRatio(id);
         set => b2WeldJoint_SetLinearDampingRatio(id, value);
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularHertz")]
-    private static extern void b2WeldJoint_SetAngularHertz(JointId jointId, float hertz);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularHertz")]
-    private static extern float b2WeldJoint_GetAngularHertz(JointId jointId);
-
     /// <summary>
     /// The weld joint angular stiffness in Hertz.
     /// </summary>
-    public float AngularHertz
+    public unsafe float AngularHertz
     {
         get => b2WeldJoint_GetAngularHertz(id);
         set => b2WeldJoint_SetAngularHertz(id, value);
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetAngularDampingRatio")]
-    private static extern void b2WeldJoint_SetAngularDampingRatio(JointId jointId, float dampingRatio);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetAngularDampingRatio")]
-    private static extern float b2WeldJoint_GetAngularDampingRatio(JointId jointId);
-
     /// <summary>
     /// The weld joint angular damping ratio.
     /// </summary>
-    public float AngularDampingRatio
+    public unsafe float AngularDampingRatio
     {
         get => b2WeldJoint_GetAngularDampingRatio(id);
         set => b2WeldJoint_SetAngularDampingRatio(id, value);

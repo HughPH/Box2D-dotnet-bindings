@@ -12,6 +12,20 @@ namespace Box2D;
 [PublicAPI]
 public ref struct QueryFilter
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<QueryFilter> b2DefaultQueryFilter;
+
+    static unsafe QueryFilter()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2DefaultQueryFilter", out var ptr);
+        b2DefaultQueryFilter = (delegate* unmanaged[Cdecl]<QueryFilter>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
+    private static extern QueryFilter b2DefaultQueryFilter();
+#endif
+    
     /// <summary>
     /// The collision category bits of this query. Normally you would just set one bit.
     /// </summary>
@@ -33,16 +47,10 @@ public ref struct QueryFilter
     }
     
     /// <summary>
-    /// The default query filter settings.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultQueryFilter")]
-    private static extern QueryFilter DefaultQueryFilter();
-
-    /// <summary>
     /// Default constructor for the query filter. This will set the filter to the default settings.
     /// </summary>
-    public QueryFilter()
+    public unsafe QueryFilter()
     {
-        this = DefaultQueryFilter();
+        this = b2DefaultQueryFilter();
     }
 }

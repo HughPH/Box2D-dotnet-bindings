@@ -9,14 +9,25 @@ namespace Box2D;
 [PublicAPI]
 public static class Stats
 {
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetByteCount")]
-    private static extern int GetByteCount();
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<int> b2GetByteCount;
+
+    static unsafe Stats()
+    {
+        nint lib = NativeLibrary.Load(libraryName);
+        NativeLibrary.TryGetExport(lib, "b2GetByteCount", out var ptr);
+        b2GetByteCount = (delegate* unmanaged[Cdecl]<int>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetByteCount")]
+    private static extern int b2GetByteCount();
+#endif
     
     /// <summary>
     /// Get the number of bytes allocated by Box2D
     /// </summary>
     /// <returns>The number of bytes allocated by Box2D</returns>
-    public static int GetAllocatedBytes() => GetByteCount();
+    public static unsafe int GetAllocatedBytes() => b2GetByteCount();
 
     /// <summary>
     /// Get the world performance profile for the supplied world
