@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -47,6 +48,7 @@ public partial class Joint
     /// <summary>
     /// Destroys this joint
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void Destroy()
     {
         if (!Valid) return;

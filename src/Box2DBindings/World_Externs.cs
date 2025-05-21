@@ -94,7 +94,7 @@ partial class World
     
     static unsafe World()
     {
-        var lib = NativeLibrary.Load(libraryName);
+        var lib = Core.NativeLibHandle;
 
         NativeLibrary.TryGetExport(lib, "b2World_IsValid", out var p0);
         NativeLibrary.TryGetExport(lib, "b2World_Step", out var p1);

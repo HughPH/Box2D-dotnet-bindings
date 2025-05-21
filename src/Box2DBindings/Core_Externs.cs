@@ -75,7 +75,8 @@ namespace Box2D
             }
 #endif
 
-            var lib = NativeLibrary.Load(libraryName);
+            Core.NativeLibHandle = NativeLibrary.Load(libraryName);
+            var lib = Core.NativeLibHandle;
 
             NativeLibrary.TryGetExport(lib, "b2GetVersion", out var p0);
             NativeLibrary.TryGetExport(lib, "b2GetTicks", out var p1);

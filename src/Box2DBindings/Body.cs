@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -111,6 +112,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// Destroy this body.
     /// </summary>
     /// <remarks>This destroys all shapes and joints attached to the body. Do not keep references to the associated shapes and joints</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void Destroy()
     {
         if (!Valid) return;
@@ -601,58 +603,70 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <summary>
     /// The shapes attached to this body.
     /// </summary>
-    public unsafe ReadOnlySpan<Shape> Shapes
+    public IEnumerable<Shape> Shapes
     {
         get
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
 
-            int shapeCount = b2Body_GetShapeCount(this);
+            int shapeCount;
+            unsafe { shapeCount = b2Body_GetShapeCount(this); }
             if (shapeCount == 0)
-                return [];
+                yield break;
 
-            Shape[] shapes =
-#if NET5_0_OR_GREATER
-                GC.AllocateUninitializedArray<Shape>(shapeCount);
-#else
-                new Shape[shapeCount];
-#endif
+            var buffer = ArrayPool<Shape>.Shared.Rent(shapeCount);
+            try
+            {
+                unsafe
+                {
+                    fixed (Shape* shapeArrayPtr = buffer)
+                        b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
+                }
 
-            fixed (Shape* shapeArrayPtr = shapes)
-                b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
-
-            return shapes.AsSpan(0, shapeCount);
+                for (int i = 0; i < shapeCount; i++)
+                    yield return buffer[i];
+            }
+            finally
+            {
+                ArrayPool<Shape>.Shared.Return(buffer);
+            }
         }
     }
 
     /// <summary>
     /// The joints attached to this body.
     /// </summary>
-    public unsafe ReadOnlySpan<Joint> Joints
+    public IEnumerable<Joint> Joints
     {
         get
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
 
-            int jointCount = b2Body_GetJointCount(this);
+            int jointCount;
+            unsafe { jointCount = b2Body_GetJointCount(this); }
             if (jointCount == 0)
-                return [];
+                yield break;
 
-            JointId* jointIds = stackalloc JointId[jointCount];
-            b2Body_GetJoints(this, jointIds, jointCount);
+            var buffer = ArrayPool<Joint>.Shared.Rent(jointCount);
+            try
+            {
+                unsafe
+                {
+                    JointId* jointIds = stackalloc JointId[jointCount];
+                    b2Body_GetJoints(this, jointIds, jointCount);
+                    for (int i = 0; i < jointCount; i++)
+                        buffer[i] = Joint.GetJoint(jointIds[i]);
+                }
 
-            Joint[] jointObjects =
-#if NET5_0_OR_GREATER
-                GC.AllocateUninitializedArray<Joint>(jointCount);
-#else
-                new Joint[jointCount];
-#endif
-            for (int i = 0; i < jointCount; i++)
-                jointObjects[i] = Joint.GetJoint(jointIds[i]);
-
-            return jointObjects.AsSpan(0, jointCount);
+                for (int i = 0; i < jointCount; i++)
+                    yield return buffer[i];
+            }
+            finally
+            {
+                ArrayPool<Joint>.Shared.Return(buffer, clearArray: true);
+            }
         }
     }
 
@@ -662,29 +676,37 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>
     /// <i>Note: Box2D uses speculative collision so some contact points may be separated.</i>
     /// </remarks>
-    public unsafe ReadOnlySpan<ContactData> Contacts
+    public IEnumerable<ContactData> Contacts
     {
         get
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
 
-            int needed = b2Body_GetContactCapacity(this);
+            int needed;
+            unsafe { needed = b2Body_GetContactCapacity(this); }
             if (needed == 0)
-                return [];
+                yield break;
 
-            ContactData[] contactData =
-#if NET5_0_OR_GREATER
-                GC.AllocateUninitializedArray<ContactData>(needed);
-#else
-                new ContactData[needed];
-#endif
+            var buffer = ArrayPool<ContactData>.Shared.Rent(needed);
             int written;
-            fixed (ContactData* p = contactData)
+            try
             {
-                written = b2Body_GetContactData(this, p, contactData.Length);
+                unsafe
+                {
+                    fixed (ContactData* p = buffer)
+                    {
+                        written = b2Body_GetContactData(this, p, buffer.Length);
+                    }
+                }
+
+                for (int i = 0; i < written; i++)
+                    yield return buffer[i];
             }
-            return contactData.AsSpan(0, written);
+            finally
+            {
+                ArrayPool<ContactData>.Shared.Return(buffer, clearArray: true);
+            }
         }
     }
 

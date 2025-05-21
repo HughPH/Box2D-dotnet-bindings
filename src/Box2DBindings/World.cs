@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #if NET9_0_OR_GREATER
 using System.Threading;
@@ -113,6 +114,7 @@ public sealed partial class World
     /// <summary>
     /// Destroy this world
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void Destroy()
     {
         if (!Valid) return;

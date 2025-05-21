@@ -15,7 +15,7 @@ public struct RayCastInput
 
     static unsafe RayCastInput()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2IsValidRay", out var ptr);
         b2IsValidRay = (delegate* unmanaged[Cdecl]<in RayCastInput, byte>)ptr;
     }

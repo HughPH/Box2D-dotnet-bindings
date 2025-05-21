@@ -16,7 +16,7 @@ public struct ExplosionDef
 
     static unsafe ExplosionDef()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultExplosionDef", out var ptr);
         b2DefaultExplosionDef = (delegate* unmanaged[Cdecl]<ExplosionDef>)ptr;
     }

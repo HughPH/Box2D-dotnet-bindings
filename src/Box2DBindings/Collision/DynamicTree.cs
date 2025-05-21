@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace Box2D;
 
@@ -53,6 +54,7 @@ public unsafe partial struct DynamicTree
     /// Destroy the tree, freeing the node pool.
     /// </summary>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__collision.html#https://box2d.org/documentation/group__tree.html#ga3ffc351d31681acfb3b342eaf1ad1841">b2DynamicTree_Destroy</a></remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Destroy() => b2DynamicTree_Destroy(ref this);
     
     /// <summary>

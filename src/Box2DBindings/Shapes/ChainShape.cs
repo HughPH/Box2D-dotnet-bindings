@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -32,6 +33,7 @@ public partial struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShap
     /// Destroys this chain shape
     /// </summary>
     /// <remarks>This will remove the chain shape from the world and destroy all contacts associated with this shape</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void Destroy()
     {
         if (!Valid) return;

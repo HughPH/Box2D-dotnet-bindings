@@ -22,6 +22,7 @@ public static partial class Core
             PlatformID.MacOSX => "dylib",
             _ => ""
         };
+    internal static readonly nint NativeLibHandle;
     #else
     internal const string libraryName = "libbox2d";
     #endif

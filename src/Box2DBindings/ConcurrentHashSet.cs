@@ -15,7 +15,7 @@ sealed class ConcurrentHashSet<T> : IEnumerable<T> where T : notnull
         _locks = new object[StripeCount];
         for (int i = 0; i < StripeCount; i++)
         {
-            _sets[i] = new HashSet<T>();
+            _sets[i] = new HashSet<T>(1536);
             _locks[i] = new object();
         }
     }

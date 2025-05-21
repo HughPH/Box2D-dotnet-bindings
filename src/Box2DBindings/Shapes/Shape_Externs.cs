@@ -56,7 +56,7 @@ namespace Box2D
 
         static unsafe Shape()
         {
-            nint lib = NativeLibrary.Load(libraryName);
+            nint lib = Core.NativeLibHandle;
             NativeLibrary.TryGetExport(lib, "b2DestroyShape", out var p0);
             NativeLibrary.TryGetExport(lib, "b2Shape_IsValid", out var p1);
             NativeLibrary.TryGetExport(lib, "b2Shape_GetType", out var p2);

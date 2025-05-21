@@ -11,7 +11,7 @@ struct WheelJointDefInternal
 
     static unsafe WheelJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultWheelJointDef", out var ptr);
         b2DefaultWheelJointDef = (delegate* unmanaged[Cdecl]<WheelJointDefInternal>)ptr;
     }

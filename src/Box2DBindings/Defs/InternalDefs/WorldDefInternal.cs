@@ -11,7 +11,7 @@ struct WorldDefInternal
 
     static unsafe WorldDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultWorldDef", out var ptr);
         b2DefaultWorldDef = (delegate* unmanaged[Cdecl]<WorldDefInternal>)ptr;
     }

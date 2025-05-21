@@ -11,7 +11,7 @@ struct RevoluteJointDefInternal
 
     static unsafe RevoluteJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultRevoluteJointDef", out var ptr);
         b2DefaultRevoluteJointDef = (delegate* unmanaged[Cdecl]<RevoluteJointDefInternal>)ptr;
     }

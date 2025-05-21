@@ -13,7 +13,7 @@ namespace Box2D
 
     static unsafe Circle()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2ComputeCircleMass", out var p0);
         NativeLibrary.TryGetExport(lib, "b2ComputeCircleAABB", out var p1);
         NativeLibrary.TryGetExport(lib, "b2PointInCircle", out var p2);

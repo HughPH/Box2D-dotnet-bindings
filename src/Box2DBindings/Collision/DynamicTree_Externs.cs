@@ -34,7 +34,7 @@ unsafe partial struct DynamicTree
 
     static DynamicTree()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_Create", out var p0);
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_Destroy", out var p1);
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_CreateProxy", out var p2);

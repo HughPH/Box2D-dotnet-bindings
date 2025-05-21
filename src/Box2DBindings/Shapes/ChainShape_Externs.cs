@@ -19,7 +19,7 @@ namespace Box2D
 
     static unsafe ChainShape()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DestroyChain", out var p0);
         NativeLibrary.TryGetExport(lib, "b2Chain_GetWorld", out var p1);
         NativeLibrary.TryGetExport(lib, "b2Chain_GetSegmentCount", out var p2);

@@ -16,7 +16,7 @@ namespace Box2D
 
     static unsafe MouseJoint()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2MouseJoint_SetTarget", out var p0);
         NativeLibrary.TryGetExport(lib, "b2MouseJoint_GetTarget", out var p1);
         NativeLibrary.TryGetExport(lib, "b2MouseJoint_SetSpringHertz", out var p2);

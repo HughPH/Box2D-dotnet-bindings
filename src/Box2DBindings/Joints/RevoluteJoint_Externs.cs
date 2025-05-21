@@ -29,7 +29,7 @@ namespace Box2D
 
         static unsafe RevoluteJoint()
         {
-            nint lib = NativeLibrary.Load(libraryName);
+            nint lib = Core.NativeLibHandle;
             NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_EnableSpring", out var p0);
             NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_IsSpringEnabled", out var p1);
             NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_SetSpringHertz", out var p2);

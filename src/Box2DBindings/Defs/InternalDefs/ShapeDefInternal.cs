@@ -11,7 +11,7 @@ struct ShapeDefInternal
 
     static unsafe ShapeDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultShapeDef", out var ptr);
         b2DefaultShapeDef = (delegate* unmanaged[Cdecl]<ShapeDefInternal>)ptr;
     }

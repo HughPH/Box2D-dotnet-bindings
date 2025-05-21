@@ -29,7 +29,7 @@ partial class DistanceJoint
 
     static unsafe DistanceJoint()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DistanceJoint_SetLength", out var p0);
         NativeLibrary.TryGetExport(lib, "b2DistanceJoint_GetLength", out var p1);
         NativeLibrary.TryGetExport(lib, "b2DistanceJoint_EnableSpring", out var p2);

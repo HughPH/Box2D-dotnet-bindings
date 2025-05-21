@@ -11,7 +11,7 @@ struct PrismaticJointDefInternal
 
     static unsafe PrismaticJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultPrismaticJointDef", out var ptr);
         b2DefaultPrismaticJointDef = (delegate* unmanaged[Cdecl]<PrismaticJointDefInternal>)ptr;
     }

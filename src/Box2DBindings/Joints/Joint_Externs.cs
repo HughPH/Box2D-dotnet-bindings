@@ -23,7 +23,7 @@ namespace Box2D
 
     static unsafe Joint()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DestroyJoint", out var p0);
         NativeLibrary.TryGetExport(lib, "b2Joint_IsValid", out var p1);
         NativeLibrary.TryGetExport(lib, "b2Joint_GetType", out var p2);

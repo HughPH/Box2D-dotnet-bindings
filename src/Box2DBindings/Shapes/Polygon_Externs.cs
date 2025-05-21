@@ -22,7 +22,7 @@ namespace Box2D
 
         static unsafe Polygon()
         {
-            nint lib = NativeLibrary.Load(libraryName);
+            nint lib = Core.NativeLibHandle;
             NativeLibrary.TryGetExport(lib, "b2MakePolygon", out var p0);
             NativeLibrary.TryGetExport(lib, "b2MakeOffsetPolygon", out var p1);
             NativeLibrary.TryGetExport(lib, "b2MakeOffsetRoundedPolygon", out var p2);

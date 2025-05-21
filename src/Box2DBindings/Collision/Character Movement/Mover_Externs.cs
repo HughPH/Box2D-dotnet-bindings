@@ -10,7 +10,7 @@ static partial class Mover
         
     static unsafe Mover()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
 
         NativeLibrary.TryGetExport(lib, "b2SolvePlanes", out var solvePtr);
         NativeLibrary.TryGetExport(lib, "b2ClipVector", out var clipPtr);

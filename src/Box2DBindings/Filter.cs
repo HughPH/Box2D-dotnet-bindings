@@ -14,7 +14,7 @@ public struct Filter
 
     static unsafe Filter()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2DefaultFilter", out var ptr);
         b2DefaultFilter = (delegate* unmanaged[Cdecl]<Filter>)ptr;
     }

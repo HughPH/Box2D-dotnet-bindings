@@ -20,7 +20,7 @@ public ref struct Hull
 
     static unsafe Hull()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = Core.NativeLibHandle;
         NativeLibrary.TryGetExport(lib, "b2ComputeHull", out var ptr1);
         NativeLibrary.TryGetExport(lib, "b2ValidateHull", out var ptr2);
         b2ComputeHull = (delegate* unmanaged[Cdecl]<Vec2*, int, Hull>)ptr1;
