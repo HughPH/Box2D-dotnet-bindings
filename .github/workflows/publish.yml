@@ -116,46 +116,6 @@ jobs:
                       exit 1
                     fi
 
-            -   name: objdump for sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi                   
-
-            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
-                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      strip artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dylib ]]; then
-                      strip -x artefact/libbox2d.dylib
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      strip artefact/libbox2d.dll
-                    fi
-
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx artefact/libbox2d.dll
-                    fi
-
-            -   name: extra objdump for extra sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi
-
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
                 with:
@@ -221,7 +181,6 @@ jobs:
 
         steps:
             -   id: purge
-                name: Move previous run to /dev/null for safekeeping 
                 run: |
                     rm -rf ./* 
             
@@ -270,46 +229,6 @@ jobs:
                       exit 1
                     fi
 
-            -   name: objdump for sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi                   
-
-            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
-                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      strip artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dylib ]]; then
-                      strip -x artefact/libbox2d.dylib
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      strip artefact/libbox2d.dll
-                    fi
-
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx artefact/libbox2d.dll
-                    fi
-
-            -   name: extra objdump for extra sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi
-
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
                 with:
@@ -327,6 +246,10 @@ jobs:
             id-token: write
             pages: write
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./* 
+            
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
@@ -351,6 +274,8 @@ jobs:
                     fi
                     cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
+                    
+                    sync
 
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
@@ -364,6 +289,10 @@ jobs:
         if: github.ref == 'refs/heads/main'
         runs-on: [self-hosted, Linux, X64]
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./* 
+
             -   uses: actions/checkout@v4
 
             -   name: Generate Doxygen Documentation
@@ -386,6 +315,10 @@ jobs:
             !startsWith(github.ref_name, 'codex/') }}
         runs-on: [self-hosted, Linux, X64]
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./*
+                    
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"

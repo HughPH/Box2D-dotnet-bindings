@@ -25,6 +25,8 @@ namespace Box2D
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2PrismaticJoint_GetMotorForce;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2PrismaticJoint_GetTranslation;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2PrismaticJoint_GetSpeed;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2PrismaticJoint_SetTargetTranslation;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2PrismaticJoint_GetTargetTranslation;
 
     static unsafe PrismaticJoint()
     {
@@ -49,6 +51,8 @@ namespace Box2D
         NativeLibrary.TryGetExport(lib, "b2PrismaticJoint_GetMotorForce", out var p17);
         NativeLibrary.TryGetExport(lib, "b2PrismaticJoint_GetTranslation", out var p18);
         NativeLibrary.TryGetExport(lib, "b2PrismaticJoint_GetSpeed", out var p19);
+        NativeLibrary.TryGetExport(lib, "b2PrismaticJoint_SetTargetTranslation", out var p20);
+        NativeLibrary.TryGetExport(lib, "b2PrismaticJoint_GetTargetTranslation", out var p21);
 
         b2PrismaticJoint_EnableSpring = (delegate* unmanaged[Cdecl]<JointId, byte, void>)p0;
         b2PrismaticJoint_IsSpringEnabled = (delegate* unmanaged[Cdecl]<JointId, byte>)p1;
@@ -70,6 +74,8 @@ namespace Box2D
         b2PrismaticJoint_GetMotorForce = (delegate* unmanaged[Cdecl]<JointId, float>)p17;
         b2PrismaticJoint_GetTranslation = (delegate* unmanaged[Cdecl]<JointId, float>)p18;
         b2PrismaticJoint_GetSpeed = (delegate* unmanaged[Cdecl]<JointId, float>)p19;
+        b2PrismaticJoint_SetTargetTranslation = (delegate* unmanaged[Cdecl]<JointId, float, void>)p20;
+        b2PrismaticJoint_GetTargetTranslation = (delegate* unmanaged[Cdecl]<JointId, float>)p21;
     }
 #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_EnableSpring")]
@@ -131,6 +137,12 @@ namespace Box2D
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetSpeed")]
     private static extern float b2PrismaticJoint_GetSpeed(JointId jointId);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetTargetTranslation")]
+    private static extern void b2PrismaticJoint_SetTargetTranslation(JointId jointId, float translation);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetTargetTranslation")]
+    private static extern float b2PrismaticJoint_GetTargetTranslation(JointId jointId);
 #endif
     }
 }

@@ -24,6 +24,8 @@ namespace Box2D
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, float> b2Shape_GetRestitution;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, int, void> b2Shape_SetMaterial;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, int> b2Shape_GetMaterial;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, SurfaceMaterial, void> b2Shape_SetSurfaceMaterial;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, SurfaceMaterial> b2Shape_GetSurfaceMaterial;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, Filter> b2Shape_GetFilter;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, Filter, void> b2Shape_SetFilter;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, byte, void> b2Shape_EnableContactEvents;
@@ -100,6 +102,8 @@ namespace Box2D
             NativeLibrary.TryGetExport(lib, "b2Shape_GetAABB", out var p42);
             NativeLibrary.TryGetExport(lib, "b2Shape_GetMassData", out var p43);
             NativeLibrary.TryGetExport(lib, "b2Shape_GetClosestPoint", out var p44);
+            NativeLibrary.TryGetExport(lib, "b2Shape_SetSurfaceMaterial", out var p45);
+            NativeLibrary.TryGetExport(lib, "b2Shape_GetSurfaceMaterial", out var p46);
 
             b2DestroyShape = (delegate* unmanaged[Cdecl]<Shape, byte, void>)p0;
             b2Shape_IsValid = (delegate* unmanaged[Cdecl]<Shape, byte>)p1;
@@ -146,6 +150,8 @@ namespace Box2D
             b2Shape_GetAABB = (delegate* unmanaged[Cdecl]<Shape, AABB>)p42;
             b2Shape_GetMassData = (delegate* unmanaged[Cdecl]<Shape, MassData>)p43;
             b2Shape_GetClosestPoint = (delegate* unmanaged[Cdecl]<Shape, Vec2, Vec2>)p44;
+            b2Shape_SetSurfaceMaterial = (delegate* unmanaged[Cdecl]<Shape, SurfaceMaterial, void>)p45;
+            b2Shape_GetSurfaceMaterial = (delegate* unmanaged[Cdecl]<Shape, SurfaceMaterial>)p46;
         }
         #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyShape")]
@@ -282,6 +288,12 @@ namespace Box2D
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetClosestPoint")]
     private static extern Vec2 b2Shape_GetClosestPoint(Shape shape, Vec2 target);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetSurfaceMaterial")]
+    private static extern void b2Shape_SetSurfaceMaterial(Shape shape, SurfaceMaterial surfaceMaterial);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSurfaceMaterial")]
+    private static extern SurfaceMaterial b2Shape_GetSurfaceMaterial(Shape shape);
 #endif
     }
 }

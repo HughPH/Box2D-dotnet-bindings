@@ -247,16 +247,11 @@ public partial struct Shape : IEquatable<Shape>, IComparable<Shape>
         }
     }
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_SetSurfaceMaterial")]
-    private static extern void b2Shape_SetSurfaceMaterial(Shape shape, SurfaceMaterial surfaceMaterial);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetSurfaceMaterial")]
-    private static extern SurfaceMaterial b2Shape_GetSurfaceMaterial(Shape shape);
     
     /// <summary>
     /// Gets/sets the surface material for this shape
     /// </summary>
-    public SurfaceMaterial SurfaceMaterial
+    public unsafe SurfaceMaterial SurfaceMaterial
     {
         get => Valid ? b2Shape_GetSurfaceMaterial(this) : throw new InvalidOperationException("Shape is not valid");
         set
