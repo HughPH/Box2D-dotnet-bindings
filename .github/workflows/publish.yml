@@ -41,7 +41,7 @@ jobs:
                     echo "value=$version" >> "$GITHUB_OUTPUT"
 
     build-box2d-linux-x64:
-        name: Build / retrieve Box2D native libs
+        name: Build / retrieve Box2D native libs (Build & Test)
         needs: detect-tag
         if: github.ref == 'refs/heads/main'
         strategy:
@@ -153,18 +153,12 @@ jobs:
                     if-no-files-found: 'error'
 
     build-box2d-main:
-        name: Build / retrieve Box2D native libs
+        name: Build / retrieve Box2D native libs (Dist)
         needs: detect-tag
         if: github.ref == 'refs/heads/main'
         strategy:
             matrix:
                 include:
-                    # Linux x64
-                    -   target: linux-x64
-                        runs_on: [self-hosted, Linux, X64]
-                        cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-O3 -march=native -Wno-error=maybe-uninitialized"
-
                     # Linux x86 (cross‑compile)
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
