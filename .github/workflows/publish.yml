@@ -326,7 +326,7 @@ jobs:
             -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
-                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+                      -p:PackageVersion=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
 
             -   name: "Push to NuGet"
