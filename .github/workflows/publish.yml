@@ -18,14 +18,22 @@ jobs:
         permissions:
             contents: read
         outputs:
-            box2d_tag: ${{ steps.tag.outputs.tag }}
+            box2d_ref: ${{ steps.ref.outputs.ref }}
             pkg_ver: ${{ steps.version.outputs.value }}
         steps:
-            -   id: tag
-                name: "Fetch latest Box2D release tag"
+            -   id: ref
+                name: "Fetch latest Box2D tag or commit"
                 run: |
-                    tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
-                    echo "tag=$tag" >> "$GITHUB_OUTPUT"
+                    if [[ "${GITHUB_REF_NAME}" == "vnext" ]]; then
+                        # Get the latest commit hash for main
+                        sha=$(gh api /repos/$BOX2D_REPO/commits/main --jq .sha)
+                        echo "Using Box2D commit hash from main: $sha"
+                        echo "ref=$sha" >> "$GITHUB_OUTPUT"
+                    else
+                        tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
+                        echo "Using Box2D ref: $tag"
+                        echo "ref=$tag" >> "$GITHUB_OUTPUT"
+                    fi
 
             -   id: version
                 name: "Compute managed package version string"
@@ -69,9 +77,12 @@ jobs:
                     restore-keys: |
                         ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
 
-            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
+            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_ref }}"
                 if: steps.cache.outputs.cache-hit != 'true'
-                run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_tag }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                run: |
+                    git clone https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                    cd box2d-src
+                    git checkout ${{ needs.detect-tag.outputs.box2d_ref }}
 
             -   name: "Configure & compile Box2D"
                 if: steps.cache.outputs.cache-hit != 'true'
@@ -100,46 +111,6 @@ jobs:
                       echo "Artefact directory is empty, aborting."
                       tree box2d-build/bin
                       exit 1
-                    fi
-
-            -   name: objdump for sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi                   
-
-            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
-                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      strip artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dylib ]]; then
-                      strip -x artefact/libbox2d.dylib
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      strip artefact/libbox2d.dll
-                    fi
-
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx artefact/libbox2d.dll
-                    fi
-
-            -   name: extra objdump for extra sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
                     fi
 
             -   name: Upload artefacts
@@ -190,15 +161,15 @@ jobs:
 
                     # macOS x64
                     -   target: osx-x64
-                        runs_on: macos-latest
+                        runs_on: macos-13
                         cmake_flags: >
-                            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=x86_64"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3" -DCMAKE_CXX_FLAGS_RELEASE="-O3"
 
                     # macOS ARM64
                     -   target: osx-arm64
                         runs_on: macos-latest
                         cmake_flags: >
-                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
+                            -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3" -DCMAKE_CXX_FLAGS_RELEASE="-O3"
         runs-on: ${{ matrix.runs_on }}
         
         concurrency:
@@ -206,20 +177,25 @@ jobs:
             cancel-in-progress: false
 
         steps:
-            -   uses: actions/checkout@v4
+            -   id: purge
+                run: |
+                    rm -rf ./* 
 
             -   id: cache
                 name: Restore native build cache
                 uses: actions/cache@v4
                 with:
                     path: box2d-build
-                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_ref }}
                     restore-keys: |
-                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_ref }}
 
-            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
+            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_ref }}"
                 if: steps.cache.outputs.cache-hit != 'true'
-                run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_tag }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                run: |
+                    git clone https://github.com/${{ env.BOX2D_REPO }} box2d-src
+                    cd box2d-src
+                    git checkout ${{ needs.detect-tag.outputs.box2d_ref }}
 
             -   name: "Configure & compile Box2D"
                 if: steps.cache.outputs.cache-hit != 'true'
@@ -250,46 +226,6 @@ jobs:
                       exit 1
                     fi
 
-            -   name: objdump for sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi                   
-
-            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
-                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      strip artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dylib ]]; then
-                      strip -x artefact/libbox2d.dylib
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      strip artefact/libbox2d.dll
-                    fi
-
-            -   name: UPX pack release artifacts if not 'win-arm64'
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [[ -f artefact/libbox2d.so ]]; then
-                      upx artefact/libbox2d.so
-                    elif [[ -f artefact/libbox2d.dll ]]; then
-                      upx artefact/libbox2d.dll
-                    fi
-
-            -   name: extra objdump for extra sanity
-                if: ${{ matrix.target != 'win-arm64' }}
-                run: |
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      objdump -f artefact/libbox2d.so
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      objdump -f artefact/libbox2d.dll
-                    fi
-
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
                 with:
@@ -307,6 +243,10 @@ jobs:
             id-token: write
             pages: write
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./* 
+
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
@@ -331,6 +271,8 @@ jobs:
                     fi
                     cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
+                    
+                    sync
 
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
@@ -344,6 +286,10 @@ jobs:
         if: github.ref == 'refs/heads/main'
         runs-on: [self-hosted, Linux, X64]
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./* 
+
             -   uses: actions/checkout@v4
 
             -   name: Generate Doxygen Documentation
@@ -366,6 +312,10 @@ jobs:
             !startsWith(github.ref_name, 'codex/') }}
         runs-on: [self-hosted, Linux, X64]
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./*
+
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
@@ -379,13 +329,13 @@ jobs:
                     dotnet pack src/Box2DBindings \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
-#
+            #
             -   name: "Push to NuGet"
                 if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
                 env:
                     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
                 run: |
-                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-                    --api-key "$NUGET_API_KEY" \
-                    --source "$NUGET_FEED"
+                    dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+                      --api-key "$NUGET_API_KEY" \
+                      --source "$NUGET_FEED"
 
