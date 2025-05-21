@@ -21,6 +21,8 @@
         <LangVersion>preview</LangVersion>
 
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        
+        <PackageVersion>0.0.0-donotuse</PackageVersion>
     </PropertyGroup>
     
     <Target Name="SetVersionDefaults" BeforeTargets="PrepareForBuild">
