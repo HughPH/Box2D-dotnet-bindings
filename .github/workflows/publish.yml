@@ -215,9 +215,16 @@ jobs:
                     dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
+                shell: bash
                 run: |
-                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net8.0/
-                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net9.0/
+                    set -e
+                    lib=src/Box2DBindings/native/linux-x64/libbox2d.so
+                    if [ ! -f "$lib" ]; then
+                      echo "Missing Linux shared library: $lib"
+                      exit 1
+                    fi
+                    cp "$lib" src/UnitTests/bin/Debug/net8.0/
+                    cp "$lib" src/UnitTests/bin/Debug/net9.0/
 
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
@@ -232,7 +239,7 @@ jobs:
                       -c Release
 
             -   name: "Push to NuGet"
-                if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
+                if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/codex') }}
                 env:
                     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
                 run: |
