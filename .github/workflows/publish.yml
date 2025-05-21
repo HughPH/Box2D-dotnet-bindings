@@ -278,11 +278,12 @@ jobs:
                     
                     sync
 
+            -   name: Run UnitTests (net9.0)
+                run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
+
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
 
-            -   name: Run UnitTests (net9.0)
-                run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
     publish-docs:
         name: Publish documentation
@@ -327,6 +328,12 @@ jobs:
                 with:
                     path: src/Box2DBindings/native
                     pattern: "*"
+
+            -   name: "Build"
+                run: |
+                    dotnet build src/Box2DBindings \
+                      -c Release \
+                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }}
 
             -   name: "Pack NuGet package"
                 run: |

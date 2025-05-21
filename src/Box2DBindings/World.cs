@@ -28,7 +28,6 @@ public sealed partial class World
     /// </summary>
     public static IEqualityComparer<World> DefaultEqualityComparer { get; } = WorldComparer.Instance;
 
-    // Equals:
     /// <summary>
     /// Checks if this World and another World refer to the same World
     /// </summary>
@@ -163,17 +162,17 @@ public sealed partial class World
     public object WorldLock = new();
 #endif
 
-    private readonly TaskCallback bodyMoveTaskCallback; // root the task callback to avoid GC
+    private readonly TaskCallback bodyMoveTaskCallback = null!; // root the task callback to avoid GC
     private readonly nint bodyMoveTaskCallbackPointer;
-    private readonly TaskCallback sensorBeginTouchTaskCallback;
+    private readonly TaskCallback sensorBeginTouchTaskCallback = null!;
     private readonly nint sensorBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback sensorEndTouchTaskCallback;
+    private readonly TaskCallback sensorEndTouchTaskCallback = null!;
     private readonly nint sensorEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactBeginTouchTaskCallback;
+    private readonly TaskCallback contactBeginTouchTaskCallback = null!;
     private readonly nint contactBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback contactEndTouchTaskCallback;
+    private readonly TaskCallback contactEndTouchTaskCallback = null!;
     private readonly nint contactEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactHitTaskCallback;
+    private readonly TaskCallback contactHitTaskCallback = null!;
     private readonly nint contactHitTaskCallbackPointer;
     
     /// <summary>

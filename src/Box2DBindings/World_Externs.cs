@@ -7,7 +7,7 @@ partial class World
 #if NET5_0_OR_GREATER
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, byte> b2World_IsValid;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, float, int, void> b2World_Step;
-    private static unsafe delegate* unmanaged[Cdecl]<WorldId, DebugDrawInternal*, void> b2World_Draw_;
+    private static unsafe delegate* unmanaged[Cdecl]<WorldId, in DebugDrawInternal, void> b2World_Draw_;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, BodyEvents> b2World_GetBodyEvents;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, SensorEvents> b2World_GetSensorEvents;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, ContactEvents> b2World_GetContactEvents;
@@ -89,8 +89,7 @@ partial class World
     
     private static unsafe void b2World_Draw(WorldId worldId, ref DebugDrawInternal draw)
     {
-        fixed (DebugDrawInternal* ptr = &draw)
-            b2World_Draw_(worldId, ptr);
+        b2World_Draw_(worldId, in draw);
     }
     
     static unsafe World()
@@ -144,7 +143,7 @@ partial class World
         
         b2World_IsValid = (delegate* unmanaged[Cdecl]<WorldId, byte>)p0;
         b2World_Step = (delegate* unmanaged[Cdecl]<WorldId, float, int, void>)p1;
-        b2World_Draw_ = (delegate* unmanaged[Cdecl]<WorldId, DebugDrawInternal*, void>)p2;
+        b2World_Draw_ = (delegate* unmanaged[Cdecl]<WorldId, in DebugDrawInternal, void>)p2;
         b2World_GetBodyEvents = (delegate* unmanaged[Cdecl]<WorldId, BodyEvents>)p3;
         b2World_GetSensorEvents = (delegate* unmanaged[Cdecl]<WorldId, SensorEvents>)p4;
         b2World_GetContactEvents = (delegate* unmanaged[Cdecl]<WorldId, ContactEvents>)p5;
