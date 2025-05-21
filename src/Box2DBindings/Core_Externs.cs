@@ -69,6 +69,10 @@ namespace Box2D
             {
                 throw new FileNotFoundException($"The library {libraryName} was not found in working directory {Environment.CurrentDirectory}");
             }
+            else
+            {
+                Console.WriteLine($"Loading {libraryName} from {Environment.CurrentDirectory}");
+            }
 #endif
 
             var lib = NativeLibrary.Load(libraryName);

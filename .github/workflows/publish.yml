@@ -122,7 +122,6 @@ jobs:
                     name: ${{ matrix.target }}
                     path: artefact/
                     retention-days: 7
-                    compression-level: '0'
                     if-no-files-found: 'error'
 
     build-box2d-main:
@@ -236,7 +235,6 @@ jobs:
                     name: ${{ matrix.target }}
                     path: artefact/
                     retention-days: 7
-                    compression-level: '0'
                     if-no-files-found: 'error'
     
     run-tests:
@@ -276,6 +274,7 @@ jobs:
                     cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
                     cp "$lib" .
+                    objdump -f ./libbox2d.so
                     
                     sync
 
