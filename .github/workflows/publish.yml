@@ -43,7 +43,6 @@ jobs:
     build-box2d-linux-x64:
         name: Build / retrieve Box2D native libs (Build & Test)
         needs: detect-tag
-        if: github.ref == 'refs/heads/main'
         strategy:
             matrix:
                 include:
