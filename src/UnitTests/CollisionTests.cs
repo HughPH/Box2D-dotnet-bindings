@@ -3,6 +3,7 @@ using Vec2 = System.Numerics.Vector2;
 
 namespace UnitTests
 {
+    [Collection("Sequential")]
     public class CollisionTests
     {
         private const float TimeStep = 1f / 60f; // 60 FPS
