@@ -3,6 +3,7 @@ using Box2D.Comparers;
 
 namespace UnitTests;
 
+[Collection("Sequential")]
 public class WorldIdComparerTests
 {
     [Fact]

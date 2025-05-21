@@ -4,6 +4,7 @@ using Vec2 = System.Numerics.Vector2;
 
 namespace UnitTests;
 
+[Collection("Sequential")]
 public class AABBTests
 {
     [Fact]

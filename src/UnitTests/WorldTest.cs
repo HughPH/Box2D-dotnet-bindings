@@ -6,6 +6,7 @@ using Xunit;
 namespace UnitTests
 {
     [TestSubject(typeof(World))]
+    [Collection("Sequential")]
     public class WorldTest
     {
                 [Fact]
