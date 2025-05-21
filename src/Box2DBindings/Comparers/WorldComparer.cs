@@ -25,7 +25,7 @@ sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
             return -1;
         if (y is null)
             return 1;
-        return x.id.Equals(y.id) ? 0 : x.id.GetHashCode() - y.id.GetHashCode();
+        return Comparer<int>.Default.Compare(x.id, y.id);
     }
 }
     
