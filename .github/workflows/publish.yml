@@ -192,9 +192,9 @@ jobs:
                     retention-days: 7
                     compression-level: '0'
                     if-no-files-found: 'error'
-                    
-    publish-bindings:
-        name: Build & publish C# bindings
+    
+    run-tests:
+        name: Test C# bindings
         needs: [ detect-tag, build-box2d ]
         runs-on: [self-hosted, Linux, X64]
         permissions:
@@ -215,9 +215,16 @@ jobs:
                     dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
+                shell: bash
                 run: |
-                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net8.0/
-                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net9.0/
+                    set -e
+                    lib=src/Box2DBindings/native/linux-x64/libbox2d.so
+                    if [ ! -f "$lib" ]; then
+                      echo "Missing Linux shared library: $lib"
+                      exit 1
+                    fi
+                    cp "$lib" src/UnitTests/bin/Debug/net8.0/
+                    cp "$lib" src/UnitTests/bin/Debug/net9.0/
 
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
@@ -225,12 +232,27 @@ jobs:
             -   name: Run UnitTests (net9.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
+    publish-bindings:
+        name: Publish NuGet package
+        needs: [ run-tests ]
+        if: ${{ github.event_name != 'pull_request' &&
+            !startsWith(github.ref_name, 'codex/') }}
+        runs-on: [self-hosted, Linux, X64]
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: "Download native libs"
+                uses: actions/download-artifact@v4
+                with:
+                    path: src/Box2DBindings/native
+                    pattern: "*"
+
             -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
-
+#
             -   name: "Push to NuGet"
                 if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
                 env:
@@ -240,10 +262,18 @@ jobs:
                     --api-key "$NUGET_API_KEY" \
                     --source "$NUGET_FEED"
 
+    publish-docs:
+        name: Publish documentation
+        needs: [ run-tests ]
+        if: github.ref == 'refs/heads/main'
+        runs-on: [self-hosted, Linux, X64]
+        steps:
+            -   uses: actions/checkout@v4
+
             -   name: Generate Doxygen Documentation
                 if: github.ref == 'refs/heads/main'
                 run: doxygen
-            
+
             -   name: Upload artefact
                 if: github.ref == 'refs/heads/main'
                 uses: actions/upload-pages-artifact@v3
@@ -251,7 +281,8 @@ jobs:
                     name: github-pages
                     path: docs/html
                     retention-days: 7
-    
+
             -   name: Deploy to GitHub Pages
                 if: github.ref == 'refs/heads/main'
                 uses: actions/deploy-pages@v4
+                    
