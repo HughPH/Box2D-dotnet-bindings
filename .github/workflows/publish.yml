@@ -339,6 +339,27 @@ jobs:
             -   name: Run UnitTests (net9.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
+    publish-docs:
+        name: Publish documentation
+        needs: [ run-tests ]
+        if: github.ref == 'refs/heads/main'
+        runs-on: [self-hosted, Linux, X64]
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: Generate Doxygen Documentation
+                run: doxygen
+
+            -   name: Upload artefact
+                uses: actions/upload-pages-artifact@v3
+                with:
+                    name: github-pages
+                    path: docs/html
+                    retention-days: 7
+
+            -   name: Deploy to GitHub Pages
+                uses: actions/deploy-pages@v4
+    
     publish-bindings:
         name: Publish NuGet package
         needs: [ run-tests, build-box2d-main ]
@@ -369,24 +390,3 @@ jobs:
                     --api-key "$NUGET_API_KEY" \
                     --source "$NUGET_FEED"
 
-    publish-docs:
-        name: Publish documentation
-        needs: [ run-tests ]
-        if: github.ref == 'refs/heads/main'
-        runs-on: [self-hosted, Linux, X64]
-        steps:
-            -   uses: actions/checkout@v4
-
-            -   name: Generate Doxygen Documentation
-                run: doxygen
-
-            -   name: Upload artefact
-                uses: actions/upload-pages-artifact@v3
-                with:
-                    name: github-pages
-                    path: docs/html
-                    retention-days: 7
-
-            -   name: Deploy to GitHub Pages
-                uses: actions/deploy-pages@v4
-                    
