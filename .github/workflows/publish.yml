@@ -341,7 +341,7 @@ jobs:
 
     publish-bindings:
         name: Publish NuGet package
-        needs: [ run-tests ]
+        needs: [ run-tests, build-box2d-main ]
         if: ${{ github.event_name != 'pull_request' &&
             !startsWith(github.ref_name, 'codex/') }}
         runs-on: [self-hosted, Linux, X64]
