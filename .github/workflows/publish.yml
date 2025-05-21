@@ -101,6 +101,7 @@ jobs:
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
         runs-on: ${{ matrix.runs_on }}
+        if: ${{ matrix.if }}
 
         concurrency:
             group: box2d-${{ matrix.target }}
