@@ -52,7 +52,7 @@ public sealed partial class World
     private static bool initialized;
 
     /// <summary>
-    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
+    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You may create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
     /// <returns>The world</returns>
@@ -62,7 +62,7 @@ public sealed partial class World
     }
 
     /// <summary>
-    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
+    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You may create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
     public World(WorldDef def)

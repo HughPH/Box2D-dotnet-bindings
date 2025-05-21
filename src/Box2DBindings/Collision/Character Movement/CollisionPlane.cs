@@ -17,7 +17,7 @@ public struct CollisionPlane
     public Plane Plane;
 
     /// <summary>
-    /// Setting this to float.<see cref="System.Math.float.MaxValue"/> makes the plane as rigid as possible. Lower values can
+    /// Setting this to <see cref="float.MaxValue"/> makes the plane as rigid as possible. Lower values can
     /// make the plane collision soft. Usually in meters.
     /// </summary>
     public float PushLimit;
@@ -42,7 +42,7 @@ public struct CollisionPlane
     /// Constructs a new CollisionPlane object with the given parameters.
     /// </summary>
     /// <param name="plane">The collision plane between the mover and some shape.</param>
-    /// <param name="pushLimit">The plane rigidity. Setting this to float.<see cref="System.Math.float.MaxValue"/> makes the plane as rigid as possible. Lower values can make the plane collision soft. Usually in meters.</param>
+    /// <param name="pushLimit">The plane rigidity. Setting this to <see cref="float.MaxValue"/> makes the plane as rigid as possible. Lower values can make the plane collision soft. Usually in meters.</param>
     /// <param name="push">The push on the mover determined by b2SolvePlanes. Usually in meters.</param>
     /// <param name="clipVelocity">Indicates if <see cref="Mover.ClipVector(in Vec2,Box2D.Character_Movement.CollisionPlane[])"/> should clip against this plane. Should be false for soft collision.</param>
     public CollisionPlane(Plane plane, float pushLimit, float push, bool clipVelocity)
