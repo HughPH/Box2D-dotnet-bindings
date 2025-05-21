@@ -178,7 +178,6 @@ jobs:
 
         steps:
             -   id: purge
-                name: Move previous run to /dev/null for safekeeping 
                 run: |
                     rm -rf ./* 
             
@@ -244,6 +243,10 @@ jobs:
             id-token: write
             pages: write
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./* 
+            
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
@@ -281,6 +284,10 @@ jobs:
         if: github.ref == 'refs/heads/main'
         runs-on: [self-hosted, Linux, X64]
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./* 
+
             -   uses: actions/checkout@v4
 
             -   name: Generate Doxygen Documentation
@@ -303,6 +310,10 @@ jobs:
             !startsWith(github.ref_name, 'codex/') }}
         runs-on: [self-hosted, Linux, X64]
         steps:
+            -   id: purge
+                run: |
+                    rm -rf ./*
+                    
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
