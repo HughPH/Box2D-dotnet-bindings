@@ -4,6 +4,7 @@ using Xunit.Abstractions;
 
 namespace UnitTests;
 
+[Collection("Sequential")]
 public class CreationTests
 {
     public CreationTests(ITestOutputHelper output)
