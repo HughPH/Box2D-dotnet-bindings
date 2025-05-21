@@ -233,8 +233,8 @@ jobs:
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
     publish-bindings:
-        name: Test C# bindings
-        needs: [ detect-tag, build-box2d, run-tests ]
+        name: Publish NuGet package
+        needs: [ run-tests ]
         if: ${{ github.event_name != 'pull_request' &&
             !startsWith(github.ref_name, 'codex/') }}
         runs-on: [self-hosted, Linux, X64]
@@ -253,27 +253,36 @@ jobs:
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
 #
-#            -   name: "Push to NuGet"
-#                if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
-#                env:
-#                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#                run: |
-#                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
-#                    --api-key "$NUGET_API_KEY" \
-#                    --source "$NUGET_FEED"
-#
-#            -   name: Generate Doxygen Documentation
-#                if: github.ref == 'refs/heads/main'
-#                run: doxygen
-#            
-#            -   name: Upload artefact
-#                if: github.ref == 'refs/heads/main'
-#                uses: actions/upload-pages-artifact@v3
-#                with:
-#                    name: github-pages
-#                    path: docs/html
-#                    retention-days: 7
-#    
-#            -   name: Deploy to GitHub Pages
-#                if: github.ref == 'refs/heads/main'
-#                uses: actions/deploy-pages@v4
+            -   name: "Push to NuGet"
+                if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
+                env:
+                    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+                run: |
+                  dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
+                    --api-key "$NUGET_API_KEY" \
+                    --source "$NUGET_FEED"
+
+    publish-docs:
+        name: Publish NuGet package
+        needs: [ run-tests ]
+        if: github.ref == 'refs/heads/main'
+        runs-on: [self-hosted, Linux, X64]
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: Generate Doxygen Documentation
+                if: github.ref == 'refs/heads/main'
+                run: doxygen
+
+            -   name: Upload artefact
+                if: github.ref == 'refs/heads/main'
+                uses: actions/upload-pages-artifact@v3
+                with:
+                    name: github-pages
+                    path: docs/html
+                    retention-days: 7
+
+            -   name: Deploy to GitHub Pages
+                if: github.ref == 'refs/heads/main'
+                uses: actions/deploy-pages@v4
+                    
