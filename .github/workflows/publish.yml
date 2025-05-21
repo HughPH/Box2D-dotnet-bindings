@@ -55,42 +55,49 @@ jobs:
                     # Linux x86 (cross‑compile)
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-O3 -m32 -msse2 -mstackrealign -march=i686 -Wno-error=maybe-uninitialized" -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--hash-style=sysv"
 
                     # Linux ARM64
                     -   target: linux-arm64
                         runs_on: [self-hosted, Linux, X64]
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS="-O3 -Wno-error=maybe-uninitialized" 
 
                     # Windows x64
                     -   target: win-x64
                         runs_on: [self-hosted, Linux, X64]
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
 
                     # Windows x86
                     -   target: win-x86
                         runs_on: [self-hosted, Linux, X64]
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=x86 -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_C_FLAGS="-O3 -m32 -msse -mstackrealign -march=i686" -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF
 
                     # Windows ARM64
                     -   target: win-arm64
                         runs_on: [self-hosted, Linux, X64]
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_PROCESSOR=ARM64 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-g++ -DBUILD_SHARED_LIBS=ON -DBOX2D_SAMPLES=OFF -DCMAKE_C_FLAGS_RELEASE="-O3"
 
                     # macOS x64
                     -   target: osx-x64
                         runs_on: macos-latest
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=x86_64"
 
                     # macOS ARM64
                     -   target: osx-arm64
                         runs_on: macos-latest
+                        if: github.ref == 'refs/heads/main'
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3 -march=native"
         runs-on: ${{ matrix.runs_on }}
@@ -271,11 +278,9 @@ jobs:
             -   uses: actions/checkout@v4
 
             -   name: Generate Doxygen Documentation
-                if: github.ref == 'refs/heads/main'
                 run: doxygen
 
             -   name: Upload artefact
-                if: github.ref == 'refs/heads/main'
                 uses: actions/upload-pages-artifact@v3
                 with:
                     name: github-pages
@@ -283,6 +288,5 @@ jobs:
                     retention-days: 7
 
             -   name: Deploy to GitHub Pages
-                if: github.ref == 'refs/heads/main'
                 uses: actions/deploy-pages@v4
                     
