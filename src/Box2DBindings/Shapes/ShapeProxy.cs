@@ -6,7 +6,7 @@ namespace Box2D;
 
 /// <summary>
 /// A distance proxy is used by the GJK algorithm. It encapsulates any shape.
-/// You can provide between 1 and <see cref="Constants.MAX_POLYGON_VERTICES" /> and a radius.
+/// You can provide between 1 and <see cref="Constants.MAX_POLYGON_VERTICES"/> points and a radius.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]

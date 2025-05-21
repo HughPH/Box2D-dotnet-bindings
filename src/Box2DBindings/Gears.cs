@@ -4,7 +4,7 @@ using System;
 namespace Box2D;
 
 /// <summary>
-/// Gear calculation functionality no included in Box2D.
+/// Gear calculation functionality not included in Box2D.
 /// </summary>
 [PublicAPI]
 public class Gears
@@ -18,7 +18,7 @@ public class Gears
     /// <param name="teeth">The number of teeth that the gear should have.</param>
     /// <param name="toothLength">The length of the teeth - how far they stick out from the sprocket.</param>
     /// <returns>A list of shapes that were added to the Body.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">>If teeth is less than 3</exception>
+    /// <exception cref="ArgumentOutOfRangeException">If teeth is less than 3.</exception>
     public ReadOnlySpan<Shape> CreateInvoluteGear(
         Body body, ShapeDef shapeDef,
         float pitchRadius, int teeth, float toothLength)
