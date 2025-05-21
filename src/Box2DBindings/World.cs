@@ -52,7 +52,7 @@ public sealed partial class World
     private static bool initialized;
 
     /// <summary>
-    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
+    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You may create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
     /// <returns>The world</returns>
@@ -62,7 +62,7 @@ public sealed partial class World
     }
 
     /// <summary>
-    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You make create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
+    /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You may create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
     /// </summary>
     /// <param name="def">The world definition</param>
     public World(WorldDef def)
@@ -175,17 +175,17 @@ public sealed partial class World
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_Step")]
     private static extern void b2World_Step(WorldId worldId, float timeStep, int subStepCount);
     
-    private readonly TaskCallback bodyMoveTaskCallback; // root the task callback to avoid GC
+    private readonly TaskCallback bodyMoveTaskCallback = null!; // root the task callback to avoid GC
     private readonly nint bodyMoveTaskCallbackPointer;
-    private readonly TaskCallback sensorBeginTouchTaskCallback;
+    private readonly TaskCallback sensorBeginTouchTaskCallback = null!;
     private readonly nint sensorBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback sensorEndTouchTaskCallback;
+    private readonly TaskCallback sensorEndTouchTaskCallback = null!;
     private readonly nint sensorEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactBeginTouchTaskCallback;
+    private readonly TaskCallback contactBeginTouchTaskCallback = null!;
     private readonly nint contactBeginTouchTaskCallbackPointer;
-    private readonly TaskCallback contactEndTouchTaskCallback;
+    private readonly TaskCallback contactEndTouchTaskCallback = null!;
     private readonly nint contactEndTouchTaskCallbackPointer;
-    private readonly TaskCallback contactHitTaskCallback;
+    private readonly TaskCallback contactHitTaskCallback = null!;
     private readonly nint contactHitTaskCallbackPointer;
 
     /// <summary>

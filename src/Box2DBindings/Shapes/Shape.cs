@@ -12,7 +12,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct Shape : IEquatable<Shape>
+public struct Shape : IEquatable<Shape>, IComparable<Shape>
 {
     private int index1;
     private ushort world0;
@@ -701,5 +701,16 @@ public struct Shape : IEquatable<Shape>
         }
         count = 0;
         return (Vec2*)0;
+    }
+    
+    public int CompareTo(Shape other)
+    {
+        int index1Comparison = index1.CompareTo(other.index1);
+        if (index1Comparison != 0)
+            return index1Comparison;
+        int world0Comparison = world0.CompareTo(other.world0);
+        if (world0Comparison != 0)
+            return world0Comparison;
+        return generation.CompareTo(other.generation);
     }
 }

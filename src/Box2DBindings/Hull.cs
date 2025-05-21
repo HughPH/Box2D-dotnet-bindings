@@ -8,7 +8,7 @@ namespace Box2D;
 /// A convex hull. Used to create convex polygons.
 /// </summary>
 /// <remarks>
-/// <b>Warning: Do not modify these values directly, instead use <see cref="Hull.Compute(System.Span{System.Numerics.Vector2})"/></b>
+/// <b>Warning: Do not modify these values directly, instead use <see cref="M:Box2D.Hull.Compute(System.ReadOnlySpan{Box2D.Vec2})"/></b>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]

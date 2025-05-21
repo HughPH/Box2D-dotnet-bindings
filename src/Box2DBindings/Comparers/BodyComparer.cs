@@ -12,5 +12,5 @@ sealed class BodyComparer : IEqualityComparer<Body>, IComparer<Body>
 
     public int GetHashCode(Body obj) => obj.GetHashCode();
         
-    public int Compare(Body x, Body y) => x.Equals(y) ? 0 : x.GetHashCode() - y.GetHashCode();
+    public int Compare(Body x, Body y) => x.Equals(y) ? 0 : Comparer<Body>.Default.Compare(x, y);
 }

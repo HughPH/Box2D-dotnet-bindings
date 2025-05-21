@@ -5,12 +5,28 @@ namespace Box2D.Comparers;
 sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
 {
     public static readonly WorldComparer Instance = new();
+
+    public bool Equals(World? x, World? y)
+    {
+        if (ReferenceEquals(x, y))
+            return true;
+        if (x is null || y is null)
+            return false;
+        return EqualityComparer<WorldId>.Default.Equals(x.id, y.id);
+    }
         
-    public bool Equals(World x, World y) => x.id.Equals(y.id);
+    public int GetHashCode(World obj) => obj.id.GetHashCode();
         
-    public int GetHashCode(World obj) => obj.GetHashCode();
-        
-    public int Compare(World x, World y) => x.id.Equals(y.id) ? 0 : x.id.GetHashCode() - y.id.GetHashCode();
+    public int Compare(World? x, World? y)
+    {
+        if (ReferenceEquals(x, y))
+            return 0;
+        if (x is null)
+            return -1;
+        if (y is null)
+            return 1;
+        return WorldId.DefaultComparer.Compare(x.id, y.id);
+    }
 }
     
 sealed class WorldIdComparer : IEqualityComparer<WorldId>, IComparer<WorldId>
@@ -20,6 +36,13 @@ sealed class WorldIdComparer : IEqualityComparer<WorldId>, IComparer<WorldId>
     public bool Equals(WorldId x, WorldId y) => x.Equals(y);
         
     public int GetHashCode(WorldId obj) => obj.GetHashCode();
-        
-    public int Compare(WorldId x, WorldId y) => x.Equals(y) ? 0 : x.GetHashCode() - y.GetHashCode();
+
+    public int Compare(WorldId x, WorldId y)
+    {
+        if (x.Equals(y))
+            return 0;
+        if (x.index1 == y.index1)
+            return x.generation - y.generation;
+        return x.index1 - y.index1;
+    }
 }

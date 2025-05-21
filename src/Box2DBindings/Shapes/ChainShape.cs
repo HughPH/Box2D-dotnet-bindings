@@ -148,17 +148,25 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
     /// <returns>True if the chain shape is valid, false otherwise</returns>
     public bool Valid => b2Chain_IsValid(this) != 0;
 
+    /// <summary>Checks equality between two <see cref="ChainShape"/> values.</summary>
     public bool Equals(ChainShape other) =>
         index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+
+    /// <inheritdoc/>
     public override bool Equals(object? obj) =>
         obj is ChainShape other && Equals(other);
+
+    /// <inheritdoc/>
     public override int GetHashCode() =>
         HashCode.Combine(index1, world0, generation);
-    
+
+    /// <summary>Default equality comparer for <see cref="ChainShape"/>.</summary>
     public static IEqualityComparer<ChainShape> DefaultEqualityComparer { get; } = ChainShapeComparer.Instance;
 
+    /// <summary>Default comparer for <see cref="ChainShape"/>.</summary>
     public static IComparer<ChainShape> DefaultComparer { get; } = ChainShapeComparer.Instance;
 
+    /// <summary>Compares this instance to another <see cref="ChainShape"/>.</summary>
     public int CompareTo(ChainShape other)
     {
         int index1Comparison = index1.CompareTo(other.index1);

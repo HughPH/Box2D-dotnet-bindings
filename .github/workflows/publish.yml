@@ -48,8 +48,8 @@ jobs:
                     fi
                     echo "value=$version" >> "$GITHUB_OUTPUT"
 
-    build-box2d:
-        name: Build / retrieve Box2D native libs
+    build-box2d-linux-x64:
+        name: Build / retrieve Box2D native libs (Build & Test)
         needs: detect-tag
         strategy:
             matrix:
@@ -59,7 +59,113 @@ jobs:
                         runs_on: [self-hosted, Linux, X64]
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS="-O3 -march=native -Wno-error=maybe-uninitialized"
+        runs-on: ${{ matrix.runs_on }}
+        
+        concurrency:
+            group: box2d-${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+            cancel-in-progress: false
 
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   id: cache
+                name: Restore native build cache
+                uses: actions/cache@v4
+                with:
+                    path: box2d-build
+                    key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+                    restore-keys: |
+                        ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
+
+            -   name: "Clone Box2D ${{ needs.detect-tag.outputs.box2d_tag }}"
+                if: steps.cache.outputs.cache-hit != 'true'
+                run: git clone --depth 1 --branch "${{ needs.detect-tag.outputs.box2d_tag }}" https://github.com/${{ env.BOX2D_REPO }} box2d-src
+
+            -   name: "Configure & compile Box2D"
+                if: steps.cache.outputs.cache-hit != 'true'
+                run: |
+                    cmake -S box2d-src -B box2d-build ${{ matrix.cmake_flags }}
+                    cmake --build box2d-build --config Release --parallel
+
+            -   name: Prepare artefact directory
+                shell: bash
+                run: |
+                    mkdir -p artefact/
+                    if [ -f box2d-build/bin/libbox2d.so ]; then
+                      cp box2d-build/bin/libbox2d.so artefact/
+                    fi
+                    if [ -f box2d-build/bin/libbox2d.dylib ]; then
+                      cp box2d-build/bin/libbox2d.dylib artefact/
+                    fi
+                    if [ -f box2d-build/bin/libbox2d.dll ]; then
+                      cp box2d-build/bin/libbox2d.dll artefact/
+                    fi
+
+            -   name: "Fail if artefact directory is empty"
+                shell: bash
+                run: |
+                    if [ -z "$(ls -A artefact/)" ]; then
+                      echo "Artefact directory is empty, aborting."
+                      tree box2d-build/bin
+                      exit 1
+                    fi
+
+            -   name: objdump for sanity
+                if: ${{ matrix.target != 'win-arm64' }}
+                run: |
+                    if [ -f box2d-build/bin/libbox2d.so ]; then
+                      objdump -f artefact/libbox2d.so
+                    fi
+                    if [ -f box2d-build/bin/libbox2d.dll ]; then
+                      objdump -f artefact/libbox2d.dll
+                    fi                   
+
+            -   name: Strip release artifacts if not 'linux-arm64' or "win-arm64"
+                if: ${{ matrix.target != 'linux-arm64' && matrix.target != 'win-arm64' }}
+                run: |
+                    if [[ -f artefact/libbox2d.so ]]; then
+                      strip artefact/libbox2d.so
+                    elif [[ -f artefact/libbox2d.dylib ]]; then
+                      strip -x artefact/libbox2d.dylib
+                    elif [[ -f artefact/libbox2d.dll ]]; then
+                      strip artefact/libbox2d.dll
+                    fi
+
+            -   name: UPX pack release artifacts if not 'win-arm64'
+                if: ${{ matrix.target != 'win-arm64' }}
+                run: |
+                    if [[ -f artefact/libbox2d.so ]]; then
+                      upx artefact/libbox2d.so
+                    elif [[ -f artefact/libbox2d.dll ]]; then
+                      upx artefact/libbox2d.dll
+                    fi
+
+            -   name: extra objdump for extra sanity
+                if: ${{ matrix.target != 'win-arm64' }}
+                run: |
+                    if [ -f box2d-build/bin/libbox2d.so ]; then
+                      objdump -f artefact/libbox2d.so
+                    fi
+                    if [ -f box2d-build/bin/libbox2d.dll ]; then
+                      objdump -f artefact/libbox2d.dll
+                    fi
+
+            -   name: Upload artefacts
+                uses: actions/upload-artifact@v4
+                with:
+                    name: ${{ matrix.target }}
+                    path: artefact/
+                    retention-days: 7
+                    compression-level: '0'
+                    if-no-files-found: 'error'
+
+    build-box2d-main:
+        name: Build / retrieve Box2D native libs (Dist)
+        needs: detect-tag
+        if: github.ref == 'refs/heads/main'
+        strategy:
+            matrix:
+                include:
                     # Linux x86 (cross‑compile)
                     -   target: linux-x86
                         runs_on: [self-hosted, Linux, X64]
@@ -102,9 +208,9 @@ jobs:
                         cmake_flags: >
                             -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DBOX2D_SAMPLES=OFF -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=bin -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin -DCMAKE_C_FLAGS_RELEASE="-O3" -DCMAKE_CXX_FLAGS_RELEASE="-O3"
         runs-on: ${{ matrix.runs_on }}
-
+        
         concurrency:
-            group: box2d-${{ matrix.target }}
+            group: box2d-${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_tag }}
             cancel-in-progress: false
 
         steps:
@@ -206,10 +312,10 @@ jobs:
                     retention-days: 7
                     compression-level: '0'
                     if-no-files-found: 'error'
-                    
-    publish-bindings:
-        name: Build & publish C# bindings
-        needs: [ detect-tag, build-box2d ]
+    
+    run-tests:
+        name: Test C# bindings
+        needs: [ detect-tag, build-box2d-linux-x64 ]
         runs-on: [self-hosted, Linux, X64]
         permissions:
             id-token: write
@@ -229,9 +335,16 @@ jobs:
                     dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
+                shell: bash
                 run: |
-                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net8.0/
-                    cp src/Box2DBindings/native/linux-x64/libbox2d.so src/UnitTests/bin/Debug/net9.0/
+                    set -e
+                    lib=src/Box2DBindings/native/linux-x64/libbox2d.so
+                    if [ ! -f "$lib" ]; then
+                      echo "Missing Linux shared library: $lib"
+                      exit 1
+                    fi
+                    cp "$lib" src/UnitTests/bin/Debug/net8.0/
+                    cp "$lib" src/UnitTests/bin/Debug/net9.0/
 
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
@@ -239,12 +352,48 @@ jobs:
             -   name: Run UnitTests (net9.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
+    publish-docs:
+        name: Publish documentation
+        needs: [ run-tests ]
+        if: github.ref == 'refs/heads/main'
+        runs-on: [self-hosted, Linux, X64]
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: Generate Doxygen Documentation
+                run: doxygen
+
+            -   name: Upload artefact
+                uses: actions/upload-pages-artifact@v3
+                with:
+                    name: github-pages
+                    path: docs/html
+                    retention-days: 7
+
+            -   name: Deploy to GitHub Pages
+                uses: actions/deploy-pages@v4
+    
+    publish-bindings:
+        name: Publish NuGet package
+        needs: [ run-tests, build-box2d-main ]
+        if: ${{ github.event_name != 'pull_request' &&
+            !startsWith(github.ref_name, 'codex/') }}
+        runs-on: [self-hosted, Linux, X64]
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: "Download native libs"
+                uses: actions/download-artifact@v4
+                with:
+                    path: src/Box2DBindings/native
+                    pattern: "*"
+
             -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
-
+#
             -   name: "Push to NuGet"
                 if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
                 env:
@@ -254,18 +403,3 @@ jobs:
                     --api-key "$NUGET_API_KEY" \
                     --source "$NUGET_FEED"
 
-            -   name: Generate Doxygen Documentation
-                if: github.ref == 'refs/heads/main'
-                run: doxygen
-            
-            -   name: Upload artefact
-                if: github.ref == 'refs/heads/main'
-                uses: actions/upload-pages-artifact@v3
-                with:
-                    name: github-pages
-                    path: docs/html
-                    retention-days: 7
-    
-            -   name: Deploy to GitHub Pages
-                if: github.ref == 'refs/heads/main'
-                uses: actions/deploy-pages@v4

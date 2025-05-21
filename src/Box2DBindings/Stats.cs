@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Box2D;
 
+/// <summary>
+/// Utility functions for collecting profiling and memory statistics from Box2D.
+/// </summary>
 [PublicAPI]
 public static class Stats
 {

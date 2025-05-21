@@ -12,5 +12,5 @@ sealed class ShapeComparer : IEqualityComparer<Shape>, IComparer<Shape>
 
     public int GetHashCode(Shape obj) => obj.GetHashCode();
         
-    public int Compare(Shape x, Shape y) => x.Equals(y) ? 0 : x.GetHashCode() - y.GetHashCode();
+    public int Compare(Shape x, Shape y) => x.Equals(y) ? 0 : Comparer<Shape>.Default.Compare(x, y);
 }

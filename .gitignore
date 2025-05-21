@@ -25,3 +25,5 @@ src/native/
 
 *.dll
 *.so
+
+AGENTS.md
