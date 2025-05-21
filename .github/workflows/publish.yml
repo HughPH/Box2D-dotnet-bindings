@@ -267,11 +267,7 @@ jobs:
                       exit 1
                     fi
                     cp "$lib" src/UnitTests/bin/Debug/net8.0/
-                    echo "-- net 8.0 --"
-                    ls src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
-                    echo "-- net 9.0 --"
-                    ls src/UnitTests/bin/Debug/net9.0/
 
             -   name: Run UnitTests (net8.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
