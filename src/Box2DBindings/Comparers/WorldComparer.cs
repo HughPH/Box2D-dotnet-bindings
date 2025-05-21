@@ -5,12 +5,28 @@ namespace Box2D.Comparers;
 sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
 {
     public static readonly WorldComparer Instance = new();
-        
-    public bool Equals(World x, World y) => x.id.Equals(y.id);
+
+    public bool Equals(World? x, World? y)
+    {
+        if (ReferenceEquals(x, y))
+            return true;
+        if (x is null || y is null)
+            return false;
+        return x.id.Equals(y.id);
+    }
         
     public int GetHashCode(World obj) => obj.GetHashCode();
         
-    public int Compare(World x, World y) => x.id.Equals(y.id) ? 0 : x.id.GetHashCode() - y.id.GetHashCode();
+    public int Compare(World? x, World? y)
+    {
+        if (ReferenceEquals(x, y))
+            return 0;
+        if (x is null)
+            return -1;
+        if (y is null)
+            return 1;
+        return Comparer<int>.Default.Compare(x.id, y.id);
+    }
 }
     
 sealed class WorldIdComparer : IEqualityComparer<WorldId>, IComparer<WorldId>
