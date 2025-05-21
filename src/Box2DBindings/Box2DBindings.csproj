@@ -13,7 +13,7 @@
 
         <PackageReadmeFile>README.md</PackageReadmeFile>
         
-        <TargetFrameworks>netstandard2.1;net6.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;net9.0</TargetFrameworks>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

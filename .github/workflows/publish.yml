@@ -259,7 +259,6 @@ jobs:
 
             -   name: Build UnitTests project
                 run: |
-                    dotnet build src/UnitTests --configuration Debug --framework net8.0
                     dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
@@ -271,18 +270,12 @@ jobs:
                       echo "Missing Linux shared library: $lib"
                       exit 1
                     fi
-                    cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
-                    cp "$lib" .
-                    objdump -f ./libbox2d.so
                     
                     sync
 
             -   name: Run UnitTests (net9.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
-
-            -   name: Run UnitTests (net8.0)
-                run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
 
 
     publish-docs:
@@ -328,6 +321,13 @@ jobs:
                 with:
                     path: src/Box2DBindings/native
                     pattern: "*"
+
+            -   name: "Pack NuGet package"
+                run: |
+                    dotnet build src/Box2DBindings \
+                      -c Release \
+                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+                      -p:PackageVersion=${{ needs.detect-tag.outputs.pkg_ver }} \
 
             -   name: "Pack NuGet package"
                 run: |
