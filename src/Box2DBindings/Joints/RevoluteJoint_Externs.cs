@@ -24,6 +24,8 @@ namespace Box2D
         private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2RevoluteJoint_GetMotorTorque;
         private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2RevoluteJoint_SetMaxMotorTorque;
         private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2RevoluteJoint_GetMaxMotorTorque;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2RevoluteJoint_SetTargetAngle;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2RevoluteJoint_GetTargetAngle;
 
         static unsafe RevoluteJoint()
         {
@@ -47,6 +49,8 @@ namespace Box2D
             NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_GetMotorTorque", out var p16);
             NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_SetMaxMotorTorque", out var p17);
             NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_GetMaxMotorTorque", out var p18);
+            NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_SetTargetAngle", out var p19);
+            NativeLibrary.TryGetExport(lib, "b2RevoluteJoint_GetTargetAngle", out var p20);
 
             b2RevoluteJoint_EnableSpring = (delegate* unmanaged[Cdecl]<JointId, byte, void>)p0;
             b2RevoluteJoint_IsSpringEnabled = (delegate* unmanaged[Cdecl]<JointId, byte>)p1;
@@ -67,6 +71,8 @@ namespace Box2D
             b2RevoluteJoint_GetMotorTorque = (delegate* unmanaged[Cdecl]<JointId, float>)p16;
             b2RevoluteJoint_SetMaxMotorTorque = (delegate* unmanaged[Cdecl]<JointId, float, void>)p17;
             b2RevoluteJoint_GetMaxMotorTorque = (delegate* unmanaged[Cdecl]<JointId, float>)p18;
+            b2RevoluteJoint_SetTargetAngle = (delegate* unmanaged[Cdecl]<JointId, float, void>)p19;
+            b2RevoluteJoint_GetTargetAngle = (delegate* unmanaged[Cdecl]<JointId, float>)p20;
         }
 #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_EnableSpring")]
@@ -125,6 +131,12 @@ namespace Box2D
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_GetMaxMotorTorque")]
     private static extern float b2RevoluteJoint_GetMaxMotorTorque(JointId jointId);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_SetTargetAngle")]
+    private static extern void b2RevoluteJoint_SetTargetAngle(JointId jointId, float angle);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_GetTargetAngle")]
+    private static extern float b2RevoluteJoint_GetTargetAngle(JointId jointId);
 #endif
     }
 }

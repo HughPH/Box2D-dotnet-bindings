@@ -44,16 +44,11 @@ public sealed partial class PrismaticJoint : Joint
         set => b2PrismaticJoint_SetSpringDampingRatio(id, value);
     }
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_SetTargetTranslation")]
-    private static extern void b2PrismaticJoint_SetTargetTranslation(JointId jointId, float translation);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PrismaticJoint_GetTargetTranslation")]
-    private static extern float b2PrismaticJoint_GetTargetTranslation(JointId jointId);
     
     /// <summary>
     /// The prismatic joint spring target translation
     /// </summary>
-    public float TargetTranslation
+    public unsafe float TargetTranslation
     {
         get => b2PrismaticJoint_GetTargetTranslation(id);
         set => b2PrismaticJoint_SetTargetTranslation(id, value);

@@ -48,16 +48,11 @@ public sealed partial class RevoluteJoint : Joint
         set => b2RevoluteJoint_SetSpringDampingRatio(id, value);
     }
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_SetTargetAngle")]
-    private static extern void b2RevoluteJoint_SetTargetAngle(JointId jointId, float angle);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RevoluteJoint_GetTargetAngle")]
-    private static extern float b2RevoluteJoint_GetTargetAngle(JointId jointId);
     
     /// <summary>
     /// The revolute joint spring target angle in radians
     /// </summary>
-    public float TargetAngle
+    public unsafe float TargetAngle
     {
         get => b2RevoluteJoint_GetTargetAngle(id);
         set => b2RevoluteJoint_SetTargetAngle(id, value);
