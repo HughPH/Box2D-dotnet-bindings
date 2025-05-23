@@ -24,7 +24,7 @@ jobs:
             -   id: ref
                 name: "Fetch latest Box2D tag or commit"
                 run: |
-                    if [[ "${GITHUB_REF_NAME}" == "vnext" ]]; then
+                    if [[ "${GITHUB_REF_NAME}" == "public/vnext" ]]; then
                         # Get the latest commit hash for main
                         sha=$(gh api /repos/$BOX2D_REPO/commits/main --jq .sha)
                         echo "Using Box2D commit hash from main: $sha"
