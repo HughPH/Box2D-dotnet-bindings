@@ -199,4 +199,224 @@ public unsafe partial struct Polygon
     /// </summary>
     public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastPolygon_(in input, in this);
 
+    /// <summary>
+    /// Decompose a polygon using a simplified version of Mark Bayazit's algorithm.
+    /// The input can have any number of points. The result is a set of convex
+    /// polygons, each containing no more than <see cref="Constants.MAX_POLYGON_VERTICES"/>
+    /// points.
+    /// </summary>
+    public static Polygon[] Decompose(ReadOnlySpan<Vec2> points)
+    {
+        if (points.Length < 3)
+            throw new ArgumentException("At least three points are required", nameof(points));
+
+        // Copy to a modifiable list ensuring counter-clockwise winding
+        var list = new System.Collections.Generic.List<Vec2>(points.Length);
+        if (IsCounterClockwise(points))
+        {
+            for (int i = 0; i < points.Length; ++i)
+                list.Add(points[i]);
+        }
+        else
+        {
+            for (int i = points.Length - 1; i >= 0; --i)
+                list.Add(points[i]);
+        }
+
+        var polys = new System.Collections.Generic.List<Polygon>();
+        DecomposeRecursive(list, polys);
+        return polys.ToArray();
+    }
+
+    private static void DecomposeRecursive(System.Collections.Generic.List<Vec2> vertices, System.Collections.Generic.List<Polygon> result)
+    {
+        if (IsConvex(vertices))
+        {
+            if (vertices.Count <= MAX_POLYGON_VERTICES)
+            {
+                result.Add(MakePolygon(vertices.ToArray(), 0f));
+            }
+            else
+            {
+                SplitConvex(vertices, result);
+            }
+            return;
+        }
+
+        for (int i = 0; i < vertices.Count; ++i)
+        {
+            if (IsReflex(i, vertices))
+            {
+                for (int j = 0; j < vertices.Count; ++j)
+                {
+                    if (CanSee(i, j, vertices))
+                    {
+                        var lower = CopyPolygon(vertices, i, j);
+                        var upper = CopyPolygon(vertices, j, i);
+                        DecomposeRecursive(lower, result);
+                        DecomposeRecursive(upper, result);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Fallback - treat remaining polygon as convex
+        if (vertices.Count >= 3)
+            result.Add(MakePolygon(vertices.ToArray(), 0f));
+    }
+
+    private static System.Collections.Generic.List<Vec2> CopyPolygon(System.Collections.Generic.List<Vec2> vertices, int i, int j)
+    {
+        var result = new System.Collections.Generic.List<Vec2>();
+        int start = i;
+        while (start != j)
+        {
+            result.Add(vertices[start]);
+            start = (start + 1) % vertices.Count;
+        }
+        result.Add(vertices[j]);
+        return result;
+    }
+
+    private static bool IsConvex(System.Collections.Generic.List<Vec2> vertices)
+    {
+        bool sign = Cross(vertices[^2], vertices[^1], vertices[0]) > 0f;
+        for (int i = 0; i < vertices.Count; ++i)
+        {
+            int i1 = (i + 1) % vertices.Count;
+            int i2 = (i + 2) % vertices.Count;
+            if ((Cross(vertices[i], vertices[i1], vertices[i2]) > 0f) != sign)
+                return false;
+        }
+        return true;
+    }
+
+    private static bool IsReflex(int index, System.Collections.Generic.List<Vec2> vertices)
+    {
+        int prev = (index - 1 + vertices.Count) % vertices.Count;
+        int next = (index + 1) % vertices.Count;
+        return Cross(vertices[prev], vertices[index], vertices[next]) < 0f;
+    }
+
+    private static bool CanSee(int i, int j, System.Collections.Generic.List<Vec2> vertices)
+    {
+        int count = vertices.Count;
+
+        if (i == j || (i + 1) % count == j || i == (j + 1) % count)
+            return false;
+
+        Vec2 a = vertices[i];
+        Vec2 b = vertices[j];
+
+        int iprev = (i - 1 + count) % count;
+        int inext = (i + 1) % count;
+        int jprev = (j - 1 + count) % count;
+        int jnext = (j + 1) % count;
+
+        if (Cross(vertices[iprev], a, vertices[inext]) < 0f)
+        {
+            if (Cross(a, vertices[inext], b) > 0f || Cross(vertices[iprev], a, b) > 0f)
+                return false;
+        }
+        else
+        {
+            if (Cross(a, vertices[iprev], b) < 0f || Cross(vertices[inext], a, b) < 0f)
+                return false;
+        }
+
+        if (Cross(vertices[jprev], b, vertices[jnext]) < 0f)
+        {
+            if (Cross(b, vertices[jnext], a) > 0f || Cross(vertices[jprev], b, a) > 0f)
+                return false;
+        }
+        else
+        {
+            if (Cross(b, vertices[jprev], a) < 0f || Cross(vertices[jnext], b, a) < 0f)
+                return false;
+        }
+
+        for (int k = 0; k < count; ++k)
+        {
+            int k1 = (k + 1) % count;
+            if (k == i || k1 == i || k == j || k1 == j)
+                continue;
+
+            if (LineIntersect(a, b, vertices[k], vertices[k1]))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool LineIntersect(Vec2 a1, Vec2 a2, Vec2 b1, Vec2 b2)
+    {
+        float d1 = Cross(a1, a2, b1);
+        float d2 = Cross(a1, a2, b2);
+        float d3 = Cross(b1, b2, a1);
+        float d4 = Cross(b1, b2, a2);
+
+        if (((d1 > 0f && d2 < 0f) || (d1 < 0f && d2 > 0f)) && ((d3 > 0f && d4 < 0f) || (d3 < 0f && d4 > 0f)))
+            return true;
+
+        if (MathF.Abs(d1) < float.Epsilon && OnSegment(a1, a2, b1)) return true;
+        if (MathF.Abs(d2) < float.Epsilon && OnSegment(a1, a2, b2)) return true;
+        if (MathF.Abs(d3) < float.Epsilon && OnSegment(b1, b2, a1)) return true;
+        if (MathF.Abs(d4) < float.Epsilon && OnSegment(b1, b2, a2)) return true;
+
+        return false;
+    }
+
+    private static bool OnSegment(Vec2 a, Vec2 b, Vec2 c)
+    {
+        return c.X >= MathF.Min(a.X, b.X) - float.Epsilon && c.X <= MathF.Max(a.X, b.X) + float.Epsilon &&
+               c.Y >= MathF.Min(a.Y, b.Y) - float.Epsilon && c.Y <= MathF.Max(a.Y, b.Y) + float.Epsilon;
+    }
+
+    private static bool IsCounterClockwise(ReadOnlySpan<Vec2> pts)
+    {
+        float area = 0f;
+        for (int i = 0; i < pts.Length; ++i)
+        {
+            int j = (i + 1) % pts.Length;
+            area += pts[i].X * pts[j].Y - pts[j].X * pts[i].Y;
+        }
+        return area > 0f;
+    }
+
+    private static void SplitConvex(System.Collections.Generic.List<Vec2> vertices, System.Collections.Generic.List<Polygon> result)
+    {
+        int n = vertices.Count;
+        int max = MAX_POLYGON_VERTICES;
+
+        int pieces = 1;
+        for (int candidate = 1; candidate <= n / 3; ++candidate)
+        {
+            int basePoints = n / candidate;
+            int extra = n % candidate;
+            int largest = basePoints + (extra > 0 ? 1 : 0);
+            if (largest <= max)
+                pieces = candidate;
+        }
+
+        int index = 0;
+        int vtxIdx = 0;
+        for (int i = 0; i < pieces; ++i)
+        {
+            int thisCount = n / pieces + (i < n % pieces ? 1 : 0);
+            var chunk = new Vec2[thisCount];
+            for (int j = 0; j < thisCount; ++j)
+            {
+                chunk[j] = vertices[(vtxIdx + j) % n];
+            }
+            result.Add(MakePolygon(chunk, 0f));
+            vtxIdx += thisCount;
+        }
+    }
+
+    private static float Cross(Vec2 a, Vec2 b, Vec2 c)
+    {
+        return (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
+    }
+
 }
