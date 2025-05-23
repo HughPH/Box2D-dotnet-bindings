@@ -261,6 +261,7 @@ jobs:
 
             -   name: Build UnitTests project
                 run: |
+                    dotnet build src/UnitTests --configuration Debug --framework net8.0
                     dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
