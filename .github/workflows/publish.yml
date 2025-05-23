@@ -125,9 +125,8 @@ jobs:
     build-box2d-main:
         name: Build / retrieve Box2D native libs (Dist)
         needs: detect-tag
-        if: github.ref == 'refs/heads/main' &&
-            !contains(github.ref_name, 'codex/') &&
-            !contains(github.event.pull_request.labels.*.name, 'codex')
+        if: ${{ github.ref == 'refs/heads/main' ||
+            startsWith(github.ref_name, 'public/') }}
         strategy:
             matrix:
                 include:
@@ -310,9 +309,8 @@ jobs:
     publish-bindings:
         name: Publish NuGet package
         needs: [ run-tests, build-box2d-main ]
-        if: ${{ github.event_name != 'pull_request' &&
-            !contains(github.ref_name, 'codex/') &&
-            !contains(github.event.pull_request.labels.*.name, 'codex') }}
+        if: ${{ github.ref == 'refs/heads/main' ||
+            startsWith(github.ref_name, 'public/') }}
         runs-on: [self-hosted, Linux, X64]
         steps:
             -   id: purge
