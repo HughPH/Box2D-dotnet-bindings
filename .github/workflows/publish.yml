@@ -128,8 +128,9 @@ jobs:
     build-box2d-main:
         name: Build / retrieve Box2D native libs (Dist)
         needs: detect-tag
-        if: ${{ github.event_name != 'pull_request' &&
-            !startsWith(github.ref_name, 'codex/') }}
+        if: github.ref == 'refs/heads/main' &&
+            !contains(github.ref_name, 'codex/') &&
+            !contains(github.event.pull_request.labels.*.name, 'codex')
         strategy:
             matrix:
                 include:
@@ -260,6 +261,7 @@ jobs:
 
             -   name: Build UnitTests project
                 run: |
+                    dotnet build src/UnitTests --configuration Debug --framework net8.0
                     dotnet build src/UnitTests --configuration Debug --framework net9.0
 
             -   name: Copy Linux shared library to UnitTests output
@@ -271,9 +273,13 @@ jobs:
                       echo "Missing Linux shared library: $lib"
                       exit 1
                     fi
+                    cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
                     
                     sync
+
+            -   name: Run UnitTests (net8.0)
+                run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
 
             -   name: Run UnitTests (net9.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
@@ -308,7 +314,8 @@ jobs:
         name: Publish NuGet package
         needs: [ run-tests, build-box2d-main, detect-tag ]
         if: ${{ github.event_name != 'pull_request' &&
-            !startsWith(github.ref_name, 'codex/') }}
+            !contains(github.ref_name, 'codex/') &&
+            !contains(github.event.pull_request.labels.*.name, 'codex') }}
         runs-on: [self-hosted, Linux, X64]
         steps:
             -   id: purge
