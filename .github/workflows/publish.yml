@@ -125,7 +125,9 @@ jobs:
     build-box2d-main:
         name: Build / retrieve Box2D native libs (Dist)
         needs: detect-tag
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' &&
+            !contains(github.ref_name, 'codex/') &&
+            !contains(github.event.pull_request.labels.*.name, 'codex')
         strategy:
             matrix:
                 include:
@@ -309,7 +311,8 @@ jobs:
         name: Publish NuGet package
         needs: [ run-tests, build-box2d-main ]
         if: ${{ github.event_name != 'pull_request' &&
-            !startsWith(github.ref_name, 'codex/') }}
+            !contains(github.ref_name, 'codex/') &&
+            !contains(github.event.pull_request.labels.*.name, 'codex') }}
         runs-on: [self-hosted, Linux, X64]
         steps:
             -   id: purge
@@ -329,9 +332,7 @@ jobs:
                     dotnet pack src/Box2DBindings \
                       -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
-            #
             -   name: "Push to NuGet"
-                if: ${{ github.event_name != 'pull_request' && !contains(github.ref_name, 'codex') }}
                 env:
                     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
                 run: |
