@@ -211,15 +211,21 @@ public unsafe partial struct Polygon
             throw new ArgumentException("At least three points are required", nameof(points));
 
         var buffer = System.Buffers.ArrayPool<Vec2>.Shared.Rent(points.Length);
-        points.CopyTo(buffer);
-        var span = buffer.AsSpan(0, points.Length);
-        if (!IsCounterClockwise(span))
-            span.Reverse();
+        try
+        {
+            points.CopyTo(buffer);
+            var span = buffer.AsSpan(0, points.Length);
+            if (!IsCounterClockwise(span))
+                span.Reverse();
 
-        var result = new System.Collections.Generic.List<Polygon>();
-        DecomposeRecursive(span, result);
-        System.Buffers.ArrayPool<Vec2>.Shared.Return(buffer);
-        return result.ToArray();
+            var result = new System.Collections.Generic.List<Polygon>();
+            DecomposeRecursive(span, result);
+            return result.ToArray();
+        }
+        finally
+        {
+            System.Buffers.ArrayPool<Vec2>.Shared.Return(buffer);
+        }
     }
 
     private static void DecomposeRecursive(ReadOnlySpan<Vec2> vertices, System.Collections.Generic.List<Polygon> result)
