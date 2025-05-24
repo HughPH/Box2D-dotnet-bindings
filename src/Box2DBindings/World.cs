@@ -184,7 +184,6 @@ public sealed partial class World
     /// </summary>
     /// <param name="timeStep">The amount of time to simulate, this should be a fixed number. Usually 1/60.</param>
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
-    /// <param name="parallelEvents">If true, the events will be processed in parallel.</param>
     public unsafe void Step(float timeStep = 0.016666668f, int subStepCount = 4)
     {
         if (!Valid)
