@@ -11,7 +11,7 @@ struct MouseJointDefInternal
 
     static unsafe MouseJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultMouseJointDef", out var ptr);
         b2DefaultMouseJointDef = (delegate* unmanaged[Cdecl]<MouseJointDefInternal>)ptr;
     }

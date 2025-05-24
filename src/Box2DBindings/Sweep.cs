@@ -17,7 +17,7 @@ public struct Sweep
 
     static unsafe Sweep()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2GetSweepTransform", out var ptr);
         b2GetSweepTransform = (delegate* unmanaged[Cdecl]<in Sweep, float, Transform>)ptr;
     }

@@ -18,7 +18,7 @@ namespace Box2D
 
     static unsafe WeldJoint()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_GetReferenceAngle", out var p0);
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_SetReferenceAngle", out var p1);
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_SetLinearHertz", out var p2);

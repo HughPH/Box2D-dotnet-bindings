@@ -15,7 +15,7 @@ struct DebugDrawInternal
 
     static unsafe DebugDrawInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultDebugDraw", out var ptr);
         b2DefaultDebugDraw = (delegate* unmanaged[Cdecl]<DebugDrawInternal>)ptr;
     }

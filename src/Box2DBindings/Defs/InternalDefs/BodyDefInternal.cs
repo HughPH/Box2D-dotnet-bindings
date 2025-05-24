@@ -11,7 +11,7 @@ struct BodyDefInternal
 
     static unsafe BodyDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultBodyDef", out var ptr);
         b2DefaultBodyDef = (delegate* unmanaged[Cdecl]<BodyDefInternal>)ptr;
     }

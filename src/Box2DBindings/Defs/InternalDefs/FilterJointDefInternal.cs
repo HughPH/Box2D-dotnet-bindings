@@ -11,7 +11,7 @@ struct FilterJointDefInternal
 
     static unsafe FilterJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultNullJointDef", out var ptr);
         b2DefaultNullJointDef = (delegate* unmanaged[Cdecl]<FilterJointDefInternal>)ptr;
     }

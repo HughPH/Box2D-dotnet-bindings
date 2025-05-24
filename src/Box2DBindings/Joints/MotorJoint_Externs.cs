@@ -18,7 +18,7 @@ namespace Box2D
 
     static unsafe MotorJoint()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2MotorJoint_SetLinearOffset", out var p0);
         NativeLibrary.TryGetExport(lib, "b2MotorJoint_GetLinearOffset", out var p1);
         NativeLibrary.TryGetExport(lib, "b2MotorJoint_SetAngularOffset", out var p2);

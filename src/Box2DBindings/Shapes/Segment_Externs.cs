@@ -12,7 +12,7 @@ namespace Box2D
 
     static unsafe Segment()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2ComputeSegmentAABB", out var p0);
         NativeLibrary.TryGetExport(lib, "b2RayCastSegment", out var p1);
         NativeLibrary.TryGetExport(lib, "b2ShapeCastSegment", out var p2);

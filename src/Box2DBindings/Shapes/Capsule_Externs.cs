@@ -13,7 +13,7 @@ namespace Box2D
 
     static unsafe Capsule()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2ComputeCapsuleMass", out var p0);
         NativeLibrary.TryGetExport(lib, "b2ComputeCapsuleAABB", out var p1);
         NativeLibrary.TryGetExport(lib, "b2PointInCapsule", out var p2);

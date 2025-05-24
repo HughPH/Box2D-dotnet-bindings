@@ -78,7 +78,7 @@ namespace Box2D
 
         static unsafe Body()
         {
-            nint lib = NativeLibrary.Load(libraryName);
+            nint lib = nativeLibrary;
             NativeLibrary.TryGetExport(lib, "b2DestroyBody", out var p0);
             NativeLibrary.TryGetExport(lib, "b2Body_IsValid", out var p1);
             NativeLibrary.TryGetExport(lib, "b2Body_GetType", out var p2);

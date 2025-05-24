@@ -11,7 +11,7 @@ struct WeldJointDefInternal
 
     static unsafe WeldJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultWeldJointDef", out var ptr);
         b2DefaultWeldJointDef = (delegate* unmanaged[Cdecl]<WeldJointDefInternal>)ptr;
     }

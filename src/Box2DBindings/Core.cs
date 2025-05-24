@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -16,7 +17,9 @@ namespace Box2D;
 public static partial class Core
 {
     #if NET5_0_OR_GREATER
-    internal static string libraryName = Path.Combine("runtimes",
+    private static string libraryName = Path.Combine(
+        Assembly.GetExecutingAssembly().Location,
+        "runtimes",
         (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" :
         RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
         RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx" : "") + "-" +

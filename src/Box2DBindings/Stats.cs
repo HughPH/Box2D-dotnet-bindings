@@ -14,7 +14,7 @@ public static class Stats
 
     static unsafe Stats()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2GetByteCount", out var ptr);
         b2GetByteCount = (delegate* unmanaged[Cdecl]<int>)ptr;
     }

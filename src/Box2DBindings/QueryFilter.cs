@@ -17,7 +17,7 @@ public ref struct QueryFilter
 
     static unsafe QueryFilter()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultQueryFilter", out var ptr);
         b2DefaultQueryFilter = (delegate* unmanaged[Cdecl]<QueryFilter>)ptr;
     }

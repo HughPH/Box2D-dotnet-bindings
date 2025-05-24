@@ -11,7 +11,7 @@ struct DistanceJointDefInternal
 
     static unsafe DistanceJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultDistanceJointDef", out var ptr);
         b2DefaultDistanceJointDef = (delegate* unmanaged[Cdecl]<DistanceJointDefInternal>)ptr;
     }

@@ -10,7 +10,7 @@ partial struct Plane
 
     static unsafe Plane()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2IsValidPlane", out var ptr);
 
         if (ptr == IntPtr.Zero)

@@ -15,7 +15,7 @@ public struct SurfaceMaterial
 
     static unsafe SurfaceMaterial()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultSurfaceMaterial", out var ptr);
         b2DefaultSurfaceMaterial = (delegate* unmanaged[Cdecl]<SurfaceMaterial>)ptr;
     }

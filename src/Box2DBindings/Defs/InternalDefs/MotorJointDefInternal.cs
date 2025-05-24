@@ -11,7 +11,7 @@ struct MotorJointDefInternal
 
     static unsafe MotorJointDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultMotorJointDef", out var ptr);
         b2DefaultMotorJointDef = (delegate* unmanaged[Cdecl]<MotorJointDefInternal>)ptr;
     }

@@ -85,7 +85,7 @@ public static class Collision
 
     static unsafe Collision()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
 
         NativeLibrary.TryGetExport(lib, "b2CollideCircles", out var p0);
         NativeLibrary.TryGetExport(lib, "b2CollideCapsuleAndCircle", out var p1);

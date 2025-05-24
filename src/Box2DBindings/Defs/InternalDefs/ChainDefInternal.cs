@@ -11,7 +11,7 @@ unsafe struct ChainDefInternal
 
     static ChainDefInternal()
     {
-        nint lib = NativeLibrary.Load(libraryName);
+        nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2DefaultChainDef", out var ptr);
         b2DefaultChainDef = (delegate* unmanaged[Cdecl]<ChainDefInternal>)ptr;
     }
