@@ -1,8 +1,6 @@
 ﻿global using static Box2D.Core;
 using JetBrains.Annotations;
 using System;
-using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -16,33 +14,8 @@ namespace Box2D;
 [PublicAPI]
 public static partial class Core
 {
-    #if NET5_0_OR_GREATER
-    private static string libraryName = "libbox2d";
-    // Path.Combine(
-    //     AppContext.BaseDirectory,
-    //     "runtimes",
-    //     (
-    //         RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" :
-    //         RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
-    //         RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx" : throw new PlatformNotSupportedException("Unsupported OS platform")
-    //     ) + "-" +
-    //     (
-    //         RuntimeInformation.ProcessArchitecture switch
-    //         {
-    //             Architecture.X64 => "x64",
-    //             Architecture.Arm64 => "arm64",
-    //             Architecture.X86 => "x86",
-    //             _ => ""
-    //         }
-    //     ),
-    //     "native",
-    //     "libbox2d" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".dll" :
-    //     RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? ".so" :
-    //     RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ""));
-    #else
     internal const string libraryName = "libbox2d";
-    #endif
-
+    
     /// <summary>
     /// Multiply and subtract two vectors.
     /// </summary>
