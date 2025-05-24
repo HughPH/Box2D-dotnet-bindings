@@ -63,9 +63,7 @@ namespace Box2D
 
         private static readonly unsafe delegate* unmanaged[Cdecl]<nint, void> b2SetAssertFcn;
 
-        internal static nint nativeLibrary = File.Exists(libraryName)
-            ? NativeLibrary.Load(libraryName, Assembly.GetExecutingAssembly(),null)
-            : throw new FileNotFoundException($"The library {libraryName} was not found");
+        internal static nint nativeLibrary = NativeLibrary.Load(libraryName, Assembly.GetExecutingAssembly(), null);
         
         static unsafe Core()
         {
