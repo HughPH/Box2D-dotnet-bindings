@@ -272,10 +272,8 @@ jobs:
                       echo "Missing Linux shared library: $lib"
                       exit 1
                     fi
-                    mkdir -p src/UnitTests/bin/Debug/net8.0/runtimes/linux-x64/native
-                    cp "$lib" src/UnitTests/bin/Debug/net8.0/runtimes/linux-x64/native/
-                    mkdir -p src/UnitTests/bin/Debug/net9.0/runtimes/linux-x64/native
-                    cp "$lib" src/UnitTests/bin/Debug/net9.0/runtimes/linux-x64/native/
+                    cp "$lib" src/UnitTests/bin/Debug/net8.0/
+                    cp "$lib" src/UnitTests/bin/Debug/net9.0/
                     
                     sync
 
