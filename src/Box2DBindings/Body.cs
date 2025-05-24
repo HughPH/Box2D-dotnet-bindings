@@ -754,6 +754,6 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return b2CreateChain(this, in def._internal);
+        return new(b2CreateChain(this, in def._internal));
     }
 }

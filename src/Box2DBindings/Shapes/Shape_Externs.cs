@@ -45,7 +45,7 @@ namespace Box2D
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, in Capsule, void> b2Shape_SetCapsule;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, in Segment, void> b2Shape_SetSegment;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, in Polygon, void> b2Shape_SetPolygon;
-        private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, ChainShape> b2Shape_GetParentChain;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, ChainShapeId> b2Shape_GetParentChain;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, int> b2Shape_GetContactCapacity;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, ContactData*, int, int> b2Shape_GetContactData;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, int> b2Shape_GetSensorCapacity;
@@ -142,7 +142,7 @@ namespace Box2D
             b2Shape_SetCapsule = (delegate* unmanaged[Cdecl]<Shape, in Capsule, void>)p34;
             b2Shape_SetSegment = (delegate* unmanaged[Cdecl]<Shape, in Segment, void>)p35;
             b2Shape_SetPolygon = (delegate* unmanaged[Cdecl]<Shape, in Polygon, void>)p36;
-            b2Shape_GetParentChain = (delegate* unmanaged[Cdecl]<Shape, ChainShape>)p37;
+            b2Shape_GetParentChain = (delegate* unmanaged[Cdecl]<Shape, ChainShapeId>)p37;
             b2Shape_GetContactCapacity = (delegate* unmanaged[Cdecl]<Shape, int>)p38;
             b2Shape_GetContactData = (delegate* unmanaged[Cdecl]<Shape, ContactData*, int, int>)p39;
             b2Shape_GetSensorCapacity = (delegate* unmanaged[Cdecl]<Shape, int>)p40;
@@ -266,7 +266,7 @@ namespace Box2D
     private static extern void b2Shape_SetPolygon(Shape shape, in Polygon polygon);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetParentChain")]
-    private static extern ChainShape b2Shape_GetParentChain(Shape shape);
+    private static extern ChainShapeId b2Shape_GetParentChain(Shape shape);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetContactCapacity")]
     private static extern int b2Shape_GetContactCapacity(Shape shape);

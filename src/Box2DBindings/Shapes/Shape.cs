@@ -402,7 +402,7 @@ public partial struct Shape : IEquatable<Shape>, IComparable<Shape>
     /// Gets the parent chain id if the shape type is a chain segment
     /// </summary>
     /// <returns>The parent chain id if the shape type is a chain segment, otherwise returns 0</returns>
-    public unsafe ChainShape GetParentChain() => b2Shape_GetParentChain(this);
+    public unsafe ChainShape GetParentChain() => ChainShape.GetChain(b2Shape_GetParentChain(this));
 
     /// <summary>
     /// Gets the contact data for this shape

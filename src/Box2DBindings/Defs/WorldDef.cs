@@ -173,6 +173,9 @@ public sealed class WorldDef
     /// <param name="finishTask">Finish task callback</param>
     /// <param name="userTaskContext">User task context</param>
     /// <param name="enableParallelEvents">Enable parallel processing of World events</param>
+    /// <remarks>
+    /// Parallel processing of World events is not a standard Box2D feature.
+    /// </remarks>
     public  WorldDef(  
         Vec2 gravity,
         float restitutionThreshold = 0.0f,

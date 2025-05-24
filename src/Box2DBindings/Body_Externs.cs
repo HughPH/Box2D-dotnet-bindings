@@ -74,7 +74,7 @@ namespace Box2D
         private static readonly unsafe delegate* unmanaged[Cdecl]<Body, in ShapeDefInternal, in Segment, Shape> b2CreateSegmentShape;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Body, in ShapeDefInternal, in Capsule, Shape> b2CreateCapsuleShape;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Body, in ShapeDefInternal, in Polygon, Shape> b2CreatePolygonShape;
-        private static readonly unsafe delegate* unmanaged[Cdecl]<Body, in ChainDefInternal, ChainShape> b2CreateChain;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<Body, in ChainDefInternal, ChainShapeId> b2CreateChain;
 
         static unsafe Body()
         {
@@ -219,7 +219,7 @@ namespace Box2D
             b2CreateSegmentShape = (delegate* unmanaged[Cdecl]<Body, in ShapeDefInternal, in Segment, Shape>)p66;
             b2CreateCapsuleShape = (delegate* unmanaged[Cdecl]<Body, in ShapeDefInternal, in Capsule, Shape>)p67;
             b2CreatePolygonShape = (delegate* unmanaged[Cdecl]<Body, in ShapeDefInternal, in Polygon, Shape>)p68;
-            b2CreateChain = (delegate* unmanaged[Cdecl]<Body, in ChainDefInternal, ChainShape>)p69;
+            b2CreateChain = (delegate* unmanaged[Cdecl]<Body, in ChainDefInternal, ChainShapeId>)p69;
         }
 #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyBody")]
@@ -430,7 +430,7 @@ namespace Box2D
     private static extern Shape b2CreatePolygonShape(Body bodyId, in ShapeDefInternal def, in Polygon polygon);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateChain")]
-    private static extern ChainShape b2CreateChain(Body bodyId, in ChainDefInternal def);
+    private static extern ChainShapeId b2CreateChain(Body bodyId, in ChainDefInternal def);
 #endif
     }
 }

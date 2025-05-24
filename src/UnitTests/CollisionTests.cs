@@ -329,7 +329,7 @@ namespace UnitTests
             var body2 = world.CreateBody(bodyDef2);
 
             // Create a chain on body 1 using ChainShape
-            var chainShape = new ChainShape(body1, new ChainDef(
+            var chainShape = body1.CreateChain(new ChainDef(
                 new[]
                     {
                         new Vec2(-3, 1), // Start point on the left
