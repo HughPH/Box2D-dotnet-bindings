@@ -1,6 +1,7 @@
 ﻿global using static Box2D.Core;
 using JetBrains.Annotations;
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -15,13 +16,21 @@ namespace Box2D;
 public static partial class Core
 {
     #if NET5_0_OR_GREATER
-    internal static string libraryName = "libbox2d." + Environment.OSVersion.Platform switch
-        {
-            PlatformID.Win32NT => "dll",
-            PlatformID.Unix => "so",
-            PlatformID.MacOSX => "dylib",
-            _ => ""
-        };
+    internal static string libraryName = Path.Combine("runtimes",
+        (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" :
+        RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
+        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx" : "") + "-" +
+        (RuntimeInformation.ProcessArchitecture switch
+            {
+                Architecture.X64 => "x64",
+                Architecture.Arm64 => "arm64",
+                Architecture.X86 => "x86",
+                _ => ""
+            }),
+        "native",
+        "libbox2d" + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".dll" :
+        RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? ".so" :
+        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ".dylib" : ""));
     #else
     internal const string libraryName = "libbox2d";
     #endif
