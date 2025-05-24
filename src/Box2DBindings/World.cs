@@ -46,6 +46,8 @@ public sealed partial class World
     internal readonly ConcurrentHashSet<Body> bodies = new();
 
     private static bool initialized;
+    
+    private bool parallelEvents = false;
 
     /// <summary>
     /// Create a world for rigid body simulation. A world contains bodies, shapes, and constraints. You may create up to 128 worlds. Each world is completely independent and may be simulated in parallel.
@@ -108,6 +110,8 @@ public sealed partial class World
             contactHitTaskCallback = ContactHitTaskCallback;
             contactHitTaskCallbackPointer = Marshal.GetFunctionPointerForDelegate(contactHitTaskCallback);
         }
+        
+        parallelEvents = def.EnableParallelEvents;
     }
     
     /// <summary>
@@ -181,7 +185,7 @@ public sealed partial class World
     /// <param name="timeStep">The amount of time to simulate, this should be a fixed number. Usually 1/60.</param>
     /// <param name="subStepCount">The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.</param>
     /// <param name="parallelEvents">If true, the events will be processed in parallel.</param>
-    public unsafe void Step(float timeStep = 0.016666668f, int subStepCount = 4, bool parallelEvents = false)
+    public unsafe void Step(float timeStep = 0.016666668f, int subStepCount = 4)
     {
         if (!Valid)
             throw new InvalidOperationException("World is not valid");
