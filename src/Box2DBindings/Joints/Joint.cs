@@ -74,13 +74,13 @@ public partial class Joint
     /// Gets body A on this joint
     /// </summary>
     /// <returns>The body A on this joint</returns>
-    public unsafe Body BodyA => Valid ? b2Joint_GetBodyA(id) : throw new InvalidOperationException("Joint is not valid");
+    public unsafe Body BodyA => Valid ? Body.GetBody(b2Joint_GetBodyA(id)) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets body B on this joint
     /// </summary>
     /// <returns>The body B on this joint</returns>
-    public unsafe Body BodyB => Valid ? b2Joint_GetBodyB(id) : throw new InvalidOperationException("Joint is not valid");
+    public unsafe Body BodyB => Valid ? Body.GetBody(b2Joint_GetBodyB(id)) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
     /// Gets the world that owns this joint

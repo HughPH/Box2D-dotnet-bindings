@@ -20,9 +20,9 @@ struct MouseJointDefInternal
     private static extern MouseJointDefInternal b2DefaultMouseJointDef();
 #endif
     
-    internal Body BodyA;
+    internal BodyId BodyA;
     
-    internal Body BodyB;
+    internal BodyId BodyB;
 
     internal Vec2 Target;
 

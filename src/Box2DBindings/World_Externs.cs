@@ -38,7 +38,7 @@ partial class World
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, nint, void> b2World_SetFrictionCallback_;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, nint, void> b2World_SetRestitutionCallback_;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, void> b2World_DumpMemoryStats;
-    private static unsafe delegate* unmanaged[Cdecl]<WorldId, in BodyDefInternal, Body> b2CreateBody;
+    private static unsafe delegate* unmanaged[Cdecl]<WorldId, in BodyDefInternal, BodyId> b2CreateBody;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, in DistanceJointDefInternal, JointId> b2CreateDistanceJoint;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, in MotorJointDefInternal, JointId> b2CreateMotorJoint;
     private static unsafe delegate* unmanaged[Cdecl]<WorldId, in MouseJointDefInternal, JointId> b2CreateMouseJoint;
@@ -174,7 +174,7 @@ partial class World
         b2World_SetFrictionCallback_ = (delegate* unmanaged[Cdecl]<WorldId, nint, void>)p30;
         b2World_SetRestitutionCallback_ = (delegate* unmanaged[Cdecl]<WorldId, nint, void>)p31;
         b2World_DumpMemoryStats = (delegate* unmanaged[Cdecl]<WorldId, void>)p32;
-        b2CreateBody = (delegate* unmanaged[Cdecl]<WorldId, in BodyDefInternal, Body>)p33;
+        b2CreateBody = (delegate* unmanaged[Cdecl]<WorldId, in BodyDefInternal, BodyId>)p33;
         b2CreateDistanceJoint = (delegate* unmanaged[Cdecl]<WorldId, in DistanceJointDefInternal, JointId>)p34;
         b2CreateMotorJoint = (delegate* unmanaged[Cdecl]<WorldId, in MotorJointDefInternal, JointId>)p35;
         b2CreateMouseJoint = (delegate* unmanaged[Cdecl]<WorldId, in MouseJointDefInternal, JointId>)p36;
@@ -308,7 +308,7 @@ partial class World
     private static extern void b2World_DumpMemoryStats(WorldId worldId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateBody")]
-    private static extern Body b2CreateBody(WorldId worldId, in BodyDefInternal def);
+    private static extern BodyId b2CreateBody(WorldId worldId, in BodyDefInternal def);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2CreateDistanceJoint")]
     private static extern JointId b2CreateDistanceJoint(WorldId worldId, in DistanceJointDefInternal def);

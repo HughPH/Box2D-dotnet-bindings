@@ -20,9 +20,9 @@ struct FilterJointDefInternal
     private static extern FilterJointDefInternal b2DefaultNullJointDef();
 #endif
     
-    internal Body BodyA;
+    internal BodyId BodyA;
     
-    internal Body BodyB;
+    internal BodyId BodyB;
 
     internal nint UserData;
 

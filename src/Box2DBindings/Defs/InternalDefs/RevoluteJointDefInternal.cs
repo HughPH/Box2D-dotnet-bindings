@@ -20,9 +20,9 @@ struct RevoluteJointDefInternal
     private static extern RevoluteJointDefInternal b2DefaultRevoluteJointDef();
 #endif
 
-    internal Body BodyA;
+    internal BodyId BodyA;
     
-    internal Body BodyB;
+    internal BodyId BodyB;
 
     internal Vec2 LocalAnchorA;
 

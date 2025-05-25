@@ -21,10 +21,10 @@ struct WeldJointDefInternal
 #endif
 
     [FieldOffset(0)]
-    internal Body BodyA;
+    internal BodyId BodyA;
 
     [FieldOffset(8)]
-    internal Body BodyB;
+    internal BodyId BodyB;
 
     [FieldOffset(16)]
     internal Vec2 LocalAnchorA;

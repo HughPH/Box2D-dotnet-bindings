@@ -17,12 +17,20 @@ public sealed class MouseJointDef
     /// <summary>
     /// The first attached body. This is assumed to be static.
     /// </summary>
-    public ref Body BodyA => ref _internal.BodyA;
+    public Body BodyA
+    {
+        get => Body.GetBody(_internal.BodyA);
+        set => _internal.BodyA = value.id;
+    }
 
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public ref Body BodyB => ref _internal.BodyB;
+    public Body BodyB
+    {
+        get => Body.GetBody(_internal.BodyB);
+        set => _internal.BodyB = value.id;
+    }
 
     /// <summary>
     /// The initial target point in world space

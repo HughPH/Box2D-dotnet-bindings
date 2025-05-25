@@ -23,12 +23,12 @@ struct MotorJointDefInternal
     /// <summary>
     /// The first attached body
     /// </summary>
-    internal Body BodyA;
+    internal BodyId BodyA;
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    internal Body BodyB;
+    internal BodyId BodyB;
 
     /// <summary>
     /// Position of bodyB minus the position of bodyA, in bodyA's frame

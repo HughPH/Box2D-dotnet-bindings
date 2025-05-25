@@ -13,22 +13,15 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public partial struct Body : IEquatable<Body>, IComparable<Body>
+public partial class Body : IEquatable<Body>, IComparable<Body>
 {
+    internal BodyId id;
 
+    private Shape[]? shapes;
 
-    internal int index1;
-    private ushort world0;
-    private ushort generation;
-
-    /// <summary>
-    /// Create a body in the supplied world using the supplied BodyDef
-    /// </summary>
-    /// <param name="world">The world in which to create the body</param>
-    /// <param name="def">The BodyDef to use to create the body</param>
-    public Body(World world, BodyDef def)
+    internal Body(BodyId id)
     {
-        this = world.CreateBody(def);
+        this.id = id;
     }
 
     /// <summary>
@@ -50,7 +43,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="other">The other Body object to compare with</param>
     /// <returns>True if the two Body objects are equal, false otherwise</returns>
-    public bool Equals(Body other) => index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+    public bool Equals(Body other) => id.index1 == other.id.index1 && id.world0 == other.id.world0 && id.generation == other.id.generation;
 
     /// <summary>
     /// Check if this Body object is equal to another object.
@@ -63,7 +56,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// Get the hash code for this Body object.
     /// </summary>
     /// <returns>The hash code for this Body object</returns>
-    public override int GetHashCode() => HashCode.Combine(index1, world0, generation);
+    public override int GetHashCode() => HashCode.Combine(id.index1, id.world0, id.generation);
 
     // equality operator
     /// <summary>
@@ -98,13 +91,22 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// or zero if they are equal</returns>
     public int CompareTo(Body other)
     {
-        int index1Comparison = index1.CompareTo(other.index1);
+        int index1Comparison = id.index1.CompareTo(other.id.index1);
         if (index1Comparison != 0)
             return index1Comparison;
-        int world0Comparison = world0.CompareTo(other.world0);
+        int world0Comparison = id.world0.CompareTo(other.id.world0);
         if (world0Comparison != 0)
             return world0Comparison;
-        return generation.CompareTo(other.generation);
+        return id.generation.CompareTo(other.id.generation);
+    }
+
+    private static Dictionary<BodyId, Body> bodies = new(BodyId.DefaultEqualityComparer);
+
+    internal static Body GetBody(BodyId id)
+    {
+        if (!bodies.TryGetValue(id, out var body))
+            bodies[id] = body = new Body(id);
+        return body;
     }
     
     /// <summary>
@@ -117,11 +119,11 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
         // remove self from world
         World.bodies.Remove(this);
         // dealloc user data
-        nint userDataPtr = b2Body_GetUserData(this);
+        nint userDataPtr = b2Body_GetUserData(id);
         FreeHandle(ref userDataPtr);
-        b2Body_SetUserData(this, 0);
+        b2Body_SetUserData(id, 0);
 
-        b2DestroyBody(this);
+        b2DestroyBody(id);
 
     }
 
@@ -130,19 +132,19 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <returns>True if the body id is valid</returns>
     /// <remarks>Can be used to detect orphaned ids. Provides validation for up to 64K allocations</remarks>
-    public unsafe bool Valid => b2Body_IsValid(this) != 0;
+    public unsafe bool Valid => b2Body_IsValid(id) != 0;
 
     /// <summary>
     /// The body type: static, kinematic, or dynamic.
     /// </summary>
     public unsafe BodyType Type
     {
-        get => Valid ? b2Body_GetType(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetType(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetType(this, value);
+            b2Body_SetType(id, value);
         }
     }
 
@@ -151,12 +153,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     public unsafe string? Name
     {
-        get => Valid ? Marshal.PtrToStringAnsi(b2Body_GetName(this)) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? Marshal.PtrToStringAnsi(b2Body_GetName(id)) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetName(this, value);
+            b2Body_SetName(id, value);
         }
     }
 
@@ -165,12 +167,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     public unsafe object? UserData
     {
-        get => Valid ? GetObjectAtPointer(b2Body_GetUserData, this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? GetObjectAtPointer(b2Body_GetUserData, id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, this, value);
+            SetObjectAtPointer(b2Body_GetUserData, b2Body_SetUserData, id, value);
         }
     }
 
@@ -178,12 +180,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// The world position of the body.
     /// </summary>
     /// <remarks>This is the location of the body origin</remarks>
-    public unsafe Vec2 Position => Valid ? b2Body_GetPosition(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 Position => Valid ? b2Body_GetPosition(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The world rotation of this body as a cosine/sine pair (complex number).
     /// </summary>
-    public unsafe Rotation Rotation => Valid ? b2Body_GetRotation(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Rotation Rotation => Valid ? b2Body_GetRotation(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The world transform of this body.
@@ -192,12 +194,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <i>Note: Generally you should create a body with the intended transform.</i></remarks>
     public unsafe Transform Transform
     {
-        get => Valid ? b2Body_GetTransform(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetTransform(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetTransform(this, value.Position, value.Rotation);
+            b2Body_SetTransform(id, value.Position, value.Rotation);
         }
     }
 
@@ -206,28 +208,28 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     /// <param name="worldPoint">The world point</param>
     /// <returns>The local point on the body</returns>
-    public unsafe Vec2 GetLocalPoint(Vec2 worldPoint) => Valid ? b2Body_GetLocalPoint(this, worldPoint) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 GetLocalPoint(Vec2 worldPoint) => Valid ? b2Body_GetLocalPoint(id, worldPoint) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// Get a world point on a body given a local point
     /// </summary>
     /// <param name="localPoint">The local point</param>
     /// <returns>The world point on the body</returns>
-    public unsafe Vec2 GetWorldPoint(Vec2 localPoint) => Valid ? b2Body_GetWorldPoint(this, localPoint) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 GetWorldPoint(Vec2 localPoint) => Valid ? b2Body_GetWorldPoint(id, localPoint) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// Get a local vector on a body given a world vector
     /// </summary>
     /// <param name="worldVector">The world vector</param>
     /// <returns>The local vector on the body</returns>
-    public unsafe Vec2 GetLocalVector(Vec2 worldVector) => Valid ? b2Body_GetLocalVector(this, worldVector) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 GetLocalVector(Vec2 worldVector) => Valid ? b2Body_GetLocalVector(id, worldVector) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// Get a world vector on a body given a local vector
     /// </summary>
     /// <param name="localVector">The local vector</param>
     /// <returns>The world vector on the body</returns>
-    public unsafe Vec2 GetWorldVector(Vec2 localVector) => Valid ? b2Body_GetWorldVector(this, localVector) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 GetWorldVector(Vec2 localVector) => Valid ? b2Body_GetWorldVector(id, localVector) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The linear velocity of the body's center of mass.
@@ -235,12 +237,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>Usually in meters per second</remarks>
     public unsafe Vec2 LinearVelocity
     {
-        get => Valid ? b2Body_GetLinearVelocity(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetLinearVelocity(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetLinearVelocity(this, value);
+            b2Body_SetLinearVelocity(id, value);
         }
     }
 
@@ -250,12 +252,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>In radians per second</remarks>
     public unsafe float AngularVelocity
     {
-        get => Valid ? b2Body_GetAngularVelocity(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetAngularVelocity(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetAngularVelocity(this, value);
+            b2Body_SetAngularVelocity(id, value);
         }
     }
 
@@ -271,7 +273,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_SetTargetTransform(this, target, timeStep);
+        b2Body_SetTargetTransform(id, target, timeStep);
     }
 
     /// <summary>
@@ -284,7 +286,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return b2Body_GetLocalPointVelocity(this, localPoint);
+        return b2Body_GetLocalPointVelocity(id, localPoint);
     }
 
     /// <summary>
@@ -297,7 +299,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return b2Body_GetWorldPointVelocity(this, worldPoint);
+        return b2Body_GetWorldPointVelocity(id, worldPoint);
     }
 
     /// <summary>
@@ -311,7 +313,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyForce(this, force, point, wake ? (byte)1 : (byte)0);
+        b2Body_ApplyForce(id, force, point, wake ? (byte)1 : (byte)0);
     }
 
     /// <summary>
@@ -325,7 +327,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyForceToCenter(this, force, wake ? (byte)1 : (byte)0);
+        b2Body_ApplyForceToCenter(id, force, wake ? (byte)1 : (byte)0);
     }
 
     /// <summary>
@@ -338,7 +340,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyTorque(this, torque, wake ? (byte)1 : (byte)0);
+        b2Body_ApplyTorque(id, torque, wake ? (byte)1 : (byte)0);
     }
 
     /// <summary>
@@ -353,7 +355,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyLinearImpulse(this, impulse, point, wake ? (byte)1 : (byte)0);
+        b2Body_ApplyLinearImpulse(id, impulse, point, wake ? (byte)1 : (byte)0);
     }
 
     /// <summary>
@@ -367,7 +369,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyLinearImpulseToCenter(this, impulse, wake ? (byte)1 : (byte)0);
+        b2Body_ApplyLinearImpulseToCenter(id, impulse, wake ? (byte)1 : (byte)0);
     }
 
     /// <summary>
@@ -381,40 +383,40 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyAngularImpulse(this, impulse, wake ? (byte)1 : (byte)0);
+        b2Body_ApplyAngularImpulse(id, impulse, wake ? (byte)1 : (byte)0);
     }
 
     /// <summary>
     /// The mass of the body, usually in kilograms.
     /// </summary>
-    public unsafe float Mass => Valid ? b2Body_GetMass(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe float Mass => Valid ? b2Body_GetMass(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The rotational inertia of the body, usually in kg*m².
     /// </summary>
-    public unsafe float RotationalInertia => Valid ? b2Body_GetRotationalInertia(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe float RotationalInertia => Valid ? b2Body_GetRotationalInertia(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The center of mass position of the body in local space.
     /// </summary>
-    public unsafe Vec2 LocalCenterOfMass => Valid ? b2Body_GetLocalCenterOfMass(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 LocalCenterOfMass => Valid ? b2Body_GetLocalCenterOfMass(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The center of mass position of the body in world space.
     /// </summary>
-    public unsafe Vec2 WorldCenterOfMass => Valid ? b2Body_GetWorldCenterOfMass(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe Vec2 WorldCenterOfMass => Valid ? b2Body_GetWorldCenterOfMass(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The mass data for this body.
     /// </summary>
     public unsafe MassData MassData
     {
-        get => Valid ? b2Body_GetMassData(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetMassData(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetMassData(this, value);
+            b2Body_SetMassData(id, value);
         }
     }
 
@@ -428,7 +430,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_ApplyMassFromShapes(this);
+        b2Body_ApplyMassFromShapes(id);
     }
 
     /// <summary>
@@ -437,12 +439,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
     public unsafe float LinearDamping
     {
-        get => Valid ? b2Body_GetLinearDamping(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetLinearDamping(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetLinearDamping(this, value);
+            b2Body_SetLinearDamping(id, value);
         }
     }
 
@@ -452,12 +454,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
     public unsafe float AngularDamping
     {
-        get => Valid ? b2Body_GetAngularDamping(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetAngularDamping(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetAngularDamping(this, value);
+            b2Body_SetAngularDamping(id, value);
         }
     }
 
@@ -467,12 +469,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>Normally this is set in BodyDef before creation</remarks>
     public unsafe float GravityScale
     {
-        get => Valid ? b2Body_GetGravityScale(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetGravityScale(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetGravityScale(this, value);
+            b2Body_SetGravityScale(id, value);
         }
     }
 
@@ -485,12 +487,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </remarks>
     public unsafe bool Awake
     {
-        get => Valid ? b2Body_IsAwake(this) != 0 : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsAwake(id) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetAwake(this, value ? (byte)1 : (byte)0);
+            b2Body_SetAwake(id, value ? (byte)1 : (byte)0);
         }
     }
 
@@ -500,12 +502,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>If sleeping is disabled the body will wake</remarks>
     public unsafe bool SleepEnabled
     {
-        get => Valid ? b2Body_IsSleepEnabled(this) != 0 : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsSleepEnabled(id) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_EnableSleep(this, value ? (byte)1 : (byte)0);
+            b2Body_EnableSleep(id, value ? (byte)1 : (byte)0);
         }
     }
 
@@ -514,12 +516,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     public unsafe float SleepThreshold
     {
-        get => Valid ? b2Body_GetSleepThreshold(this) : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_GetSleepThreshold(id) : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetSleepThreshold(this, value);
+            b2Body_SetSleepThreshold(id, value);
         }
     }
 
@@ -528,15 +530,15 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// </summary>
     public unsafe bool Enabled
     {
-        get => Valid ? b2Body_IsEnabled(this) != 0 : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsEnabled(id) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
             if (value)
-                b2Body_Enable(this);
+                b2Body_Enable(id);
             else
-                b2Body_Disable(this);
+                b2Body_Disable(id);
         }
     }
 
@@ -546,12 +548,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>Setting this causes the mass to be reset in all cases</remarks>
     public unsafe bool FixedRotation
     {
-        get => Valid ? b2Body_IsFixedRotation(this) != 0 : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsFixedRotation(id) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetFixedRotation(this, value ? (byte)1 : (byte)0);
+            b2Body_SetFixedRotation(id, value ? (byte)1 : (byte)0);
         }
     }
 
@@ -561,12 +563,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <remarks>A bullet does continuous collision detection against dynamic bodies (but not other bullets)</remarks>
     public unsafe bool Bullet
     {
-        get => Valid ? b2Body_IsBullet(this) != 0 : throw new InvalidOperationException("Body is not valid");
+        get => Valid ? b2Body_IsBullet(id) != 0 : throw new InvalidOperationException("Body is not valid");
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
-            b2Body_SetBullet(this, value ? (byte)1 : (byte)0);
+            b2Body_SetBullet(id, value ? (byte)1 : (byte)0);
         }
     }
 
@@ -579,7 +581,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_EnableContactEvents(this, flag ? (byte)1 : (byte)0);
+        b2Body_EnableContactEvents(id, flag ? (byte)1 : (byte)0);
     }
 
     /// <summary>
@@ -590,13 +592,13 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        b2Body_EnableHitEvents(this, flag ? (byte)1 : (byte)0);
+        b2Body_EnableHitEvents(id, flag ? (byte)1 : (byte)0);
     }
 
     /// <summary>
     /// The world that owns this body.
     /// </summary>
-    public unsafe World World => Valid ? World.GetWorld(b2Body_GetWorld(this)) : throw new InvalidOperationException("Body is not valid");
+    public unsafe World World => Valid ? World.GetWorld(b2Body_GetWorld(id)) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// The shapes attached to this body.
@@ -608,21 +610,26 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
 
-            int shapeCount = b2Body_GetShapeCount(this);
-            if (shapeCount == 0)
-                return [];
+            if (shapes is null)
+            {
+                int shapeCount = b2Body_GetShapeCount(id);
+                if (shapeCount == 0)
+                    return [];
 
-            Shape[] shapes =
+                Shape[] buffer =
 #if NET5_0_OR_GREATER
-                GC.AllocateUninitializedArray<Shape>(shapeCount);
+                    GC.AllocateUninitializedArray<Shape>(shapeCount);
 #else
-                new Shape[shapeCount];
+                    new Shape[shapeCount];
 #endif
 
-            fixed (Shape* shapeArrayPtr = shapes)
-                b2Body_GetShapes(this, shapeArrayPtr, shapeCount);
+                fixed (Shape* shapeArrayPtr = buffer)
+                    b2Body_GetShapes(id, shapeArrayPtr, shapeCount);
 
-            return shapes.AsSpan(0, shapeCount);
+                shapes = buffer[..shapeCount];
+            }
+
+            return shapes.AsSpan();
         }
     }
 
@@ -636,12 +643,12 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
 
-            int jointCount = b2Body_GetJointCount(this);
+            int jointCount = b2Body_GetJointCount(id);
             if (jointCount == 0)
                 return [];
 
             JointId* jointIds = stackalloc JointId[jointCount];
-            b2Body_GetJoints(this, jointIds, jointCount);
+            b2Body_GetJoints(id, jointIds, jointCount);
 
             Joint[] jointObjects =
 #if NET5_0_OR_GREATER
@@ -669,7 +676,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
             if (!Valid)
                 throw new InvalidOperationException("Body is not valid");
 
-            int needed = b2Body_GetContactCapacity(this);
+            int needed = b2Body_GetContactCapacity(id);
             if (needed == 0)
                 return [];
 
@@ -682,7 +689,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
             int written;
             fixed (ContactData* p = contactData)
             {
-                written = b2Body_GetContactData(this, p, contactData.Length);
+                written = b2Body_GetContactData(id, p, contactData.Length);
             }
             return contactData.AsSpan(0, written);
         }
@@ -692,7 +699,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// The current world AABB that contains all the attached shapes.
     /// </summary>
     /// <remarks>Note that this may not encompass the body origin. If there are no shapes attached then the returned AABB is empty and centered on the body origin</remarks>
-    public unsafe AABB AABB => Valid ? b2Body_ComputeAABB(this) : throw new InvalidOperationException("Body is not valid");
+    public unsafe AABB AABB => Valid ? b2Body_ComputeAABB(id) : throw new InvalidOperationException("Body is not valid");
 
     /// <summary>
     /// Creates a circle shape and attaches it to this body
@@ -705,7 +712,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return b2CreateCircleShape(this, in def._internal, circle);
+        return b2CreateCircleShape(id, in def._internal, circle);
     }
 
     /// <summary>
@@ -719,7 +726,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return b2CreateSegmentShape(this, in def._internal, segment);
+        return b2CreateSegmentShape(id, in def._internal, segment);
     }
 
     /// <summary>
@@ -733,7 +740,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return b2CreateCapsuleShape(this, in def._internal, capsule);
+        return b2CreateCapsuleShape(id, in def._internal, capsule);
     }
 
     /// <summary>
@@ -743,7 +750,7 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     /// <param name="polygon">The polygon</param>
     /// <returns>The shape</returns>
     /// <remarks>The shape definition and geometry are fully cloned. Contacts are not created until the next time step</remarks>
-    public unsafe Shape CreateShape(in ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(this, in def._internal, polygon);
+    public unsafe Shape CreateShape(in ShapeDef def, in Polygon polygon) => b2CreatePolygonShape(id, in def._internal, polygon);
 
     /// <summary>
     /// Creates a chain shape
@@ -754,6 +761,6 @@ public partial struct Body : IEquatable<Body>, IComparable<Body>
     {
         if (!Valid)
             throw new InvalidOperationException("Body is not valid");
-        return new(b2CreateChain(this, in def._internal));
+        return new(b2CreateChain(id, in def._internal));
     }
 }

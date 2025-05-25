@@ -19,12 +19,20 @@ public sealed class WheelJointDef
     /// <summary>
     /// The first attached body
     /// </summary>
-    public ref Body BodyA => ref _internal.BodyA;
+    public Body BodyA
+    {
+        get => Body.GetBody(_internal.BodyA);
+        set => _internal.BodyA = value.id;
+    }
 
     /// <summary>
     /// The second attached body
     /// </summary>
-    public ref Body BodyB => ref _internal.BodyB;
+    public Body BodyB
+    {
+        get => Body.GetBody(_internal.BodyB);
+        set => _internal.BodyB = value.id;
+    }
 
     /// <summary>
     /// The local anchor point relative to bodyA's origin
@@ -153,8 +161,8 @@ public sealed class WheelJointDef
         bool collideConnected = false,
         object? userData = null)
     {
-        _internal.BodyA = bodyA;
-        _internal.BodyB = bodyB;
+        BodyA = bodyA;
+        BodyB = bodyB;
         _internal.LocalAnchorA = anchorA;
         _internal.LocalAnchorB = anchorB;
         _internal.LocalAxisA = axisA;

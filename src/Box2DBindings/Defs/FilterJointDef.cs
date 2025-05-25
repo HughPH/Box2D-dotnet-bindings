@@ -14,12 +14,20 @@ public sealed class FilterJointDef
     /// <summary>
     /// The first attached body.
     /// </summary>
-    public ref Body BodyA => ref _internal.BodyA;
+    public Body BodyA
+    {
+        get => Body.GetBody(_internal.BodyA);
+        set => _internal.BodyA = value.id;
+    }
 
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public ref Body BodyB => ref _internal.BodyB;
+    public Body BodyB
+    {
+        get => Body.GetBody(_internal.BodyB);
+        set => _internal.BodyB = value.id;
+    }
 
     /// <summary>
     /// User data

@@ -20,9 +20,9 @@ struct DistanceJointDefInternal
     private static extern DistanceJointDefInternal b2DefaultDistanceJointDef();
 #endif
     
-    internal Body BodyA;
+    internal BodyId BodyA;
 
-    internal Body BodyB;
+    internal BodyId BodyB;
 
     internal Vec2 LocalAnchorA;
 

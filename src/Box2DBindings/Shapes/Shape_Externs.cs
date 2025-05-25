@@ -9,7 +9,7 @@ namespace Box2D
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, byte, void> b2DestroyShape;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, byte> b2Shape_IsValid;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, ShapeType> b2Shape_GetType;
-        private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, Body> b2Shape_GetBody;
+        private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, BodyId> b2Shape_GetBody;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, WorldId> b2Shape_GetWorld;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, byte> b2Shape_IsSensor;
         private static readonly unsafe delegate* unmanaged[Cdecl]<Shape, byte, void> b2Shape_EnableSensorEvents;
@@ -108,7 +108,7 @@ namespace Box2D
             b2DestroyShape = (delegate* unmanaged[Cdecl]<Shape, byte, void>)p0;
             b2Shape_IsValid = (delegate* unmanaged[Cdecl]<Shape, byte>)p1;
             b2Shape_GetType = (delegate* unmanaged[Cdecl]<Shape, ShapeType>)p2;
-            b2Shape_GetBody = (delegate* unmanaged[Cdecl]<Shape, Body>)p3;
+            b2Shape_GetBody = (delegate* unmanaged[Cdecl]<Shape, BodyId>)p3;
             b2Shape_GetWorld = (delegate* unmanaged[Cdecl]<Shape, WorldId>)p4;
             b2Shape_IsSensor = (delegate* unmanaged[Cdecl]<Shape, byte>)p5;
             b2Shape_EnableSensorEvents = (delegate* unmanaged[Cdecl]<Shape, byte, void>)p6;
@@ -164,7 +164,7 @@ namespace Box2D
     private static extern ShapeType b2Shape_GetType(Shape shape);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetBody")]
-    private static extern Body b2Shape_GetBody(Shape shape);
+    private static extern BodyId b2Shape_GetBody(Shape shape);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Shape_GetWorld")]
     private static extern WorldId b2Shape_GetWorld(Shape shape);

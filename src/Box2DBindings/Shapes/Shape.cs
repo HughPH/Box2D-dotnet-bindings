@@ -136,7 +136,7 @@ public partial struct Shape : IEquatable<Shape>, IComparable<Shape>
     /// Gets the body that this shape is attached to
     /// </summary>
     /// <returns>The body that this shape is attached to</returns>
-    public unsafe Body Body => Valid ? b2Shape_GetBody(this) : throw new InvalidOperationException("Shape is not valid");
+    public unsafe Body Body => Valid ? Body.GetBody(b2Shape_GetBody(this)) : throw new InvalidOperationException("Shape is not valid");
 
     /// <summary>
     /// Gets the world that this shape belongs to

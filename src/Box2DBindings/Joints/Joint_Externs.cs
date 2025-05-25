@@ -8,8 +8,8 @@ namespace Box2D
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, void> b2DestroyJoint;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, byte> b2Joint_IsValid;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, JointType> b2Joint_GetType;
-    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Body> b2Joint_GetBodyA;
-    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Body> b2Joint_GetBodyB;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, BodyId> b2Joint_GetBodyA;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, BodyId> b2Joint_GetBodyB;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, WorldId> b2Joint_GetWorld;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetLocalAnchorA;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetLocalAnchorB;
@@ -43,8 +43,8 @@ namespace Box2D
         b2DestroyJoint = (delegate* unmanaged[Cdecl]<JointId, void>)p0;
         b2Joint_IsValid = (delegate* unmanaged[Cdecl]<JointId, byte>)p1;
         b2Joint_GetType = (delegate* unmanaged[Cdecl]<JointId, JointType>)p2;
-        b2Joint_GetBodyA = (delegate* unmanaged[Cdecl]<JointId, Body>)p3;
-        b2Joint_GetBodyB = (delegate* unmanaged[Cdecl]<JointId, Body>)p4;
+        b2Joint_GetBodyA = (delegate* unmanaged[Cdecl]<JointId, BodyId>)p3;
+        b2Joint_GetBodyB = (delegate* unmanaged[Cdecl]<JointId, BodyId>)p4;
         b2Joint_GetWorld = (delegate* unmanaged[Cdecl]<JointId, WorldId>)p5;
         b2Joint_GetLocalAnchorA = (delegate* unmanaged[Cdecl]<JointId, Vec2>)p6;
         b2Joint_GetLocalAnchorB = (delegate* unmanaged[Cdecl]<JointId, Vec2>)p7;
@@ -67,10 +67,10 @@ namespace Box2D
     private static extern JointType b2Joint_GetType(JointId jointId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyA")]
-    private static extern Body b2Joint_GetBodyA(JointId jointId);
+    private static extern BodyId b2Joint_GetBodyA(JointId jointId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetBodyB")]
-    private static extern Body b2Joint_GetBodyB(JointId jointId);
+    private static extern BodyId b2Joint_GetBodyB(JointId jointId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetWorld")]
     private static extern WorldId b2Joint_GetWorld(JointId jointId);

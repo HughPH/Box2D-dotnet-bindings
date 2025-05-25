@@ -681,9 +681,10 @@ public sealed partial class World
     /// <returns>The body</returns>
     public unsafe Body CreateBody(BodyDef def)
     {
-        Body body = b2CreateBody(id, def._internal);
+        BodyId bodyId = b2CreateBody(id, def._internal);
+        Body body = Body.GetBody(bodyId);
         if (!body.Valid)
-            return default;
+            return default!;
         bodies.Add(body);
         return body;
     }
