@@ -331,18 +331,23 @@ jobs:
             -   name: "Run UPX on native libs"
                 run: |
                     if [ -f src/Box2DBindings/native/linux-x64/libbox2d.so ]; then
+                        chmod +x src/Box2DBindings/native/linux-x64/libbox2d.so 
                         upx src/Box2DBindings/native/linux-x64/libbox2d.so
                     fi
                     if [ -f src/Box2DBindings/native/linux-x86/libbox2d.so ]; then
+                        chmod +x src/Box2DBindings/native/linux-x86/libbox2d.so
                         upx src/Box2DBindings/native/linux-x86/libbox2d.so
                     fi
                     if [ -f src/Box2DBindings/native/linux-arm64/libbox2d.so ]; then
+                        chmod +x src/Box2DBindings/native/linux-arm64/libbox2d.so
                         upx src/Box2DBindings/native/linux-arm64/libbox2d.so
                     fi
                     if [ -f src/Box2DBindings/native/win-x64/libbox2d.dll ]; then
+                        chmod +x src/Box2DBindings/native/win-x64/libbox2d.dll
                         upx src/Box2DBindings/native/win-x64/libbox2d.dll
                     fi
                     if [ -f src/Box2DBindings/native/win-x86/libbox2d.dll ]; then
+                        chmod +x src/Box2DBindings/native/win-x86/libbox2d.dll
                         upx src/Box2DBindings/native/win-x86/libbox2d.dll
                     fi
 
