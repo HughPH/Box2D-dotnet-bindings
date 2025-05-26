@@ -4,6 +4,7 @@ namespace Box2D;
 
 /// <summary>
 /// Results of a Box2D raycast query, including intersection details and traversal statistics.
+/// If there is initial overlap the fraction and normal will be zero while the point is an arbitrary point in the overlap region.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public readonly ref struct RayResult

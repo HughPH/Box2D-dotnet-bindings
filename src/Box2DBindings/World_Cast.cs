@@ -77,7 +77,7 @@ public partial class World
 #region RayCastClosest
 
     /// <summary>
-    /// Cast a ray into the world to collect the closest hit. This is a convenience function.
+    /// Cast a ray into the world to collect the closest hit. This is a convenience function. Ignores initial overlap.
     /// </summary>
     /// <param name="origin">The start point of the ray</param>
     /// <param name="translation">The translation of the ray from the start point to the end point</param>
@@ -152,7 +152,8 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
+    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points.<br/>
+    /// <i>Note: The callback function may receive shapes in any order</i></remarks>
     public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
@@ -175,7 +176,8 @@ public partial class World
     /// <param name="callback">A user implemented callback function</param>
     /// /// <param name="context">A user context that is passed along to the callback function</param>
     /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
+    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points.<br/>
+    /// <i>Note: The callback function may receive shapes in any order</i></remarks>
     public unsafe TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
     {
         return b2World_CastRay(id, origin, translation, filter, callback, context);

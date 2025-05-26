@@ -13,6 +13,10 @@ namespace Box2D
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, WorldId> b2Joint_GetWorld;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetLocalAnchorA;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetLocalAnchorB;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2, void> b2Joint_SetLocalAnchorA;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2, void> b2Joint_SetLocalAnchorB;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2Joint_GetLinearSeparation;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2Joint_GetAngularSeparation;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, byte, void> b2Joint_SetCollideConnected;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, byte> b2Joint_GetCollideConnected;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, nint, void> b2Joint_SetUserData;
@@ -39,6 +43,10 @@ namespace Box2D
         NativeLibrary.TryGetExport(lib, "b2Joint_WakeBodies", out var p12);
         NativeLibrary.TryGetExport(lib, "b2Joint_GetConstraintForce", out var p13);
         NativeLibrary.TryGetExport(lib, "b2Joint_GetConstraintTorque", out var p14);
+        NativeLibrary.TryGetExport(lib, "b2Joint_SetLocalAnchorA", out var p15);
+        NativeLibrary.TryGetExport(lib, "b2Joint_SetLocalAnchorB", out var p16);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetLinearSeparation", out var p17);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetAngularSeparation", out var p18);
 
         b2DestroyJoint = (delegate* unmanaged[Cdecl]<JointId, void>)p0;
         b2Joint_IsValid = (delegate* unmanaged[Cdecl]<JointId, byte>)p1;
@@ -55,6 +63,10 @@ namespace Box2D
         b2Joint_WakeBodies = (delegate* unmanaged[Cdecl]<JointId, void>)p12;
         b2Joint_GetConstraintForce = (delegate* unmanaged[Cdecl]<JointId, Vec2>)p13;
         b2Joint_GetConstraintTorque = (delegate* unmanaged[Cdecl]<JointId, float>)p14;
+        b2Joint_SetLocalAnchorA = (delegate* unmanaged[Cdecl]<JointId, Vec2, void>)p15;
+        b2Joint_SetLocalAnchorB = (delegate* unmanaged[Cdecl]<JointId, Vec2, void>)p16;
+        b2Joint_GetLinearSeparation = (delegate* unmanaged[Cdecl]<JointId, float>)p17;
+        b2Joint_GetAngularSeparation = (delegate* unmanaged[Cdecl]<JointId, float>)p18;
     }
 #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyJoint")]
@@ -101,6 +113,18 @@ namespace Box2D
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTorque")]
     private static extern float b2Joint_GetConstraintTorque(JointId jointId);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetLocalAnchorA")]
+    private static extern void b2Joint_SetLocalAnchorA(JointId jointId, Vec2 localAnchor);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetLocalAnchorB")]
+    private static extern void b2Joint_SetLocalAnchorB(JointId jointId, Vec2 localAnchor);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLinearSeparation")]
+    private static extern float b2Joint_GetLinearSeparation(JointId jointId);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetAngularSeparation")]
+    private static extern float b2Joint_GetAngularSeparation(JointId jointId);
 #endif
     }
 }

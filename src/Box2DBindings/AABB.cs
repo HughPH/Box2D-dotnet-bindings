@@ -16,7 +16,7 @@ namespace Box2D;
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct AABB : IEquatable<AABB>
+public partial struct AABB : IEquatable<AABB>
 {
     /// <summary>
     /// The lower bound of the AABB
@@ -26,6 +26,12 @@ public struct AABB : IEquatable<AABB>
     /// The upper bound of the AABB
     /// </summary>
     public Vec2 UpperBound;
+
+    /// <summary>
+    /// Checks if this AABB is valid.
+    /// </summary>
+    /// <remarks>Upper bound must be greater than or equal to lower bound and coordinates must not be NaN or infinity.</remarks>
+    public unsafe bool Valid => b2IsValidAABB(this) != 0;
 
     /// <summary>
     /// Constructs an AABB with the given lower and upper bounds

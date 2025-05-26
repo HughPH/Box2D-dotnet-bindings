@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Box2D;
 
 /// <summary>
-/// Low level ray cast or shape-cast output data
+/// Low level ray cast or shape-cast output data. Returns a zero fraction and normal in the case of initial overlap.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]

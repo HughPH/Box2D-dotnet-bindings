@@ -88,16 +88,32 @@ public partial class Joint
     public unsafe World World => Valid ? World.GetWorld(b2Joint_GetWorld(id)) : throw new InvalidOperationException("Joint is not valid");
 
     /// <summary>
-    /// Gets the local anchor on body A
+    /// The local anchor on body A
     /// </summary>
-    /// <returns>The local anchor on body A</returns>
-    public unsafe Vec2 LocalAnchorA => Valid ? b2Joint_GetLocalAnchorA(id) : throw new InvalidOperationException("Joint is not valid");
+    public unsafe Vec2 LocalAnchorA
+    {
+        get => Valid ? b2Joint_GetLocalAnchorA(id) : throw new InvalidOperationException("Joint is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            b2Joint_SetLocalAnchorA(id, value);
+        }
+    }
 
     /// <summary>
-    /// Gets the local anchor on body B
+    /// The local anchor on body B
     /// </summary>
-    /// <returns>The local anchor on body B</returns>
-    public unsafe Vec2 LocalAnchorB => Valid ? b2Joint_GetLocalAnchorB(id) : throw new InvalidOperationException("Joint is not valid");
+    public unsafe Vec2 LocalAnchorB
+    {
+        get => Valid ? b2Joint_GetLocalAnchorB(id) : throw new InvalidOperationException("Joint is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            b2Joint_SetLocalAnchorB(id, value);
+        }
+    }
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide
@@ -145,4 +161,16 @@ public partial class Joint
     /// <returns>The current constraint torque for this joint</returns>
     /// <remarks>Usually in Newton * meters</remarks>
     public unsafe float ConstraintTorque => Valid ? b2Joint_GetConstraintTorque(id) : throw new InvalidOperationException("Joint is not valid");
+
+    /// <summary>
+    /// Gets the current linear separation error for this joint
+    /// </summary>
+    /// <remarks>Does not consider admissible movement. Usually in meters.</remarks>
+    public unsafe float LinearSeparation => Valid ? b2Joint_GetLinearSeparation(id) : throw new InvalidOperationException("Joint is not valid");
+
+    /// <summary>
+    /// Gets the current angular separation error for this joint
+    /// </summary>
+    /// <remarks>Does not consider admissible movement. Usually in meters.</remarks>
+    public unsafe float AngularSeparation => Valid ? b2Joint_GetAngularSeparation(id) : throw new InvalidOperationException("Joint is not valid");
 }

@@ -135,6 +135,12 @@
       <Compile Update="Body_Externs.cs">
         <DependentUpon>Body.cs</DependentUpon>
       </Compile>
+      <Compile Update="AABB_Externs.cs">
+        <DependentUpon>AABB.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Rotation_Externs.cs">
+        <DependentUpon>Rotation.cs</DependentUpon>
+      </Compile>
       <Compile Update="Core_Externs.cs">
         <DependentUpon>Core.cs</DependentUpon>
       </Compile>

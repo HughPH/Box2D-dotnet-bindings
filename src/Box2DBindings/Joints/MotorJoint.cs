@@ -24,7 +24,8 @@ public sealed partial class MotorJoint : Joint
     }
 
     /// <summary>
-    /// The angular offset target in radians on this motor joint
+    /// The angular offset target in radians on this motor joint. When setting, this angle will be unwound
+    /// so the motor will drive along the shortest arc.
     /// </summary>
     public unsafe float AngularOffset
     {

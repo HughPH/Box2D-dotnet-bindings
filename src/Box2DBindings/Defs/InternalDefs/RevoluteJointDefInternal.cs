@@ -29,6 +29,8 @@ struct RevoluteJointDefInternal
     internal Vec2 LocalAnchorB;
 
     internal float ReferenceAngle;
+    
+    internal float TargetAngle;
 
     internal byte EnableSpring;
 

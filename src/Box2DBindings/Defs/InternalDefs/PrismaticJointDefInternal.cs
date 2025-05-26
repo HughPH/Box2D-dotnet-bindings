@@ -31,6 +31,8 @@ struct PrismaticJointDefInternal
     internal Vec2 LocalAxisA;
 
     internal float ReferenceAngle;
+    
+    internal float TargetTranslation;
 
     internal byte EnableSpring;
 
