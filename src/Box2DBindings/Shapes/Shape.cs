@@ -14,10 +14,10 @@ namespace Box2D;
 [PublicAPI]
 public partial struct Shape : IEquatable<Shape>, IComparable<Shape>
 {
-    private int index1;
-    private ushort world0;
-    private ushort generation;
-
+    internal int index1;
+    internal ushort world0;
+    internal ushort generation;
+    
     /// <summary>
     /// Create a shape on the specified body with the specified definition.
     /// </summary>

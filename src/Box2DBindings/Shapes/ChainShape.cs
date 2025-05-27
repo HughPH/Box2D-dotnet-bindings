@@ -43,7 +43,7 @@ struct ChainShapeId : IEquatable<ChainShapeId>, IComparable<ChainShapeId>
 [PublicAPI]
 public partial class ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
 {
-    private ChainShapeId id;
+    internal ChainShapeId id;
     
     internal ChainShape(ChainShapeId id)
     {

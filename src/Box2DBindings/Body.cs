@@ -15,12 +15,10 @@ namespace Box2D;
 [PublicAPI]
 public partial struct Body : IEquatable<Body>, IComparable<Body>
 {
-
-
     internal int index1;
-    private ushort world0;
-    private ushort generation;
-
+    internal ushort world0;
+    internal ushort generation;
+    
     /// <summary>
     /// Create a body in the supplied world using the supplied BodyDef
     /// </summary>
