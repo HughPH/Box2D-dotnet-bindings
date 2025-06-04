@@ -33,7 +33,7 @@ Box2D.NET is a copy-paste code port of Box2D even down to the Tracy integration.
 ### Box2D-dotnet-bindings (this project/package)
 By contrast, this is a hand-crafted API that is designed to be more idiomatic to dotnet coders. These bindings also have full XmlDoc comments and fully defined delegates, and overloads that take generic type arguments and consume and deliver Spans of data instead of pointers. Heap allocation is consciously kept to a minimum. The world can be browsed in the debugger.
 
-"Better" is probably subjective: this library is designed to bring quality of life improvements. *This API is complete up to 3.1.0 and will be upgraded as new versions of Box2D are released.* 
+"Better" is probably subjective: this library is designed to bring quality of life improvements. *This API is complete up to 3.1.1 and will be upgraded as new versions of Box2D are released.* 
 
 ## Getting things working
 Just install this package. It should work. If not, *please* [raise an issue in the github repository](https://github.com/HughPH/Box2D-dotnet-bindings/issues)
