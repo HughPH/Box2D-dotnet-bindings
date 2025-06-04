@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 struct DistanceJointDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<DistanceJointDefInternal> b2DefaultDistanceJointDef;
+
+    static unsafe DistanceJointDefInternal()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultDistanceJointDef", out var ptr);
+        b2DefaultDistanceJointDef = (delegate* unmanaged[Cdecl]<DistanceJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
+    private static extern DistanceJointDefInternal b2DefaultDistanceJointDef();
+#endif
+    
     internal Body BodyA;
 
     internal Body BodyB;
@@ -40,10 +54,7 @@ struct DistanceJointDefInternal
 
     internal readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultDistanceJointDef")]
-    private static extern DistanceJointDefInternal GetDefault();
-    
-    private static DistanceJointDefInternal Default => GetDefault();
+    private static unsafe DistanceJointDefInternal Default => b2DefaultDistanceJointDef();
 
     public DistanceJointDefInternal()
     {

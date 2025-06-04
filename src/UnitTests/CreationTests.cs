@@ -177,7 +177,7 @@ public class CreationTests
             return 0;
         });
         
-        WorldDef worldDf = new WorldDef();
+        WorldDef worldDf = new WorldDef(){EnableParallelEvents = true};
         World world = World.CreateWorld(worldDf);
 
         world.BodyMove += OnWorldBodyMove;
@@ -212,7 +212,7 @@ public class CreationTests
         bodyB.Transform = transform;
         bodyB.CreateShape(shapeDef, circle);
         
-        world.Step(0.1f,4,true);
+        world.Step(0.1f,4);
     }
     
     private void OnWorldBodyMove(in BodyMoveEvent args)

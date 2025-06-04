@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit)]
 struct WeldJointDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<WeldJointDefInternal> b2DefaultWeldJointDef;
+
+    static unsafe WeldJointDefInternal()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultWeldJointDef", out var ptr);
+        b2DefaultWeldJointDef = (delegate* unmanaged[Cdecl]<WeldJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
+    private static extern WeldJointDefInternal b2DefaultWeldJointDef();
+#endif
+
     [FieldOffset(0)]
     internal Body BodyA;
 
@@ -42,10 +56,7 @@ struct WeldJointDefInternal
     [FieldOffset(64)]
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultWeldJointDef")]
-    private static extern WeldJointDefInternal GetDefault();
-    
-    private static WeldJointDefInternal Default => GetDefault();
+    private static unsafe WeldJointDefInternal Default => b2DefaultWeldJointDef();
     
     public WeldJointDefInternal()
     {

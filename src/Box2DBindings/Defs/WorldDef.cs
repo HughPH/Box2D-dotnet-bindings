@@ -59,16 +59,6 @@ public sealed class WorldDef
     public ref float MaxContactPushSpeed => ref _internal.MaxContactPushSpeed;
 
     /// <summary>
-    /// Joint stiffness. Cycles per second.
-    /// </summary>
-    public ref float JointHertz => ref _internal.JointHertz;
-
-    /// <summary>
-    /// Joint bounciness. Non-dimensional.
-    /// </summary>
-    public ref float JointDampingRatio => ref _internal.JointDampingRatio;
-
-    /// <summary>
     /// Maximum linear speed. Usually meters per second.
     /// </summary>
     public ref float MaximumLinearSpeed => ref _internal.MaximumLinearSpeed;
@@ -143,6 +133,14 @@ public sealed class WorldDef
         get => GetObjectAtPointer(_internal.UserTaskContext);
         set => SetObjectAtPointer(ref _internal.UserTaskContext, value);
     }
+
+    /// <summary>
+    /// Enable parallel processing of World events - e.g. BodyMoveEvents, ContactEvents, SensorEvents
+    /// </summary>
+    /// <remarks>
+    /// This is not a standard Box2D feature.
+    /// </remarks>
+    public bool EnableParallelEvents;
     
     /// <summary>
     /// Construct a new world definition with the supplied values
@@ -164,6 +162,10 @@ public sealed class WorldDef
     /// <param name="enqueueTask">Enqueue task callback</param>
     /// <param name="finishTask">Finish task callback</param>
     /// <param name="userTaskContext">User task context</param>
+    /// <param name="enableParallelEvents">Enable parallel processing of World events</param>
+    /// <remarks>
+    /// Parallel processing of World events is not a standard Box2D feature.
+    /// </remarks>
     public  WorldDef(  
         Vec2 gravity,
         float restitutionThreshold = 0.0f,
@@ -171,8 +173,6 @@ public sealed class WorldDef
         float contactHertz = 0.0f,
         float contactDampingRatio = 0.0f,
         float maxContactPushSpeed = 0.0f,
-        float jointHertz = 0.0f,
-        float jointDampingRatio = 0.0f,
         float maximumLinearSpeed = 0.0f,
         bool enableSleep = true,
         bool enableContinuous = true,
@@ -181,7 +181,8 @@ public sealed class WorldDef
         RestitutionCallback? restitutionCallback = null,
         EnqueueTaskCallback? enqueueTask = null,
         FinishTaskCallback? finishTask = null,
-        object? userTaskContext = null)
+        object? userTaskContext = null,
+        bool enableParallelEvents = false)
     {
         Gravity = gravity;
         RestitutionThreshold = restitutionThreshold;
@@ -189,8 +190,6 @@ public sealed class WorldDef
         ContactHertz = contactHertz;
         ContactDampingRatio = contactDampingRatio;
         MaxContactPushSpeed = maxContactPushSpeed;
-        JointHertz = jointHertz;
-        JointDampingRatio = jointDampingRatio;
         MaximumLinearSpeed = maximumLinearSpeed;
         EnableSleep = enableSleep;
         EnableContinuous = enableContinuous;
@@ -206,5 +205,7 @@ public sealed class WorldDef
             FinishTask = finishTask;
         
         UserTaskContext = userTaskContext;
+        
+        EnableParallelEvents = enableParallelEvents;
     }
 }

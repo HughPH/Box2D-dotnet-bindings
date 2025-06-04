@@ -10,6 +10,20 @@ namespace Box2D;
 [PublicAPI]
 public struct SurfaceMaterial
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<SurfaceMaterial> b2DefaultSurfaceMaterial;
+
+    static unsafe SurfaceMaterial()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultSurfaceMaterial", out var ptr);
+        b2DefaultSurfaceMaterial = (delegate* unmanaged[Cdecl]<SurfaceMaterial>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultSurfaceMaterial")]
+    private static extern SurfaceMaterial b2DefaultSurfaceMaterial();
+#endif
+
     /// <summary>
     /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
     /// </summary>
@@ -43,16 +57,10 @@ public struct SurfaceMaterial
     public HexColor CustomColor;
     
     /// <summary>
-    /// The default surface material settings.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultSurfaceMaterial")]
-    private static extern SurfaceMaterial DefaultSurfaceMaterial();
-    
-    /// <summary>
     /// Construct a surface material with the default values.
     /// </summary>
-    public SurfaceMaterial()
+    public unsafe SurfaceMaterial()
     {
-        this = DefaultSurfaceMaterial();
+        this = b2DefaultSurfaceMaterial();
     }
 }

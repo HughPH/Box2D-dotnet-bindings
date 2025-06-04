@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 
 namespace Box2D.Comparers
@@ -10,8 +11,8 @@ namespace Box2D.Comparers
 
         public bool Equals(ChainShape x, ChainShape y) => x.Equals(y);
 
-        public int GetHashCode(ChainShape obj) => obj.GetHashCode();
+        public int GetHashCode(ChainShape obj) => HashCode.Combine(obj.id.index1, obj.id.world0, obj.id.generation);
         
-        public int Compare(ChainShape x, ChainShape y) => x.Equals(y) ? 0 : Comparer<ChainShape>.Default.Compare(x, y);
+        public int Compare(ChainShape x, ChainShape y) => x.Equals(y) ? 0 : Comparer<ChainShapeId>.Default.Compare(x.id, y.id);
     }
 }

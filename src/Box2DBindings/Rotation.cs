@@ -9,7 +9,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct Rotation : IEquatable<Rotation>
+public partial struct Rotation : IEquatable<Rotation>
 {
     /// <summary>
     /// Cosine component of the rotation.
@@ -25,6 +25,12 @@ public struct Rotation : IEquatable<Rotation>
     /// </summary>
     public static readonly Rotation Identity = new()
             { Cos = 1, Sin = 0 };
+
+    /// <summary>
+    /// Checks if this rotation is valid.
+    /// </summary>
+    /// <remarks>Not NaN or infinity and normalized.</remarks>
+    public unsafe bool Valid => b2IsValidRotation(this) != 0;
 
     /// <summary>
     /// Constructs a rotation from cosine and sine values.

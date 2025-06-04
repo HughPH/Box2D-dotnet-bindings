@@ -24,7 +24,7 @@ jobs:
             -   id: ref
                 name: "Fetch latest Box2D tag or commit"
                 run: |
-                    if [[ "${GITHUB_REF_NAME}" == "vnext" ]]; then
+                    if [[ "${GITHUB_REF_NAME}" == "public/vnext" ]]; then
                         # Get the latest commit hash for main
                         sha=$(gh api /repos/$BOX2D_REPO/commits/main --jq .sha)
                         echo "Using Box2D commit hash from main: $sha"
@@ -47,6 +47,7 @@ jobs:
                       version="$ts-$safe_branch"
                     fi
                     echo "value=$version" >> "$GITHUB_OUTPUT"
+                    echo "Computed version: $version"
 
     build-box2d-linux-x64:
         name: Build / retrieve Box2D native libs (Build & Test)
@@ -66,8 +67,11 @@ jobs:
             cancel-in-progress: false
 
         steps:
-            -   uses: actions/checkout@v4
-
+            -   id: purge
+                name: Move previous run to /dev/null for safekeeping
+                run: |
+                    rm -rf ./* 
+            
             -   id: cache
                 name: Restore native build cache
                 uses: actions/cache@v4
@@ -83,7 +87,7 @@ jobs:
                     git clone https://github.com/${{ env.BOX2D_REPO }} box2d-src
                     cd box2d-src
                     git checkout ${{ needs.detect-tag.outputs.box2d_ref }}
-
+                    
             -   name: "Configure & compile Box2D"
                 if: steps.cache.outputs.cache-hit != 'true'
                 run: |
@@ -119,7 +123,6 @@ jobs:
                     name: ${{ matrix.target }}
                     path: artefact/
                     retention-days: 7
-                    compression-level: '0'
                     if-no-files-found: 'error'
 
     build-box2d-main:
@@ -233,7 +236,6 @@ jobs:
                     name: ${{ matrix.target }}
                     path: artefact/
                     retention-days: 7
-                    compression-level: '0'
                     if-no-files-found: 'error'
     
     run-tests:
@@ -281,6 +283,7 @@ jobs:
             -   name: Run UnitTests (net9.0)
                 run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
 
+
     publish-docs:
         name: Publish documentation
         needs: [ run-tests ]
@@ -308,7 +311,7 @@ jobs:
     
     publish-bindings:
         name: Publish NuGet package
-        needs: [ run-tests, build-box2d-main ]
+        needs: [ run-tests, build-box2d-main, detect-tag ]
         if: ${{ github.ref == 'refs/heads/main' ||
             startsWith(github.ref_name, 'public/') }}
         runs-on: [self-hosted, Linux, X64]
@@ -324,12 +327,36 @@ jobs:
                 with:
                     path: src/Box2DBindings/native
                     pattern: "*"
+            
+            -   name: "Run UPX on native libs"
+                run: |
+                    if [ -f src/Box2DBindings/native/linux-x64/libbox2d.so ]; then
+                        chmod +x src/Box2DBindings/native/linux-x64/libbox2d.so 
+                        upx src/Box2DBindings/native/linux-x64/libbox2d.so
+                    fi
+                    if [ -f src/Box2DBindings/native/linux-x86/libbox2d.so ]; then
+                        chmod +x src/Box2DBindings/native/linux-x86/libbox2d.so
+                        upx src/Box2DBindings/native/linux-x86/libbox2d.so
+                    fi
+                    if [ -f src/Box2DBindings/native/linux-arm64/libbox2d.so ]; then
+                        chmod +x src/Box2DBindings/native/linux-arm64/libbox2d.so
+                        upx src/Box2DBindings/native/linux-arm64/libbox2d.so
+                    fi
+                    if [ -f src/Box2DBindings/native/win-x64/libbox2d.dll ]; then
+                        chmod +x src/Box2DBindings/native/win-x64/libbox2d.dll
+                        upx src/Box2DBindings/native/win-x64/libbox2d.dll
+                    fi
+                    if [ -f src/Box2DBindings/native/win-x86/libbox2d.dll ]; then
+                        chmod +x src/Box2DBindings/native/win-x86/libbox2d.dll
+                        upx src/Box2DBindings/native/win-x86/libbox2d.dll
+                    fi
 
             -   name: "Pack NuGet package"
                 run: |
                     dotnet pack src/Box2DBindings \
-                      -p:Version=${{ needs.detect-tag.outputs.pkg_ver }} \
+                      -p:PackageVersion=${{ needs.detect-tag.outputs.pkg_ver }} \
                       -c Release
+
             -   name: "Push to NuGet"
                 env:
                     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
@@ -337,4 +364,3 @@ jobs:
                     dotnet nuget push src/Box2DBindings/bin/Release/*.nupkg \
                       --api-key "$NUGET_API_KEY" \
                       --source "$NUGET_FEED"
-

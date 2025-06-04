@@ -1,60 +1,75 @@
 using Box2D.Comparers;
 using JetBrains.Annotations;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
+
+struct ChainShapeId : IEquatable<ChainShapeId>, IComparable<ChainShapeId>
+{
+    public int index1;
+    public ushort world0;
+    public ushort generation;
+
+    public ChainShapeId(int index1, ushort world0, ushort generation)
+    {
+        this.index1 = index1;
+        this.world0 = world0;
+        this.generation = generation;
+    }
+    public bool Equals(ChainShapeId other) =>
+        index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+    public override bool Equals(object? obj) =>
+        obj is ChainShapeId other && Equals(other);
+    public override int GetHashCode() =>
+        HashCode.Combine(index1, world0, generation);
+    public int CompareTo(ChainShapeId other)
+    {
+        int index1Comparison = index1.CompareTo(other.index1);
+        if (index1Comparison != 0)
+            return index1Comparison;
+        int world0Comparison = world0.CompareTo(other.world0);
+        if (world0Comparison != 0)
+            return world0Comparison;
+        return generation.CompareTo(other.generation);
+    }
+}
 
 /// <summary>
 /// A chain shape is a series of connected line segments.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
+public partial class ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
 {
-    private int index1;
-    private ushort world0;
-    private ushort generation;
+    internal ChainShapeId id;
     
-    /// <summary>
-    /// Create a ChainShape on the specified body with the specified definition.
-    /// </summary>
-    /// <param name="body">The body on which to create the shape</param>
-    /// <param name="def">The ChainDef definition</param>
-    public ChainShape(Body body, ChainDef def)
+    internal ChainShape(ChainShapeId id)
     {
-        this = body.CreateChain(def);
+        this.id = id;
+        if (!chainShapes.ContainsKey(id))
+            chainShapes[id] = this;
     }
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyChain")]
-    private static extern void b2DestroyChain(ChainShape chainId);
-    
+
     /// <summary>
     /// Destroys this chain shape
     /// </summary>
     /// <remarks>This will remove the chain shape from the world and destroy all contacts associated with this shape</remarks>
-    public void Destroy()
+    public unsafe void Destroy()
     {
         if (!Valid) return;
-        b2DestroyChain(this);
+        b2DestroyChain(id);
+        chainShapes.Remove(id);
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetWorld")]
-    private static extern WorldId b2Chain_GetWorld(ChainShape chainId);
     
     /// <summary>
     /// Gets the world that owns this chain shape
     /// </summary>
     /// <returns>The world that owns this chain shape</returns>
-    public World World => Valid ? World.GetWorld(b2Chain_GetWorld(this)) : throw new InvalidOperationException("Chain shape is not valid");
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegmentCount")]
-    private static extern int b2Chain_GetSegmentCount(ChainShape chainId);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetSegments")]
-    private static extern unsafe int b2Chain_GetSegments(ChainShape chainId, [In] Shape* segmentArray, int capacity);
+    public unsafe World World => Valid ? World.GetWorld(b2Chain_GetWorld(id)) : throw new InvalidOperationException("Chain shape is not valid");
+
+    private Shape[]? segments = null;
     
     /// <summary>
     /// The chain segments
@@ -65,92 +80,77 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            int needed = b2Chain_GetSegmentCount(this);
-            Shape[] buffer = 
+
+            if (segments is null)
+            {
+                int needed = b2Chain_GetSegmentCount(id);
+                Shape[] buffer =
 #if NET5_0_OR_GREATER
                 GC.AllocateUninitializedArray<Shape>(needed);
 #else
-                new Shape[needed];
+                    new Shape[needed];
 #endif
-            int written;
-            fixed (Shape* p = buffer)
-                written = b2Chain_GetSegments(this, p, buffer.Length);
-            return buffer.AsSpan(0, written);
+                int written;
+                fixed (Shape* p = buffer)
+                    written = b2Chain_GetSegments(id, p, buffer.Length);
+                
+                segments = buffer[..written];
+            }
+            return segments.AsSpan();
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetFriction")]
-    private static extern void b2Chain_SetFriction(ChainShape chainId, float friction);
-   
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetFriction")]
-    private static extern float b2Chain_GetFriction(ChainShape chainId);
     
     /// <summary>
     /// The chain friction
     /// </summary>
-    public float Friction
+    public unsafe float Friction
     {
-        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetFriction(this);
+        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetFriction(id);
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            b2Chain_SetFriction(this, value);
+            b2Chain_SetFriction(id, value);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetRestitution")]
-    private static extern void b2Chain_SetRestitution(ChainShape chainId, float restitution);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetRestitution")]
-    private static extern float b2Chain_GetRestitution(ChainShape chainId);
     
     /// <summary>
     /// The chain restitution (bounciness)
     /// </summary>
-    public float Restitution
+    public unsafe float Restitution
     {
-        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetRestitution(this);
+        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetRestitution(id);
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            b2Chain_SetRestitution(this, value);
+            b2Chain_SetRestitution(id, value);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_SetMaterial")]
-    private static extern void b2Chain_SetMaterial(ChainShape chainId, int material);
-    
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_GetMaterial")]
-    private static extern int b2Chain_GetMaterial(ChainShape chainId);
     
     /// <summary>
     /// The chain material
     /// </summary>
-    public int Material
+    public unsafe int Material
     {
-        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetMaterial(this);
+        get => !Valid ? throw new InvalidOperationException("The chain shape is not valid.") : b2Chain_GetMaterial(id);
         set
         {
             if (!Valid)
                 throw new InvalidOperationException("The chain shape is not valid.");
-            b2Chain_SetMaterial(this, value);
+            b2Chain_SetMaterial(id, value);
         }
     }
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Chain_IsValid")]
-    private static extern byte b2Chain_IsValid(ChainShape chainId);
     
     /// <summary>
     /// Checks if the chain shape is valid
     /// </summary>
     /// <returns>True if the chain shape is valid, false otherwise</returns>
-    public bool Valid => b2Chain_IsValid(this) != 0;
+    public unsafe bool Valid => b2Chain_IsValid(id) != 0;
 
     /// <summary>Checks equality between two <see cref="ChainShape"/> values.</summary>
     public bool Equals(ChainShape other) =>
-        index1 == other.index1 && world0 == other.world0 && generation == other.generation;
+        id.index1 == other.id.index1 && id.world0 == other.id.world0 && id.generation == other.id.generation;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) =>
@@ -158,7 +158,7 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
 
     /// <inheritdoc/>
     public override int GetHashCode() =>
-        HashCode.Combine(index1, world0, generation);
+        HashCode.Combine(id.index1, id.world0, id.generation);
 
     /// <summary>Default equality comparer for <see cref="ChainShape"/>.</summary>
     public static IEqualityComparer<ChainShape> DefaultEqualityComparer { get; } = ChainShapeComparer.Instance;
@@ -169,12 +169,21 @@ public struct ChainShape : IEquatable<ChainShape>, IComparable<ChainShape>
     /// <summary>Compares this instance to another <see cref="ChainShape"/>.</summary>
     public int CompareTo(ChainShape other)
     {
-        int index1Comparison = index1.CompareTo(other.index1);
+        int index1Comparison = id.index1.CompareTo(other.id.index1);
         if (index1Comparison != 0)
             return index1Comparison;
-        int world0Comparison = world0.CompareTo(other.world0);
+        int world0Comparison = id.world0.CompareTo(other.id.world0);
         if (world0Comparison != 0)
             return world0Comparison;
-        return generation.CompareTo(other.generation);
+        return id.generation.CompareTo(other.id.generation);
+    }
+    
+    private static Dictionary<ChainShapeId, ChainShape> chainShapes = new();
+    
+    internal static ChainShape GetChain(ChainShapeId id)
+    {
+        if (!chainShapes.TryGetValue(id, out ChainShape? chainShape))
+            chainShapes[id] = chainShape = new ChainShape(id);
+        return chainShape;
     }
 }

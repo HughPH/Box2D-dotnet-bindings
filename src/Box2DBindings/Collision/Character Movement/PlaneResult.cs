@@ -15,6 +15,11 @@ public readonly struct PlaneResult
     /// </summary>
     public readonly Plane Plane;
 
+    /// <summary>
+    /// The collision point on the shape.
+    /// </summary>
+    public readonly Vec2 Point;
+    
     private readonly byte hit;
 
     /// <summary>

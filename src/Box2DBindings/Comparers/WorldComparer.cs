@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Box2D.Comparers;
@@ -15,7 +16,7 @@ sealed class WorldComparer : IEqualityComparer<World>, IComparer<World>
         return EqualityComparer<WorldId>.Default.Equals(x.id, y.id);
     }
         
-    public int GetHashCode(World obj) => obj.id.GetHashCode();
+    public int GetHashCode(World obj) => HashCode.Combine(obj.id.index1, obj.id.generation);
         
     public int Compare(World? x, World? y)
     {

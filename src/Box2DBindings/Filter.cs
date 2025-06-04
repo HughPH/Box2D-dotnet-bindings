@@ -9,6 +9,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 public struct Filter
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<Filter> b2DefaultFilter;
+
+    static unsafe Filter()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultFilter", out var ptr);
+        b2DefaultFilter = (delegate* unmanaged[Cdecl]<Filter>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
+    private static extern Filter b2DefaultFilter();
+#endif
+    
     /// <summary>
     /// The collision category bits. Normally you would just set one bit. The category bits should
     /// represent your application object types. For example:
@@ -45,18 +59,12 @@ public struct Filter
     /// and apply that group index to all shapes on the ragdoll.
     /// </summary>
     public int GroupIndex;
-
-    /// <summary>
-    /// The default filter settings.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultFilter")]
-    private static extern Filter DefaultFilter();
-
+    
     /// <summary>
     /// Creates a filter with the default values.
     /// </summary>
-    public Filter()
+    public unsafe Filter()
     {
-        this = DefaultFilter();
+        this = b2DefaultFilter();
     }
 }

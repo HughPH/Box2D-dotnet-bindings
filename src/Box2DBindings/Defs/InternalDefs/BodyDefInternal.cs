@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)] // The alternative to LayoutKind.Explicit is to have two padding bytes between AllowFastRotation and internalValue
 struct BodyDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<BodyDefInternal> b2DefaultBodyDef;
+
+    static unsafe BodyDefInternal()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultBodyDef", out var ptr);
+        b2DefaultBodyDef = (delegate* unmanaged[Cdecl]<BodyDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
+    private static extern BodyDefInternal b2DefaultBodyDef();
+#endif
+    
     internal BodyType Type;
 
     internal Vec2 Position;
@@ -43,10 +57,7 @@ struct BodyDefInternal
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultBodyDef")]
-    private static extern BodyDefInternal GetDefault();
-    
-    private static BodyDefInternal Default => GetDefault();
+    private static unsafe BodyDefInternal Default => b2DefaultBodyDef();
 
     public BodyDefInternal()
     {

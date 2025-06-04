@@ -11,6 +11,20 @@ namespace Box2D;
 [PublicAPI]
 public struct ExplosionDef
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<ExplosionDef> b2DefaultExplosionDef;
+
+    static unsafe ExplosionDef()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultExplosionDef", out var ptr);
+        b2DefaultExplosionDef = (delegate* unmanaged[Cdecl]<ExplosionDef>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]
+    private static extern ExplosionDef b2DefaultExplosionDef();
+#endif
+    
     /// <summary>
     /// Mask bits to filter shapes
     /// </summary>
@@ -38,13 +52,10 @@ public struct ExplosionDef
     /// </summary>
     public float ImpulsePerLength;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultExplosionDef")]
-    private static extern ExplosionDef GetDefault();
-    
     /// <summary>
     /// The default explosion definition.
     /// </summary>
-    private static ExplosionDef Default => GetDefault();
+    private static unsafe ExplosionDef Default => b2DefaultExplosionDef();
     
     /// <summary>
     /// Creates a new explosion definition with the default values.

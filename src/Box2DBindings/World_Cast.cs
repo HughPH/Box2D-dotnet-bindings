@@ -76,26 +76,19 @@ public partial class World
 
 #region RayCastClosest
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRayClosest")]
-    private static extern RayResult b2World_CastRayClosest(WorldId worldId, Vec2 origin, Vec2 translation, QueryFilter filter);
-
     /// <summary>
-    /// Cast a ray into the world to collect the closest hit. This is a convenience function.
+    /// Cast a ray into the world to collect the closest hit. This is a convenience function. Ignores initial overlap.
     /// </summary>
     /// <param name="origin">The start point of the ray</param>
     /// <param name="translation">The translation of the ray from the start point to the end point</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <returns>The ray result</returns>
     /// <remarks>This is less general than b2World_CastRay() and does not allow for custom filtering</remarks>
-    public RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) =>
-        b2World_CastRayClosest(id, origin, translation, filter);
+    public unsafe RayResult CastRayClosest(Vec2 origin, Vec2 translation, QueryFilter filter) => b2World_CastRayClosest(id, origin, translation, filter);
 
 #endregion
 
 #region CastRay
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastRay")]
-    private static extern TreeStats b2World_CastRay(WorldId worldId, Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback fcn, nint context);
 
     /// <summary>
     /// Cast a ray into the world to collect shapes in the path of the ray.
@@ -159,7 +152,8 @@ public partial class World
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <param name="callback">A user implemented callback function</param>
     /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
+    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points.<br/>
+    /// <i>Note: The callback function may receive shapes in any order</i></remarks>
     public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultCallback callback)
     {
         nint contextBuffer = GCHandle.ToIntPtr(GCHandle.Alloc(callback));
@@ -182,8 +176,9 @@ public partial class World
     /// <param name="callback">A user implemented callback function</param>
     /// /// <param name="context">A user context that is passed along to the callback function</param>
     /// <returns>Traversal performance counters</returns>
-    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. The callback function may receive shapes in any order</remarks>
-    public TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
+    /// <remarks>Your callback function controls whether you get the closest point, any point, or n-points.<br/>
+    /// <i>Note: The callback function may receive shapes in any order</i></remarks>
+    public unsafe TreeStats CastRay(Vec2 origin, Vec2 translation, QueryFilter filter, CastResultNintCallback callback, nint context)
     {
         return b2World_CastRay(id, origin, translation, filter, callback, context);
     }
@@ -191,9 +186,6 @@ public partial class World
 #endregion
 
 #region CastShape
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastShape")]
-    private static extern TreeStats b2World_CastShape(WorldId worldId, in ShapeProxy proxy, Vec2 translation, QueryFilter filter, CastResultNintCallback fcn, nint context);
 
     /// <summary>
     /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
@@ -282,9 +274,6 @@ public partial class World
 
 #region CastMover
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CastMover")]
-    private static extern float b2World_CastMover(WorldId worldId, in Capsule mover, Vec2 translation, QueryFilter filter);
-
     /// <summary>
     /// Cast a capsule mover through the world. This is a special shape cast that handles sliding along other shapes while reducing clipping.
     /// </summary>
@@ -292,15 +281,12 @@ public partial class World
     /// <param name="translation">The translation of the capsule from the start point to the end point</param>
     /// <param name="filter">Contains bit flags to filter unwanted shapes from the results</param>
     /// <returns>The fraction of the translation that was completed before a collision occurred</returns>
-    public float CastMover(in Capsule mover, Vec2 translation, QueryFilter filter) =>
+    public unsafe float CastMover(in Capsule mover, Vec2 translation, QueryFilter filter) =>
         b2World_CastMover(id, in mover, translation, filter);
 
 #endregion
 
 #region CollideMover
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_CollideMover")]
-    private static extern void b2World_CollideMover(WorldId worldId, in Capsule mover, QueryFilter filter, PlaneResultNintCallback fcn, nint context);
 
     /// <summary>
     /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for kinematic character movement.
@@ -383,9 +369,6 @@ public partial class World
 #endregion
 
 #region OverlapAABB
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapAABB")]
-    private static extern TreeStats b2World_OverlapAABB(WorldId worldId, AABB aabb, QueryFilter filter, OverlapResultNintCallback fcn, nint context);
 
     /// <summary>
     /// Overlap test for all shapes that *potentially* overlap the provided AABB
@@ -471,9 +454,6 @@ public partial class World
 #endregion
 
 #region OverlapShape
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2World_OverlapShape")]
-    private static extern TreeStats b2World_OverlapShape(WorldId worldId, in ShapeProxy proxy, QueryFilter filter, OverlapResultNintCallback fcn, nint context);
 
     /// <summary>
     /// Overlap test for all shapes that overlap the provided shape proxy

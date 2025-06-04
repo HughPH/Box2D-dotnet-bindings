@@ -13,7 +13,7 @@
 
         <PackageReadmeFile>README.md</PackageReadmeFile>
         
-        <TargetFrameworks>netstandard2.1;net9.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;net5.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -21,18 +21,22 @@
         <LangVersion>preview</LangVersion>
 
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-        <Year>$([System.DateTime]::UtcNow.ToString("yyyy"))</Year>
-        <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
-        <Day>$([System.DateTime]::UtcNow.ToString("dd"))</Day>
-        <Hour>$([System.DateTime]::UtcNow.ToString("HH"))</Hour>
-        <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
         
-        <Version>$(Year).$(Month).$(Day).$(Hour)$(Minute)-threading-alpha-0</Version>
-        <AssemblyVersion>$(Year).$(Month).$(Day).$(Hour)$(Minute)</AssemblyVersion>
-        <Copyright>Copyright © 2025 Hugh Phoenix-Hulme</Copyright>
-        <PackageProjectUrl>https://github.com/HughPH/Box2D-dotnet-bindings/</PackageProjectUrl>
     </PropertyGroup>
+    
+    <Target Name="SetVersionDefaults" BeforeTargets="PrepareForBuild">
+        <PropertyGroup>
+            <Year>$([System.DateTime]::UtcNow.ToString("yyyy"))</Year>
+            <Month>$([System.DateTime]::UtcNow.ToString("MM"))</Month>
+            <Day>$([System.DateTime]::UtcNow.ToString("dd"))</Day>
+            <Hour>$([System.DateTime]::UtcNow.ToString("HH"))</Hour>
+            <Minute>$([System.DateTime]::UtcNow.ToString("mm"))</Minute>
+
+            <Version Condition="'$(Version)' == ''">$(Year).$(Month).$(Day).$(Hour)$(Minute)</Version>
+            <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(Version)</AssemblyVersion>
+            <PackageVersion Condition="'$(PackageVersion)' == ''">$(Version)-donotuse</PackageVersion>
+        </PropertyGroup>
+    </Target>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugType>none</DebugType>
@@ -74,6 +78,84 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Joints\DistanceJoint_Externs.cs">
+        <DependentUpon>DistanceJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\Joint_Externs.cs">
+        <DependentUpon>Joint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\MotorJoint_Externs.cs">
+        <DependentUpon>MotorJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Collision\Character Movement\Mover_Externs.cs">
+        <DependentUpon>Mover.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Collision\Character Movement\Plane_Externs.cs">
+        <DependentUpon>Plane.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Collision\DynamicTree_Externs.cs">
+        <DependentUpon>DynamicTree.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\MouseJoint_Externs.cs">
+        <DependentUpon>MouseJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\PrismaticJoint_Externs.cs">
+        <DependentUpon>PrismaticJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\RevoluteJoint_Externs.cs">
+        <DependentUpon>RevoluteJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\WeldJoint_Externs.cs">
+        <DependentUpon>WeldJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Joints\WheelJoint_Externs.cs">
+        <DependentUpon>WheelJoint.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Capsule_Externs.cs">
+        <DependentUpon>Capsule.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\ChainShape_Externs.cs">
+        <DependentUpon>ChainShape.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Circle_Externs.cs">
+        <DependentUpon>Circle.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Polygon_Externs.cs">
+        <DependentUpon>Polygon.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Segment_Externs.cs">
+        <DependentUpon>Segment.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Shapes\Shape_Externs.cs">
+        <DependentUpon>Shape.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Body_Externs.cs">
+        <DependentUpon>Body.cs</DependentUpon>
+      </Compile>
+      <Compile Update="AABB_Externs.cs">
+        <DependentUpon>AABB.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Rotation_Externs.cs">
+        <DependentUpon>Rotation.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Core_Externs.cs">
+        <DependentUpon>Core.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Cast.cs">
+        <DependentUpon>World.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Events.cs">
+        <DependentUpon>World.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Cast_Externs.cs">
+        <DependentUpon>World_Cast.cs</DependentUpon>
+      </Compile>
+      <Compile Update="World_Externs.cs">
+        <DependentUpon>World.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 

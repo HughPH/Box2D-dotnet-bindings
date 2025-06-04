@@ -9,7 +9,7 @@ namespace Box2D;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [PublicAPI]
-public struct Capsule
+public partial struct Capsule
 {
     /// <summary>
     /// Local center of the first semicircle
@@ -43,58 +43,28 @@ public struct Capsule
     }
     
     /// <summary>
-    /// Compute mass properties of a capsule
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleMass")]
-    private static extern MassData ComputeCapsuleMass(in Capsule shape, float density);
-
-    /// <summary>
     /// Compute mass properties of this capsule
     /// </summary>
-    public MassData ComputeMass(float density) => ComputeCapsuleMass(in this, density);
-    
-    /// <summary>
-    /// Compute the bounding box of a transformed capsule
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ComputeCapsuleAABB")]
-    private static extern AABB ComputeCapsuleAABB(in Capsule shape, Transform transform);
+    public unsafe MassData ComputeMass(float density) => ComputeCapsuleMass(in this, density);
     
     /// <summary>
     /// Compute the bounding box of this transformed capsule
     /// </summary>
-    public AABB ComputeAABB(in Transform transform) => ComputeCapsuleAABB(in this, transform);
-    
-    /// <summary>
-    /// Test a point for overlap with a capsule in local space
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2PointInCapsule")]
-    private static extern byte PointInCapsule(Vec2 point, in Capsule shape);
+    public unsafe AABB ComputeAABB(in Transform transform) => ComputeCapsuleAABB(in this, transform);
     
     /// <summary>
     /// Test a point for overlap with this capsule in local space
     /// </summary>
-    public bool TestPoint(in Vec2 point) => PointInCapsule(point, in this) != 0;
-    
-    /// <summary>
-    /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2RayCastCapsule")]
-    private static extern CastOutput RayCastCapsule(in RayCastInput input, in Capsule shape);
+    public unsafe bool TestPoint(in Vec2 point) => PointInCapsule(point, in this) != 0;
     
     /// <summary>
     /// Ray cast versus this capsule shape in local space. Initial overlap is treated as a miss.
     /// </summary>
-    public CastOutput RayCast(in RayCastInput input) => RayCastCapsule(in input, in this);
-
-    /// <summary>
-    /// Shape cast versus a capsule. Initial overlap is treated as a miss.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2ShapeCastCapsule")]
-    private static extern CastOutput ShapeCastCapsule(in ShapeCastInput input, in Capsule shape);
+    public unsafe CastOutput RayCast(in RayCastInput input) => RayCastCapsule(in input, in this);
 
     /// <summary>
     /// Shape cast versus this capsule. Initial overlap is treated as a miss.
     /// </summary>
-    public CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCapsule(in input, in this);
+    public unsafe CastOutput ShapeCast(in ShapeCastInput input) => ShapeCastCapsule(in input, in this);
 
 }

@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System;
 
 namespace Box2D;
 
@@ -42,6 +43,12 @@ public sealed class RevoluteJointDef
     /// This defines the zero angle for the joint limit.
     /// </summary>
     public ref float ReferenceAngle => ref _internal.ReferenceAngle;
+    
+    /// <summary>
+    /// The target angle for the joint in radians. The spring-damper will drive
+    /// to this angle.
+    /// </summary>
+    public ref float TargetAngle => ref _internal.TargetAngle;
 
     /// <summary>
     /// Enable a rotational spring on the revolute hinge axis
@@ -72,12 +79,12 @@ public sealed class RevoluteJointDef
     }
 
     /// <summary>
-    /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
+    /// The lower angle for the joint limit in radians. Minimum of -0.99*pi radians.
     /// </summary>
     public ref float LowerAngle => ref _internal.LowerAngle;
 
     /// <summary>
-    /// The upper angle for the joint limit in radians. Maximum of 0.95*pi radians.
+    /// The upper angle for the joint limit in radians. Maximum of 0.99*pi radians.
     /// </summary>
     public ref float UpperAngle => ref _internal.UpperAngle;
 
@@ -142,6 +149,7 @@ public sealed class RevoluteJointDef
     /// <param name="motorSpeed">The desired motor speed in radians per second</param>
     /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
     /// <param name="userData">User data</param>
+    [Obsolete("Warning: The constructor signature has changed, and now includes targetAngle after referenceAngle.")]
     public RevoluteJointDef(
         Body bodyA,
         Body bodyB,
@@ -165,6 +173,65 @@ public sealed class RevoluteJointDef
         LocalAnchorA = anchorA;
         LocalAnchorB = anchorB;
         ReferenceAngle = referenceAngle;
+        EnableSpring = enableSpring;
+        Hertz = hertz;
+        DampingRatio = dampingRatio;
+        EnableLimit = enableLimit;
+        LowerAngle = lowerAngle;
+        UpperAngle = upperAngle;
+        EnableMotor = enableMotor;
+        MaxMotorTorque = maxMotorTorque;
+        MotorSpeed = motorSpeed;
+        CollideConnected = collideConnected;
+        
+        UserData = userData;
+    }
+    
+    /// <summary>
+    /// Construct a revolute joint definition with the supplied values
+    /// </summary>
+    /// <param name="bodyA">The first attached body</param>
+    /// <param name="bodyB">The second attached body</param>
+    /// <param name="anchorA">The local anchor point relative to bodyA's origin</param>
+    /// <param name="anchorB">The local anchor point relative to bodyB's origin</param>
+    /// <param name="referenceAngle">The bodyB angle minus bodyA angle in the reference state (radians)</param>
+    /// <param name="targetAngle">The target angle for the joint limit in radians</param>
+    /// <param name="enableSpring">Enable a rotational spring on the revolute hinge axis</param>
+    /// <param name="hertz">The spring stiffness Hertz, cycles per second</param>
+    /// <param name="dampingRatio">The spring damping ratio, non-dimensional</param>
+    /// <param name="enableLimit">A flag to enable joint limits</param>
+    /// <param name="lowerAngle">The lower angle for the joint limit in radians</param>
+    /// <param name="upperAngle">The upper angle for the joint limit in radians</param>
+    /// <param name="enableMotor">A flag to enable the joint motor</param>
+    /// <param name="maxMotorTorque">The maximum motor torque, typically in newton-meters</param>
+    /// <param name="motorSpeed">The desired motor speed in radians per second</param>
+    /// <param name="collideConnected">Set this flag to true if the attached bodies should collide</param>
+    /// <param name="userData">User data</param>
+    public RevoluteJointDef(
+        Body bodyA,
+        Body bodyB,
+        Vec2 anchorA,
+        Vec2 anchorB,
+        float referenceAngle = 0.0f,
+        float targetAngle = 0.0f,
+        bool enableSpring = false,
+        float hertz = 0.0f,
+        float dampingRatio = 0.0f,
+        bool enableLimit = false,
+        float lowerAngle = 0.0f,
+        float upperAngle = 0.0f,
+        bool enableMotor = false,
+        float maxMotorTorque = 0.0f,
+        float motorSpeed = 0.0f,
+        bool collideConnected = false,
+        object? userData = null)
+    {
+        BodyA = bodyA;
+        BodyB = bodyB;
+        LocalAnchorA = anchorA;
+        LocalAnchorB = anchorB;
+        ReferenceAngle = referenceAngle;
+        TargetAngle = targetAngle;
         EnableSpring = enableSpring;
         Hertz = hertz;
         DampingRatio = dampingRatio;

@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Sequential)]
 struct PrismaticJointDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<PrismaticJointDefInternal> b2DefaultPrismaticJointDef;
+
+    static unsafe PrismaticJointDefInternal()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultPrismaticJointDef", out var ptr);
+        b2DefaultPrismaticJointDef = (delegate* unmanaged[Cdecl]<PrismaticJointDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
+    private static extern PrismaticJointDefInternal b2DefaultPrismaticJointDef();
+#endif
+    
     internal Body BodyA;
 
     internal Body BodyB;
@@ -17,6 +31,8 @@ struct PrismaticJointDefInternal
     internal Vec2 LocalAxisA;
 
     internal float ReferenceAngle;
+    
+    internal float TargetTranslation;
 
     internal byte EnableSpring;
 
@@ -43,10 +59,7 @@ struct PrismaticJointDefInternal
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultPrismaticJointDef")]
-    private static extern PrismaticJointDefInternal GetDefault();
-    
-    private static PrismaticJointDefInternal Default => GetDefault();
+    private static unsafe PrismaticJointDefInternal Default => b2DefaultPrismaticJointDef();
     
     public PrismaticJointDefInternal()
     {

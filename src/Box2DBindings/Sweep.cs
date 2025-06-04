@@ -12,6 +12,20 @@ namespace Box2D;
 [PublicAPI]
 public struct Sweep
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<in Sweep, float, Transform> b2GetSweepTransform;
+
+    static unsafe Sweep()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2GetSweepTransform", out var ptr);
+        b2GetSweepTransform = (delegate* unmanaged[Cdecl]<in Sweep, float, Transform>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
+    private static extern Transform b2GetSweepTransform(in Sweep sweep, float time);
+#endif
+
     /// <summary>
     /// Local center of mass position
     /// </summary>
@@ -38,14 +52,8 @@ public struct Sweep
     public Rotation Q2;
     
     /// <summary>
-    /// Evaluate the transform sweep at a specific time.
-    /// </summary>
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2GetSweepTransform")]
-    private static extern Transform GetSweepTransform(in Sweep sweep, float time);
-    
-    /// <summary>
     /// Get the transform at a specific time.
     /// </summary>
-    public Transform GetTransform(float time) => GetSweepTransform(this, time);
+    public unsafe Transform GetTransform(float time) => b2GetSweepTransform(this, time);
 
 }

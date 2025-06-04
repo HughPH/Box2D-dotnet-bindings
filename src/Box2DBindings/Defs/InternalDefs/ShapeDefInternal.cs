@@ -6,6 +6,20 @@ namespace Box2D;
 [StructLayout(LayoutKind.Explicit, Size = 80)]
 struct ShapeDefInternal
 {
+#if NET5_0_OR_GREATER
+    private static readonly unsafe delegate* unmanaged[Cdecl]<ShapeDefInternal> b2DefaultShapeDef;
+
+    static unsafe ShapeDefInternal()
+    {
+        nint lib = nativeLibrary;
+        NativeLibrary.TryGetExport(lib, "b2DefaultShapeDef", out var ptr);
+        b2DefaultShapeDef = (delegate* unmanaged[Cdecl]<ShapeDefInternal>)ptr;
+    }
+#else
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
+    private static extern ShapeDefInternal b2DefaultShapeDef();
+#endif
+    
     [FieldOffset( 0)]
     internal nint UserData;
     
@@ -42,10 +56,7 @@ struct ShapeDefInternal
     [FieldOffset(72)]
     internal readonly int internalValue;
     
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DefaultShapeDef")]
-    private static extern ShapeDefInternal GetDefault();
-    
-    private static ShapeDefInternal Default => GetDefault();
+    private static unsafe ShapeDefInternal Default => b2DefaultShapeDef();
     
     public ShapeDefInternal()
     {
