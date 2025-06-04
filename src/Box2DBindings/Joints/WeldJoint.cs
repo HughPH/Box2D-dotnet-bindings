@@ -17,19 +17,6 @@ public sealed partial class WeldJoint : Joint
     { }
 
     /// <summary>
-    /// The reference angle in radians on this weld joint
-    /// </summary>
-    public unsafe float ReferenceAngle
-    {
-        get => b2WeldJoint_GetReferenceAngle(id);
-        set
-        {
-            float angleInRadians = MathF.IEEERemainder(value, MathF.PI * 2);
-            b2WeldJoint_SetReferenceAngle(id, angleInRadians);
-        }
-    }
-
-    /// <summary>
     /// The weld joint linear stiffness in Hertz.
     /// </summary>
     public unsafe float LinearHertz

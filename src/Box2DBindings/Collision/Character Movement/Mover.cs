@@ -13,32 +13,32 @@ public partial class Mover
     /// <summary>
     /// Solves the position of a mover that satisfies the given collision planes.
     /// </summary>
-    /// <param name="position">This must be the position used to generate the collision planes</param>
+    /// <param name="targetDelta">The desired movement from the position used to generate the collision planes</param>
     /// <param name="planes">The collision planes</param>
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
-    public static unsafe PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes)
+    public static unsafe PlaneSolverResult SolvePlanes(in Vec2 targetDelta, CollisionPlane[] planes)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-        return b2SolvePlanes(position, planes, planes.Length);
+        return b2SolvePlanes(targetDelta, planes, planes.Length);
     }
     
     /// <summary>
     /// Solves the position of a mover that satisfies the given collision planes.
     /// </summary>
-    /// <param name="position">This must be the position used to generate the collision planes</param>
+    /// <param name="targetDelta">The desired movement from the position used to generate the collision planes</param>
     /// <param name="planes">The collision planes</param>
     /// <param name="planeCount">The number of planes to use</param>
     /// <returns>The result of the plane solver</returns>
     /// <exception cref="ArgumentNullException">The planes array is null or empty</exception>
     /// <remarks>This wraps <a href="https://box2d.org/documentation/group__character.html#ga7a3867906e407502b61822281afe4d04">b2SolvePlanes</a></remarks>
-    public static unsafe PlaneSolverResult SolvePlanes(in Vec2 position, CollisionPlane[] planes, int planeCount)
+    public static unsafe PlaneSolverResult SolvePlanes(in Vec2 targetDelta, CollisionPlane[] planes, int planeCount)
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-        return b2SolvePlanes(position, planes, planeCount);
+        return b2SolvePlanes(targetDelta, planes, planeCount);
     }
     
     /// <summary>

@@ -5,8 +5,6 @@ namespace Box2D
     public partial class WeldJoint
     {
 #if NET5_0_OR_GREATER
-    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2WeldJoint_GetReferenceAngle;
-    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2WeldJoint_SetReferenceAngle;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2WeldJoint_SetLinearHertz;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2WeldJoint_GetLinearHertz;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2WeldJoint_SetLinearDampingRatio;
@@ -19,8 +17,6 @@ namespace Box2D
     static unsafe WeldJoint()
     {
         nint lib = nativeLibrary;
-        NativeLibrary.TryGetExport(lib, "b2WeldJoint_GetReferenceAngle", out var p0);
-        NativeLibrary.TryGetExport(lib, "b2WeldJoint_SetReferenceAngle", out var p1);
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_SetLinearHertz", out var p2);
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_GetLinearHertz", out var p3);
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_SetLinearDampingRatio", out var p4);
@@ -30,8 +26,6 @@ namespace Box2D
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_SetAngularDampingRatio", out var p8);
         NativeLibrary.TryGetExport(lib, "b2WeldJoint_GetAngularDampingRatio", out var p9);
 
-        b2WeldJoint_GetReferenceAngle = (delegate* unmanaged[Cdecl]<JointId, float>)p0;
-        b2WeldJoint_SetReferenceAngle = (delegate* unmanaged[Cdecl]<JointId, float, void>)p1;
         b2WeldJoint_SetLinearHertz = (delegate* unmanaged[Cdecl]<JointId, float, void>)p2;
         b2WeldJoint_GetLinearHertz = (delegate* unmanaged[Cdecl]<JointId, float>)p3;
         b2WeldJoint_SetLinearDampingRatio = (delegate* unmanaged[Cdecl]<JointId, float, void>)p4;
@@ -42,12 +36,6 @@ namespace Box2D
         b2WeldJoint_GetAngularDampingRatio = (delegate* unmanaged[Cdecl]<JointId, float>)p9;
     }
 #else
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_GetReferenceAngle")]
-    private static extern float b2WeldJoint_GetReferenceAngle(JointId jointId);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetReferenceAngle")]
-    private static extern void b2WeldJoint_SetReferenceAngle(JointId jointId, float angleInRadians);
-
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2WeldJoint_SetLinearHertz")]
     private static extern void b2WeldJoint_SetLinearHertz(JointId jointId, float hertz);
 

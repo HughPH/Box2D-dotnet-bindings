@@ -173,4 +173,55 @@ public partial class Joint
     /// </summary>
     /// <remarks>Does not consider admissible movement. Usually in meters.</remarks>
     public unsafe float AngularSeparation => Valid ? b2Joint_GetAngularSeparation(id) : throw new InvalidOperationException("Joint is not valid");
+
+    /// <summary>
+    /// The reference angle in radians for joints that support it.
+    /// </summary>
+    public unsafe float ReferenceAngle
+    {
+        get => Valid ? b2Joint_GetReferenceAngle(id) : throw new InvalidOperationException("Joint is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            float angleInRadians = MathF.IEEERemainder(value, MathF.PI * 2);
+            b2Joint_SetReferenceAngle(id, angleInRadians);
+        }
+    }
+
+    /// <summary>
+    /// The local axis on body A for joints that support it.
+    /// </summary>
+    public unsafe Vec2 LocalAxisA
+    {
+        get => Valid ? b2Joint_GetLocalAxisA(id) : throw new InvalidOperationException("Joint is not valid");
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            b2Joint_SetLocalAxisA(id, value);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the joint constraint tuning in Hertz and damping ratio. Advanced feature.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">If the joint is not valid</exception>
+    public unsafe (float hertz, float dampingRatio) ConstraintTuning
+    {
+        get 
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            b2Joint_GetConstraintTuning(id, out float hertz, out float dampingRatio);
+            return (hertz, dampingRatio);
+        }
+        set
+        {
+            if (!Valid)
+                throw new InvalidOperationException("Joint is not valid");
+            b2Joint_SetConstraintTuning(id, value.hertz, value.dampingRatio);
+        }
+    }
+    
 }

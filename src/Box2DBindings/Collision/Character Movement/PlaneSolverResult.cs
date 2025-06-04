@@ -11,9 +11,9 @@ namespace Box2D.Character_Movement;
 public readonly struct PlaneSolverResult
 {
     /// <summary>
-    /// The final position of the mover.
+    /// The translation of the mover.
     /// </summary>
-    public readonly Vec2 Position;
+    public readonly Vec2 Translation;
 
     /// <summary>
     /// The number of iterations used by the plane solver. For diagnostics.

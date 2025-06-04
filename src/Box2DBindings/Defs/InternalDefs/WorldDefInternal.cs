@@ -37,44 +37,38 @@ struct WorldDefInternal
 
     [FieldOffset(24)]
     internal float MaxContactPushSpeed;
-
+    
     [FieldOffset(28)]
-    internal float JointHertz;
-
-    [FieldOffset(32)]
-    internal float JointDampingRatio;
-
-    [FieldOffset(36)]
     internal float MaximumLinearSpeed;
 
-    [FieldOffset(40)]
+    [FieldOffset(32)]
     internal FrictionCallback FrictionCallback;
 
-    [FieldOffset(48)]
+    [FieldOffset(40)]
     internal RestitutionCallback RestitutionCallback;
 
-    [FieldOffset(56)]
+    [FieldOffset(48)]
     internal byte EnableSleep;
 
-    [FieldOffset(57)]
+    [FieldOffset(49)]
     internal byte EnableContinuous;
 
-    [FieldOffset(60)]
+    [FieldOffset(52)]
     internal int WorkerCount;
 
-    [FieldOffset(64)]
+    [FieldOffset(56)]
     internal EnqueueTaskCallback EnqueueTask;
 
-    [FieldOffset(72)]
+    [FieldOffset(64)]
     internal FinishTaskCallback FinishTask;
 
-    [FieldOffset(80)]
+    [FieldOffset(72)]
     internal nint UserTaskContext;
 
-    [FieldOffset(88)]
+    [FieldOffset(80)]
     internal nint UserData;
 
-    [FieldOffset(96)]
+    [FieldOffset(88)]
     private readonly int internalValue;
     
     private static unsafe WorldDefInternal Default => b2DefaultWorldDef();

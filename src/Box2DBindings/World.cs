@@ -585,15 +585,7 @@ public sealed partial class World
     /// <remarks><i>Note: Advanced feature</i></remarks>
     public unsafe void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) =>
         b2World_SetContactTuning(id, hertz, dampingRatio, pushSpeed);
-
-    /// <summary>
-    /// Adjust joint tuning parameters
-    /// </summary>
-    /// <param name="hertz">The contact stiffness (cycles per second)</param>
-    /// <param name="dampingRatio">The contact bounciness with 1 being critical damping (non-dimensional)</param>
-    /// <remarks>Advanced feature</remarks>
-    public unsafe void SetJointTuning(float hertz, float dampingRatio) => b2World_SetJointTuning(id, hertz, dampingRatio);
-
+    
     /// <summary>
     /// The maximum linear speed.
     /// </summary>

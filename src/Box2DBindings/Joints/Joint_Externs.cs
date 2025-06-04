@@ -15,6 +15,10 @@ namespace Box2D
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetLocalAnchorB;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2, void> b2Joint_SetLocalAnchorA;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2, void> b2Joint_SetLocalAnchorB;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2Joint_GetReferenceAngle;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, void> b2Joint_SetReferenceAngle;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2, void> b2Joint_SetLocalAxisA;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetLocalAxisA;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2Joint_GetLinearSeparation;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2Joint_GetAngularSeparation;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, byte, void> b2Joint_SetCollideConnected;
@@ -24,7 +28,9 @@ namespace Box2D
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, void> b2Joint_WakeBodies;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, Vec2> b2Joint_GetConstraintForce;
     private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float> b2Joint_GetConstraintTorque;
-
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, out float, out float, void> b2Joint_GetConstraintTuning;
+    private static readonly unsafe delegate* unmanaged[Cdecl]<JointId, float, float, void> b2Joint_SetConstraintTuning;
+    
     static unsafe Joint()
     {
         nint lib = nativeLibrary;
@@ -45,8 +51,14 @@ namespace Box2D
         NativeLibrary.TryGetExport(lib, "b2Joint_GetConstraintTorque", out var p14);
         NativeLibrary.TryGetExport(lib, "b2Joint_SetLocalAnchorA", out var p15);
         NativeLibrary.TryGetExport(lib, "b2Joint_SetLocalAnchorB", out var p16);
-        NativeLibrary.TryGetExport(lib, "b2Joint_GetLinearSeparation", out var p17);
-        NativeLibrary.TryGetExport(lib, "b2Joint_GetAngularSeparation", out var p18);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetReferenceAngle", out var p17);
+        NativeLibrary.TryGetExport(lib, "b2Joint_SetReferenceAngle", out var p18);
+        NativeLibrary.TryGetExport(lib, "b2Joint_SetLocalAxisA", out var p19);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetLocalAxisA", out var p20);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetLinearSeparation", out var p21);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetAngularSeparation", out var p22);
+        NativeLibrary.TryGetExport(lib, "b2Joint_SetConstraintTuning", out var p23);
+        NativeLibrary.TryGetExport(lib, "b2Joint_GetConstraintTuning", out var p24);
 
         b2DestroyJoint = (delegate* unmanaged[Cdecl]<JointId, void>)p0;
         b2Joint_IsValid = (delegate* unmanaged[Cdecl]<JointId, byte>)p1;
@@ -65,8 +77,14 @@ namespace Box2D
         b2Joint_GetConstraintTorque = (delegate* unmanaged[Cdecl]<JointId, float>)p14;
         b2Joint_SetLocalAnchorA = (delegate* unmanaged[Cdecl]<JointId, Vec2, void>)p15;
         b2Joint_SetLocalAnchorB = (delegate* unmanaged[Cdecl]<JointId, Vec2, void>)p16;
-        b2Joint_GetLinearSeparation = (delegate* unmanaged[Cdecl]<JointId, float>)p17;
-        b2Joint_GetAngularSeparation = (delegate* unmanaged[Cdecl]<JointId, float>)p18;
+        b2Joint_GetReferenceAngle = (delegate* unmanaged[Cdecl]<JointId, float>)p17;
+        b2Joint_SetReferenceAngle = (delegate* unmanaged[Cdecl]<JointId, float, void>)p18;
+        b2Joint_SetLocalAxisA = (delegate* unmanaged[Cdecl]<JointId, Vec2, void>)p19;
+        b2Joint_GetLocalAxisA = (delegate* unmanaged[Cdecl]<JointId, Vec2>)p20;
+        b2Joint_GetLinearSeparation = (delegate* unmanaged[Cdecl]<JointId, float>)p21;
+        b2Joint_GetAngularSeparation = (delegate* unmanaged[Cdecl]<JointId, float>)p22;
+        b2Joint_SetConstraintTuning = (delegate* unmanaged[Cdecl]<JointId, float, float, void>)p23;
+        b2Joint_GetConstraintTuning = (delegate* unmanaged[Cdecl]<JointId, out float, out float, void>)p24;
     }
 #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DestroyJoint")]
@@ -120,11 +138,29 @@ namespace Box2D
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetLocalAnchorB")]
     private static extern void b2Joint_SetLocalAnchorB(JointId jointId, Vec2 localAnchor);
 
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetReferenceAngle")]
+    private static extern float b2Joint_GetReferenceAngle(JointId jointId);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetReferenceAngle")]
+    private static extern void b2Joint_SetReferenceAngle(JointId jointId, float angleInRadians);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetLocalAxisA")]
+    private static extern void b2Joint_SetLocalAxisA(JointId jointId, Vec2 localAxis);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLocalAxisA")]
+    private static extern Vec2 b2Joint_GetLocalAxisA(JointId jointId);
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetLinearSeparation")]
     private static extern float b2Joint_GetLinearSeparation(JointId jointId);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetAngularSeparation")]
     private static extern float b2Joint_GetAngularSeparation(JointId jointId);
+        
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_SetConstraintTuning")]
+    private static extern void b2Joint_SetConstraintTuning(JointId jointId, float linearTuning, float angularTuning);
+        
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2Joint_GetConstraintTuning")]
+    private static extern void b2Joint_GetConstraintTuning(JointId jointId, out float linearTuning, out float angularTuning);
 #endif
     }
 }
