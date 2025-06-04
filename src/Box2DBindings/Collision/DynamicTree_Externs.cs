@@ -9,8 +9,7 @@ unsafe partial struct DynamicTree
     /// <summary>
     /// Constructing the tree initializes the node pool.
     /// </summary>
-    /// <remarks>This wraps <a href="https://box2d.org/documentation/group__collision.html#https://box2d.org/documentation/group__tree.html#gab54e4f2cbe26d0f306b9b8b5223c1838">b2DynamicTree_Create</a></remarks>
-    public static  readonly delegate* unmanaged[Cdecl]<DynamicTree> Create;
+    public static readonly delegate* unmanaged[Cdecl]<DynamicTree> Create;
     private static readonly delegate* unmanaged[Cdecl]<ref DynamicTree, void> b2DynamicTree_Destroy;
     private static readonly delegate* unmanaged[Cdecl]<ref DynamicTree, AABB, ulong, ulong, int> b2DynamicTree_CreateProxy;
     private static readonly delegate* unmanaged[Cdecl]<ref DynamicTree, int, void> b2DynamicTree_DestroyProxy;
@@ -127,7 +126,6 @@ unsafe partial struct DynamicTree
     /// <summary>
     /// Constructing the tree initializes the node pool.
     /// </summary>
-    /// <remarks>This wraps <a href="https://box2d.org/documentation/group__collision.html#https://box2d.org/documentation/group__tree.html#gab54e4f2cbe26d0f306b9b8b5223c1838">b2DynamicTree_Create</a></remarks>
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2DynamicTree_Create")]
     public static extern DynamicTree Create();
 
