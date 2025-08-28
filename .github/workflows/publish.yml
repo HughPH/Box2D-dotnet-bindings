@@ -2,7 +2,7 @@ name: Build & publish Box2D‑CSharp bindings
 
 on:
     push:
-        branches: [ "**" ]
+        branches: [ "main" ]
     workflow_dispatch:
 
 env:
