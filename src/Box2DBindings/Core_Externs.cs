@@ -65,6 +65,34 @@ namespace Box2D
 
         internal static nint nativeLibrary = NativeLibrary.Load(libraryName, Assembly.GetExecutingAssembly(), null);
         
+        internal static unsafe void GetExport<T1>(string name, ref delegate* unmanaged[Cdecl]<T1> functionPointer)
+        {
+            if (!NativeLibrary.TryGetExport(nativeLibrary, name, out nint ptr))
+                throw new DllNotFoundException($"Failed to load export '{name}' from Box2D native library.");
+            functionPointer = (delegate* unmanaged[Cdecl]<T1>)ptr;
+        }
+        
+        internal static unsafe void GetExport<T1, T2>(string name, ref delegate* unmanaged[Cdecl]<T1, T2> functionPointer)
+        {
+            if (!NativeLibrary.TryGetExport(nativeLibrary, name, out nint ptr))
+                throw new DllNotFoundException($"Failed to load export '{name}' from Box2D native library.");
+            functionPointer = (delegate* unmanaged[Cdecl]<T1, T2>)ptr;
+        }
+        
+        internal static unsafe void GetExport<T1, T2, T3>(string name, ref delegate* unmanaged[Cdecl]<T1, T2, T3> functionPointer)
+        {
+            if (!NativeLibrary.TryGetExport(nativeLibrary, name, out nint ptr))
+                throw new DllNotFoundException($"Failed to load export '{name}' from Box2D native library.");
+            functionPointer = (delegate* unmanaged[Cdecl]<T1, T2, T3>)ptr;
+        }
+        
+        internal static unsafe void GetExport<T1, T2, T3, T4>(string name, ref delegate* unmanaged[Cdecl]<T1, T2, T3, T4> functionPointer)
+        {
+            if (!NativeLibrary.TryGetExport(nativeLibrary, name, out nint ptr))
+                throw new DllNotFoundException($"Failed to load export '{name}' from Box2D native library.");
+            functionPointer = (delegate* unmanaged[Cdecl]<T1, T2, T3, T4>)ptr;
+        }
+        
         static unsafe Core()
         {
             var lib = nativeLibrary;

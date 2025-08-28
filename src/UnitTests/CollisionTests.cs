@@ -1,4 +1,5 @@
 using Box2D;
+using System.Diagnostics;
 using Vec2 = System.Numerics.Vector2;
 
 namespace UnitTests
@@ -6,13 +7,12 @@ namespace UnitTests
     [Collection("Sequential")]
     public class CollisionTests
     {
-        private const float TimeStep = 1f / 60f; // 60 FPS
         private World CreateWorld()
         {
             var worldDef = new WorldDef
-            {
-                Gravity = new Vec2(0, -9.8f)
-            };
+                {
+                    Gravity = new Vec2(0, -9.8f)
+                };
             return World.CreateWorld(worldDef);
         }
 
@@ -39,24 +39,16 @@ namespace UnitTests
             body1.LinearVelocity = new Vec2(0, 1);
             body2.LinearVelocity = new Vec2(0, -1);
 
-            float totalRadius = circle1.Radius + circle2.Radius;
-
             // Act: Simulate for 60 steps (1 second)
             bool collided = false;
 
-            for (int i = 0; i < 60; i++) 
+            world.ContactBeginTouch = (in e) => collided = true;
+
+            int i = 0;
+            while (!collided)
             {
-                world.Step(TimeStep);
-
-                // Measure the distance between the two bodies
-                var distance = Vec2.Distance(body1.Position, body2.Position);
-
-                // Check if a collision occurred
-                if (distance <= totalRadius)
-                {
-                    collided = true;
-                    break;
-                }
+                world.Step();
+                if (i++ > 60) break;
             }
 
             // Assert
@@ -78,18 +70,18 @@ namespace UnitTests
             var shapeDef = new ShapeDef { Density = 1 };
 
             var capsule1 = new Capsule
-            {
-                Center1 = new Vec2(0, 0),
-                Center2 = new Vec2(0, 1),
-                Radius = 0.5f
-            };
+                {
+                    Center1 = new Vec2(0, 0),
+                    Center2 = new Vec2(0, 1),
+                    Radius = 0.5f
+                };
 
             var capsule2 = new Capsule
-            {
-                Center1 = new Vec2(0, 0),
-                Center2 = new Vec2(0, 2),
-                Radius = 0.5f
-            };
+                {
+                    Center1 = new Vec2(0, 0),
+                    Center2 = new Vec2(0, 2),
+                    Radius = 0.5f
+                };
 
             body1.CreateShape(shapeDef, capsule1);
             body2.CreateShape(shapeDef, capsule2);
@@ -109,7 +101,7 @@ namespace UnitTests
                 float minDistance = MinDistanceBetweenLineSegments(
                     capsule1.Center1 + body1.Position, capsule1.Center2 + body1.Position,
                     capsule2.Center1 + body2.Position, capsule2.Center2 + body2.Position
-                );
+                    );
 
                 // Check if collision occurred
                 if (minDistance <= totalRadius)
@@ -215,18 +207,18 @@ namespace UnitTests
 
             // Define two polygons
             var polygon1 = new Polygon(new[]
-            {
-                new Vec2(-1, -1),
-                new Vec2(1, -1),
-                new Vec2(0, 1)
-            });
+                {
+                    new Vec2(-1, -1),
+                    new Vec2(1, -1),
+                    new Vec2(0, 1)
+                });
 
             var polygon2 = new Polygon(new[]
-            {
-                new Vec2(-2, -2),
-                new Vec2(2, -2),
-                new Vec2(0, 2)
-            });
+                {
+                    new Vec2(-2, -2),
+                    new Vec2(2, -2),
+                    new Vec2(0, 2)
+                });
 
             body1.CreateShape(shapeDef, polygon1);
             body2.CreateShape(shapeDef, polygon2);
@@ -243,13 +235,13 @@ namespace UnitTests
 
                 // Check for collision using ShapeDistance
                 var input = new DistanceInput
-                {
-                    TransformA = Transform.Identity, // Identity transform (no rotation or translation)
-                    TransformB = Transform.Identity, // Same for second shape
-                    ProxyA = Core.MakeProxy(polygon1, 0.0f), // Proxy for polygon1
-                    ProxyB = Core.MakeProxy(polygon2, 0.0f), // Proxy for polygon2
-                    UseRadii = false
-                };
+                    {
+                        TransformA = Transform.Identity, // Identity transform (no rotation or translation)
+                        TransformB = Transform.Identity, // Same for second shape
+                        ProxyA = Core.MakeProxy(polygon1, 0.0f), // Proxy for polygon1
+                        ProxyB = Core.MakeProxy(polygon2, 0.0f), // Proxy for polygon2
+                        UseRadii = false
+                    };
 
                 var cache = new SimplexCache(); // Cache for storing results of GJK/EPA algorithms
                 cache.Count = 0;
@@ -301,7 +293,7 @@ namespace UnitTests
                     segment1.Point2 + body1.Position,
                     segment2.Point1 + body2.Position,
                     segment2.Point2 + body2.Position
-                );
+                    );
 
                 // Collision occurs if the closest distance is zero or very small
                 if (distanceResult.DistanceSquared <= 0.001f)
@@ -333,8 +325,8 @@ namespace UnitTests
                 new[]
                     {
                         new Vec2(-3, 1), // Start point on the left
-                        new Vec2(0, 0),  // Middle point
-                        new Vec2(3, 1)   // End point on the right
+                        new Vec2(0, 0), // Middle point
+                        new Vec2(3, 1) // End point on the right
                     }
                 ));
 
