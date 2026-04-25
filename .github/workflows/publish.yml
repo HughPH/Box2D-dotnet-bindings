@@ -176,6 +176,7 @@ jobs:
 
         steps:
             -   id: purge
+                shell: bash
                 run: |
                     rm -rf ./* 
 
