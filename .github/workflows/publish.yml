@@ -202,28 +202,21 @@ jobs:
                     cmake -S box2d-src -B box2d-build ${{ matrix.cmake_flags }}
                     cmake --build box2d-build --config Release --parallel
 
-            -   name: Prepare artefact directory
-                shell: bash
-                run: |
-                    mkdir -p artefact/
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      cp box2d-build/bin/libbox2d.so artefact/
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dylib ]; then
-                      cp box2d-build/bin/libbox2d.dylib artefact/
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      cp box2d-build/bin/libbox2d.dll artefact/
-                    fi
-
-            -   name: "Fail if artefact directory is empty"
-                shell: bash
-                run: |
-                    if [ -z "$(ls -A artefact/)" ]; then
-                      echo "Artefact directory is empty, aborting."
-                      tree box2d-build/bin
-                      exit 1
-                    fi
+            - name: Prepare artefact directory
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  mkdir -p artefact/
+                  find box2d-build -maxdepth 4 -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) -exec cp {} artefact/ \;
+        
+            - name: Fail if artefact directory is empty
+              shell: bash
+              run: |
+                  if ! find artefact -maxdepth 1 -type f | grep -q .; then
+                  echo "Artefact directory is empty, aborting."
+                  find box2d-build -maxdepth 4 -type f
+                  exit 1
+                  fi
 
             -   name: Upload artefacts
                 uses: actions/upload-artifact@v4
