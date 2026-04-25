@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Box2D
@@ -22,37 +23,37 @@ namespace Box2D
 
         static unsafe Polygon()
         {
-            nint lib = nativeLibrary;
-            NativeLibrary.TryGetExport(lib, "b2MakePolygon", out var p0);
-            NativeLibrary.TryGetExport(lib, "b2MakeOffsetPolygon", out var p1);
-            NativeLibrary.TryGetExport(lib, "b2MakeOffsetRoundedPolygon", out var p2);
-            NativeLibrary.TryGetExport(lib, "b2MakeSquare", out var p3);
-            NativeLibrary.TryGetExport(lib, "b2MakeBox", out var p4);
-            NativeLibrary.TryGetExport(lib, "b2MakeRoundedBox", out var p5);
-            NativeLibrary.TryGetExport(lib, "b2MakeOffsetBox", out var p6);
-            NativeLibrary.TryGetExport(lib, "b2MakeOffsetRoundedBox", out var p7);
-            NativeLibrary.TryGetExport(lib, "b2TransformPolygon", out var p8);
-            NativeLibrary.TryGetExport(lib, "b2ComputePolygonMass", out var p9);
-            NativeLibrary.TryGetExport(lib, "b2ComputePolygonAABB", out var p10);
-            NativeLibrary.TryGetExport(lib, "b2PointInPolygon", out var p11);
-            NativeLibrary.TryGetExport(lib, "b2RayCastPolygon", out var p12);
-            NativeLibrary.TryGetExport(lib, "b2ShapeCastPolygon", out var p13);
-
-            MakePolygon_ = (delegate* unmanaged[Cdecl]<in Hull, float, Polygon>)p0;
-            MakeOffsetPolygon_ = (delegate* unmanaged[Cdecl]<in Hull, Vec2, Rotation, Polygon>)p1;
-            MakeOffsetRoundedPolygon_ = (delegate* unmanaged[Cdecl]<in Hull, Vec2, Rotation, float, Polygon>)p2;
-            MakeSquare_ = (delegate* unmanaged[Cdecl]<float, Polygon>)p3;
-            MakeBox_ = (delegate* unmanaged[Cdecl]<float, float, Polygon>)p4;
-            MakeRoundedBox_ = (delegate* unmanaged[Cdecl]<float, float, float, Polygon>)p5;
-            MakeOffsetBox_ = (delegate* unmanaged[Cdecl]<float, float, Vec2, Rotation, Polygon>)p6;
-            MakeOffsetRoundedBox_ = (delegate* unmanaged[Cdecl]<float, float, Vec2, Rotation, float, Polygon>)p7;
-            TransformPolygon_ = (delegate* unmanaged[Cdecl]<Transform, in Polygon, Polygon>)p8;
-            ComputePolygonMass_ = (delegate* unmanaged[Cdecl]<in Polygon, float, MassData>)p9;
-            ComputePolygonAABB_ = (delegate* unmanaged[Cdecl]<in Polygon, Transform, AABB>)p10;
-            PointInPolygon_ = (delegate* unmanaged[Cdecl]<Vec2, in Polygon, byte>)p11;
-            RayCastPolygon_ = (delegate* unmanaged[Cdecl]<in RayCastInput, in Polygon, CastOutput>)p12;
-            ShapeCastPolygon_ = (delegate* unmanaged[Cdecl]<in ShapeCastInput, in Polygon, CastOutput>)p13;
+            nint p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakePolygon", out p);
+            MakePolygon_ = (delegate* unmanaged[Cdecl]<in Hull, float, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeOffsetPolygon", out p);
+            MakeOffsetPolygon_ = (delegate* unmanaged[Cdecl]<in Hull, Vec2, Rotation, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeOffsetRoundedPolygon", out p);
+            MakeOffsetRoundedPolygon_ = (delegate* unmanaged[Cdecl]<in Hull, Vec2, Rotation, float, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeSquare", out p);
+            MakeSquare_ = (delegate* unmanaged[Cdecl]<float, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeBox", out p);
+            MakeBox_ = (delegate* unmanaged[Cdecl]<float, float, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeRoundedBox", out p);
+            MakeRoundedBox_ = (delegate* unmanaged[Cdecl]<float, float, float, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeOffsetBox", out p);
+            MakeOffsetBox_ = (delegate* unmanaged[Cdecl]<float, float, Vec2, Rotation, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2MakeOffsetRoundedBox", out p);
+            MakeOffsetRoundedBox_ = (delegate* unmanaged[Cdecl]<float, float, Vec2, Rotation, float, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2TransformPolygon", out p);
+            TransformPolygon_ = (delegate* unmanaged[Cdecl]<Transform, in Polygon, Polygon>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2ComputePolygonMass", out p);
+            ComputePolygonMass_ = (delegate* unmanaged[Cdecl]<in Polygon, float, MassData>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2ComputePolygonAABB", out p);
+            ComputePolygonAABB_ = (delegate* unmanaged[Cdecl]<in Polygon, Transform, AABB>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2PointInPolygon", out p);
+            PointInPolygon_ = (delegate* unmanaged[Cdecl]<Vec2, in Polygon, byte>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2RayCastPolygon", out p);
+            RayCastPolygon_ = (delegate* unmanaged[Cdecl]<in RayCastInput, in Polygon, CastOutput>)p;
+            NativeLibrary.TryGetExport(nativeLibrary, "b2ShapeCastPolygon", out p);
+            ShapeCastPolygon_ = (delegate* unmanaged[Cdecl]<in ShapeCastInput, in Polygon, CastOutput>)p;
         }
+
 #else
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2MakePolygon")]
     private static extern Polygon MakePolygon_(in Hull hull, float radius);

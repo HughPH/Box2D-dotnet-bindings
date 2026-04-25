@@ -12,10 +12,6 @@ partial struct Plane
     {
         nint lib = nativeLibrary;
         NativeLibrary.TryGetExport(lib, "b2IsValidPlane", out var ptr);
-
-        if (ptr == IntPtr.Zero)
-            throw new EntryPointNotFoundException("b2IsValidPlane");
-
         b2IsValidPlane = (delegate* unmanaged[Cdecl]<Plane, byte>)ptr;
     }
 #else

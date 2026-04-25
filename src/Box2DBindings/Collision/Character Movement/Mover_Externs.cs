@@ -12,11 +12,11 @@ static partial class Mover
     {
         nint lib = nativeLibrary;
 
-        NativeLibrary.TryGetExport(lib, "b2SolvePlanes", out var solvePtr);
-        NativeLibrary.TryGetExport(lib, "b2ClipVector", out var clipPtr);
-
-        b2SolvePlanes = (delegate* unmanaged[Cdecl]<Vec2, CollisionPlane[], int, PlaneSolverResult>)solvePtr;
-        b2ClipVector = (delegate* unmanaged[Cdecl]<Vec2, CollisionPlane[], int, Vec2>)clipPtr;
+        nint ptr;
+        NativeLibrary.TryGetExport(lib, "b2SolvePlanes", out ptr);
+        b2SolvePlanes = (delegate* unmanaged[Cdecl]<Vec2, CollisionPlane[], int, PlaneSolverResult>)ptr;
+        NativeLibrary.TryGetExport(lib, "b2ClipVector", out ptr);
+        b2ClipVector = (delegate* unmanaged[Cdecl]<Vec2, CollisionPlane[], int, Vec2>)ptr;
     }
 #else
         [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "b2SolvePlanes")]

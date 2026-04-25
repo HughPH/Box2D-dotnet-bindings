@@ -24,16 +24,9 @@ jobs:
             -   id: ref
                 name: "Fetch latest Box2D tag or commit"
                 run: |
-                    if [[ "${GITHUB_REF_NAME}" == "public/vnext" ]]; then
-                        # Get the latest commit hash for main
-                        sha=$(gh api /repos/$BOX2D_REPO/commits/main --jq .sha)
-                        echo "Using Box2D commit hash from main: $sha"
-                        echo "ref=$sha" >> "$GITHUB_OUTPUT"
-                    else
-                        tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
-                        echo "Using Box2D ref: $tag"
-                        echo "ref=$tag" >> "$GITHUB_OUTPUT"
-                    fi
+                    tag=$(gh api /repos/$BOX2D_REPO/releases/latest --jq .tag_name)
+                    echo "Using Box2D ref: $tag"
+                    echo "ref=$tag" >> "$GITHUB_OUTPUT"
 
             -   id: version
                 name: "Compute managed package version string"
@@ -271,14 +264,18 @@ jobs:
                     fi
                     cp "$lib" src/UnitTests/bin/Debug/net8.0/
                     cp "$lib" src/UnitTests/bin/Debug/net9.0/
+                    cp "$lib" src/UnitTests/bin/Debug/net10.0/
                     
                     sync
 
             -   name: Run UnitTests (net8.0)
-                run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --no-build --logger trx --results-directory TestResults
+                run: dotnet test src/UnitTests --configuration Debug --framework net8.0 --logger trx --results-directory TestResults
 
             -   name: Run UnitTests (net9.0)
-                run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --no-build --logger trx --results-directory TestResults
+                run: dotnet test src/UnitTests --configuration Debug --framework net9.0 --logger trx --results-directory TestResults
+
+            -   name: Run UnitTests (net10.0)
+                run: dotnet test src/UnitTests --configuration Debug --framework net10.0 --logger trx --results-directory TestResults
 
 
     publish-docs:
@@ -327,29 +324,6 @@ jobs:
                 with:
                     path: src/Box2DBindings/native
                     pattern: "*"
-            
-            # -   name: "Run UPX on native libs"
-            #     run: |
-            #         if [ -f src/Box2DBindings/native/linux-x64/libbox2d.so ]; then
-            #             chmod +x src/Box2DBindings/native/linux-x64/libbox2d.so 
-            #             upx src/Box2DBindings/native/linux-x64/libbox2d.so
-            #         fi
-            #         if [ -f src/Box2DBindings/native/linux-x86/libbox2d.so ]; then
-            #             chmod +x src/Box2DBindings/native/linux-x86/libbox2d.so
-            #             upx src/Box2DBindings/native/linux-x86/libbox2d.so
-            #         fi
-            #         if [ -f src/Box2DBindings/native/linux-arm64/libbox2d.so ]; then
-            #             chmod +x src/Box2DBindings/native/linux-arm64/libbox2d.so
-            #             upx src/Box2DBindings/native/linux-arm64/libbox2d.so
-            #         fi
-            #         if [ -f src/Box2DBindings/native/win-x64/libbox2d.dll ]; then
-            #             chmod +x src/Box2DBindings/native/win-x64/libbox2d.dll
-            #             upx src/Box2DBindings/native/win-x64/libbox2d.dll
-            #         fi
-            #         if [ -f src/Box2DBindings/native/win-x86/libbox2d.dll ]; then
-            #             chmod +x src/Box2DBindings/native/win-x86/libbox2d.dll
-            #             upx src/Box2DBindings/native/win-x86/libbox2d.dll
-            #         fi
 
             -   name: "Pack NuGet package"
                 run: |

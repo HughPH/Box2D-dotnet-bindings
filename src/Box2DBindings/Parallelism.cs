@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using JetBrains.Annotations;
@@ -15,10 +16,18 @@ namespace Box2D;
 [PublicAPI]
 public static class Parallelism
 {
-    private static int maxWorkerCount = Environment.ProcessorCount / 2;
-    private static BlockingCollection<Job>? jobQueue;
-    private static Thread[]? workers;
+    private static int maxWorkerCount = Math.Max(1, Environment.ProcessorCount / 2);
+#if NET9_0_OR_GREATER
+    private static readonly Lock Sync = new();
+#else
+    private static readonly object Sync = new();
+#endif
     private static readonly ConcurrentDictionary<nint, TaskCallback> TaskCache = new();
+    private static readonly ConcurrentQueue<nint> TaskCacheFifo = new();
+    private const int TaskCacheMaxEntries = 1024;
+    private const int TaskCachePruneBatch = 64;
+    private static int taskCacheCount;
+    private static int taskCachePruning;
 
     /// <summary>
     /// Maximum number of worker threads to use for parallel task execution.
@@ -31,61 +40,23 @@ public static class Parallelism
         get => maxWorkerCount;
         set
         {
-            if (World.worlds.Count > 0)
-                throw new InvalidOperationException("Cannot change thread count while worlds exist.");
-            maxWorkerCount = Math.Min(Math.Max(1, value), Environment.ProcessorCount);
-            //terminate old threads
-            if (workers != null)
+            lock (Sync)
             {
-                foreach (var worker in workers)
-                {
-                    worker.Interrupt();
-                    worker.Join();
-                }
+                if (World.worlds.Count > 0)
+                    throw new InvalidOperationException("Cannot change thread count while worlds exist.");
+
+                maxWorkerCount = Math.Clamp(value, 1, Environment.ProcessorCount);
             }
-            //create new threads
-            InitWorkerThreads();
         }
     }
 
-    static Parallelism()
-    {
-        InitWorkerThreads();
-    }
-
-    private static void InitWorkerThreads()
-    {
-        jobQueue = new BlockingCollection<Job>();
-        workers = new Thread[maxWorkerCount];
-        for (int i = 0; i < maxWorkerCount; i++)
-        {
-            workers[i] = new Thread(() =>
-            {
-                try
-                {
-                    foreach (var job in jobQueue!.GetConsumingEnumerable())
-                        job.Execute();
-                }catch (ThreadInterruptedException)
-                {
-                    // Thread was interrupted, exit gracefully
-                }
-                catch (Exception ex)
-                {
-                    // Handle exceptions from worker threads
-                    Console.WriteLine($"Worker thread exception: {ex}");
-                }
-            }) { IsBackground = true };
-            workers[i].Start();
-        }
-    }
-
-    private struct Job
+    private sealed class Job
     {
         public TaskCallback Task;
         public int Start, End;
         public uint Index;
         public nint TaskContext;
-        public CountdownEvent Countdown;
+        public BatchState Batch;
 
         public void Execute()
         {
@@ -93,20 +64,26 @@ public static class Parallelism
             {
                 Task(Start, End, Index, TaskContext);
             }
+            catch (Exception ex)
+            {
+                Interlocked.CompareExchange(ref Batch.Exception, ex, null);
+            }
             finally
             {
-                Countdown.Signal();
+                Batch.Countdown.Signal();
             }
         }
     }
 
+    private sealed class BatchState
+    {
+        public CountdownEvent Countdown = new(1);
+        public Exception? Exception;
+    }
+
     internal static nint DefaultEnqueue(nint taskPtr, int itemCount, int minRange, nint taskContext, nint userContext)
     {
-        if (!TaskCache.TryGetValue(taskPtr, out var task))
-        {
-            task = Marshal.GetDelegateForFunctionPointer<TaskCallback>(taskPtr);
-            TaskCache[taskPtr] = task;
-        }
+        var task = GetOrAddTaskCallback(taskPtr);
 
         if (maxWorkerCount <= 1 || itemCount <= minRange)
         {
@@ -115,7 +92,7 @@ public static class Parallelism
         }
 
         int chunk = Math.Max(minRange, (itemCount + maxWorkerCount - 1) / maxWorkerCount);
-        var countdown = CountdownEventPool.Rent(1); // Pooled
+        var batch = new BatchState();
 
         for (int w = 0; w < maxWorkerCount; w++)
         {
@@ -123,22 +100,67 @@ public static class Parallelism
             int end = Math.Min(itemCount, start + chunk);
             if (start >= end) break;
 
-            countdown.AddCount(); // Call *before* enqueueing
-            jobQueue!.Add(new Job
+            batch.Countdown.AddCount(); // Call *before* enqueueing
+            ThreadPool.QueueUserWorkItem(static job => job.Execute(), new Job
             {
                 Task = task,
                 Start = start,
                 End = end,
                 Index = (uint)w,
                 TaskContext = taskContext,
-                Countdown = countdown
-            });
+                Batch = batch
+            }, preferLocal: false);
         }
 
-        countdown.Signal(); // main thread's count
+        batch.Countdown.Signal(); // main thread's count
 
-        var handle = GCHandle.Alloc(countdown, GCHandleType.Normal);
+        var handle = GCHandle.Alloc(batch, GCHandleType.Normal);
         return GCHandle.ToIntPtr(handle);
+    }
+
+    private static TaskCallback GetOrAddTaskCallback(nint taskPtr)
+    {
+        if (TaskCache.TryGetValue(taskPtr, out var existing))
+            return existing;
+
+        var created = Marshal.GetDelegateForFunctionPointer<TaskCallback>(taskPtr);
+        if (TaskCache.TryAdd(taskPtr, created))
+        {
+            TaskCacheFifo.Enqueue(taskPtr);
+            int count = Interlocked.Increment(ref taskCacheCount);
+            if (count > TaskCacheMaxEntries)
+                TryPruneTaskCacheFifo();
+            return created;
+        }
+
+        TaskCache.TryGetValue(taskPtr, out var raced);
+        return raced!;
+    }
+
+    private static void TryPruneTaskCacheFifo()
+    {
+        // One concurrent pruner is enough; eviction is best-effort.
+        if (Interlocked.Exchange(ref taskCachePruning, 1) != 0)
+            return;
+
+        try
+        {
+            int target = Math.Max(0, TaskCacheMaxEntries - TaskCachePruneBatch);
+            int removed = 0;
+
+            while (Volatile.Read(ref taskCacheCount) > target && removed < TaskCachePruneBatch && TaskCacheFifo.TryDequeue(out var key))
+            {
+                if (TaskCache.TryRemove(key, out _))
+                {
+                    Interlocked.Decrement(ref taskCacheCount);
+                    removed++;
+                }
+            }
+        }
+        finally
+        {
+            Volatile.Write(ref taskCachePruning, 0);
+        }
     }
 
     internal static void DefaultFinish(nint userTask, nint userContext)
@@ -147,40 +169,21 @@ public static class Parallelism
             return;
 
         var handle = GCHandle.FromIntPtr(userTask);
-        var countdown = (CountdownEvent)handle.Target!;
-        countdown.Wait();
-        CountdownEventPool.Return(countdown); // Return to pool
-        handle.Free();
-    }
-    
-    static class CountdownEventPool
-    {
-        private static readonly ConcurrentBag<CountdownEvent> pool = new();
-        private const int MaxPoolSize = 64;
-        private static int count;
+        var batch = (BatchState)handle.Target!;
+        Exception? captured;
 
-        public static CountdownEvent Rent(int initialCount)
+        try
         {
-            if (pool.TryTake(out var item))
-            {
-                Interlocked.Decrement(ref count);
-                item.Reset(initialCount);
-                return item;
-            }
-
-            return new CountdownEvent(initialCount);
+            batch.Countdown.Wait();
+            captured = batch.Exception;
+        }
+        finally
+        {
+            batch.Countdown.Dispose();
+            handle.Free();
         }
 
-        public static void Return(CountdownEvent item)
-        {
-            if (Interlocked.Increment(ref count) > MaxPoolSize)
-            {
-                Interlocked.Decrement(ref count);
-                item.Dispose();
-                return;
-            }
-
-            pool.Add(item);
-        }
+        if (captured != null)
+            ExceptionDispatchInfo.Capture(captured).Throw();
     }
 }
