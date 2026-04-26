@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D;
@@ -52,11 +53,11 @@ unsafe partial struct DynamicTree
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_GetCategoryBits", out p);
         b2DynamicTree_GetCategoryBits = (delegate* unmanaged[Cdecl]<ref DynamicTree, int, ulong>)p;
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_Query", out p);
-        b2DynamicTree_Query_ = (delegate* unmanaged[Cdecl]<in DynamicTree, AABB, ulong, IntPtr, IntPtr, TreeStats>)p;
+        b2DynamicTree_Query_ = (delegate* unmanaged[Cdecl]<in DynamicTree, AABB, ulong, nint, nint, TreeStats>)p;
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_ShapeCast", out p);
-        b2DynamicTree_ShapeCast_ = (delegate* unmanaged[Cdecl]<in DynamicTree, ShapeCastInput*, ulong, IntPtr, IntPtr, TreeStats>)p;
+        b2DynamicTree_ShapeCast_ = (delegate* unmanaged[Cdecl]<in DynamicTree, ShapeCastInput*, ulong, nint, nint, TreeStats>)p;
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_RayCast", out p);
-        b2DynamicTree_RayCast_ = (delegate* unmanaged[Cdecl]<in DynamicTree, RayCastInput*, ulong, IntPtr, IntPtr, TreeStats>)p;
+        b2DynamicTree_RayCast_ = (delegate* unmanaged[Cdecl]<in DynamicTree, RayCastInput*, ulong, nint, nint, TreeStats>)p;
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_GetHeight", out p);
         b2DynamicTree_GetHeight = (delegate* unmanaged[Cdecl]<in DynamicTree, int>)p;
         NativeLibrary.TryGetExport(lib, "b2DynamicTree_GetAreaRatio", out p);
