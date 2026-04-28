@@ -9,7 +9,14 @@ namespace UnitTests
     [Collection("Sequential")]
     public class WorldTest
     {
-                [Fact]
+        public enum TestShapeKind
+        {
+            Circle,
+            Segment,
+            Capsule
+        }
+
+        [Fact]
         public void CreateWorld_ShouldInitializeCorrectly()
         {
             var worldDef = new WorldDef();
@@ -196,6 +203,101 @@ namespace UnitTests
             {
                 var events = world.SensorEvents;
             });
+        }
+
+        [Theory]
+        [InlineData(TestShapeKind.Circle, TestShapeKind.Circle)]
+        [InlineData(TestShapeKind.Segment, TestShapeKind.Capsule)]
+        public void SensorShape_ShouldReportOverlaps_AndRaiseBeginEndSensorEvents(TestShapeKind sensorShapeKind, TestShapeKind visitorShapeKind)
+        {
+            var world = World.CreateWorld(new WorldDef());
+
+            var sensorBody = world.CreateBody(new BodyDef
+            {
+                Type = BodyType.Static,
+                Position = new Vector2(0, 0)
+            });
+            var visitorBody = world.CreateBody(new BodyDef
+            {
+                Type = BodyType.Kinematic,
+                Position = new Vector2(0, 0)
+            });
+
+            var sensorShape = CreateShape(sensorBody, new ShapeDef
+            {
+                IsSensor = true,
+                EnableSensorEvents = true
+            }, sensorShapeKind);
+            var visitorShape = CreateShape(visitorBody, new ShapeDef
+            {
+                Density = 1.0f,
+                EnableSensorEvents = true
+            }, visitorShapeKind);
+
+            SensorBeginTouchEvent? beginEvent = null;
+            SensorEndTouchEvent? endEvent = null;
+            world.SensorBeginTouch += (in @event) => beginEvent = @event;
+            world.SensorEndTouch += (in @event) => endEvent = @event;
+
+            world.Step(1.0f / 60.0f);
+
+            Assert.True(sensorShape.Sensor);
+            Assert.NotNull(beginEvent);
+            Assert.Equal(sensorShape, beginEvent.Value.SensorShape);
+            Assert.Equal(visitorShape, beginEvent.Value.VisitorShape);
+
+            var sensorEvents = world.SensorEvents;
+            Assert.Equal(1, sensorEvents.BeginEvents.Length);
+            Assert.Equal(sensorShape, sensorEvents.BeginEvents[0].SensorShape);
+            Assert.Equal(visitorShape, sensorEvents.BeginEvents[0].VisitorShape);
+            Assert.Equal(0, sensorEvents.EndEvents.Length);
+
+            var overlaps = sensorShape.SensorOverlaps;
+            Assert.Equal(1, overlaps.Length);
+            Assert.Equal(visitorShape, overlaps[0]);
+
+            visitorBody.Transform = new Transform
+            {
+                Position = new Vector2(5, 0),
+                Rotation = visitorBody.Transform.Rotation
+            };
+
+            world.Step(1.0f / 60.0f);
+
+            Assert.NotNull(endEvent);
+            Assert.Equal(sensorShape, endEvent.Value.SensorShape);
+            Assert.Equal(visitorShape, endEvent.Value.VisitorShape);
+
+            sensorEvents = world.SensorEvents;
+            Assert.Equal(0, sensorEvents.BeginEvents.Length);
+            Assert.Equal(1, sensorEvents.EndEvents.Length);
+            Assert.Equal(sensorShape, sensorEvents.EndEvents[0].SensorShape);
+            Assert.Equal(visitorShape, sensorEvents.EndEvents[0].VisitorShape);
+            Assert.Equal(0, sensorShape.SensorOverlaps.Length);
+        }
+
+        private static Shape CreateShape(Body body, ShapeDef shapeDef, TestShapeKind shapeKind)
+        {
+            return shapeKind switch
+            {
+                TestShapeKind.Circle => body.CreateShape(shapeDef, new Circle
+                {
+                    Center = Vector2.Zero,
+                    Radius = 1.0f
+                }),
+                TestShapeKind.Segment => body.CreateShape(shapeDef, new Segment
+                {
+                    Point1 = new Vector2(-1.0f, 0.0f),
+                    Point2 = new Vector2(1.0f, 0.0f)
+                }),
+                TestShapeKind.Capsule => body.CreateShape(shapeDef, new Capsule
+                {
+                    Center1 = new Vector2(-0.5f, 0.0f),
+                    Center2 = new Vector2(0.5f, 0.0f),
+                    Radius = 0.5f
+                }),
+                _ => throw new ArgumentOutOfRangeException(nameof(shapeKind), shapeKind, null)
+            };
         }
 
         [Fact]
