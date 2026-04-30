@@ -90,16 +90,7 @@ jobs:
             -   name: Prepare artefact directory
                 shell: bash
                 run: |
-                    mkdir -p artefact/
-                    if [ -f box2d-build/bin/libbox2d.so ]; then
-                      cp box2d-build/bin/libbox2d.so artefact/
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dylib ]; then
-                      cp box2d-build/bin/libbox2d.dylib artefact/
-                    fi
-                    if [ -f box2d-build/bin/libbox2d.dll ]; then
-                      cp box2d-build/bin/libbox2d.dll artefact/
-                    fi
+                    cp box2d-build/bin/libbox2d.so artefact/
 
             -   name: "Fail if artefact directory is empty"
                 shell: bash
@@ -268,12 +259,34 @@ jobs:
                     cmake -S box2d-src -B box2d-build ${{ matrix.cmake_flags }}
                     cmake --build box2d-build --config Release --parallel
 
-            - name: Prepare artefact directory
-              shell: bash
-              run: |
-                  set -euo pipefail
-                  mkdir -p artefact/
-                  find box2d-build -maxdepth 4 -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) -exec cp {} artefact/ \;
+            -   name: Prepare artefact directory
+                shell: bash
+                run: |
+                    set -euo pipefail
+                    mkdir -p artefact/
+                    
+                    case "${{ runner.os }}" in
+                      Linux)
+                        lib="$(find box2d-build -maxdepth 5 -type f -name 'libbox2d.so*' | sort | head -n 1)"
+                        if [ -n "$lib" ]; then
+                          cp "$lib" artefact/libbox2d.so
+                        fi
+                        ;;
+                    
+                      macOS)
+                        lib="$(find box2d-build -maxdepth 5 -type f -name 'libbox2d*.dylib' | sort | head -n 1)"
+                        if [ -n "$lib" ]; then
+                          cp "$lib" artefact/libbox2d.dylib
+                        fi
+                        ;;
+                    
+                      Windows)
+                        lib="$(find box2d-build -maxdepth 5 -type f -name 'box2d.dll' -o -name 'libbox2d.dll' | sort | head -n 1)"
+                        if [ -n "$lib" ]; then
+                          cp "$lib" artefact/
+                        fi
+                        ;;
+                    esac
         
             - name: Fail if artefact directory is empty
               shell: bash
