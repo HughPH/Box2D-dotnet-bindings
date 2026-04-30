@@ -216,7 +216,7 @@ jobs:
 
             -   id: cache
                 name: Restore native build cache
-                uses: actions/cache@v4
+                uses: actions/cache@v5
                 with:
                     path: box2d-build
                     key: ${{ matrix.target }}-${{ needs.detect-tag.outputs.box2d_ref }}
@@ -299,7 +299,7 @@ jobs:
                   fi
 
             -   name: Upload artefacts
-                uses: actions/upload-artifact@v4
+                uses: actions/upload-artifact@v7
                 with:
                     name: ${{ matrix.target }}
                     path: artefact/
@@ -318,7 +318,7 @@ jobs:
             -   uses: actions/checkout@v4
 
             -   name: "Download native libs"
-                uses: actions/download-artifact@v4
+                uses: actions/download-artifact@v8
                 with:
                     path: src/Box2DBindings/native
                     pattern: "*"
