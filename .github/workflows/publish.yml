@@ -90,6 +90,7 @@ jobs:
             -   name: Prepare artefact directory
                 shell: bash
                 run: |
+                    mkdir -p artefact/
                     cp box2d-build/bin/libbox2d.so artefact/
 
             -   name: "Fail if artefact directory is empty"
