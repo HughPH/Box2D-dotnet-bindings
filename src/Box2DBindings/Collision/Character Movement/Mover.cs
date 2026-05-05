@@ -21,7 +21,8 @@ public partial class Mover
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-        return b2SolvePlanes(targetDelta, planes, planes.Length);
+        fixed (CollisionPlane* planesPtr = planes)
+            return b2SolvePlanes(targetDelta, planesPtr, planes.Length);
     }
     
     /// <summary>
@@ -36,7 +37,8 @@ public partial class Mover
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-        return b2SolvePlanes(targetDelta, planes, planeCount);
+        fixed (CollisionPlane* planesPtr = planes)
+            return b2SolvePlanes(targetDelta, planesPtr, planeCount);
     }
     
     /// <summary>
@@ -51,8 +53,8 @@ public partial class Mover
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-
-        return b2ClipVector(vector, planes, planes.Length);
+        fixed (CollisionPlane* planesPtr = planes)
+            return b2ClipVector(vector, planesPtr, planes.Length);
     }
     
     /// <summary>
@@ -68,7 +70,7 @@ public partial class Mover
     {
         if (planes is not { Length: not 0 })
             throw new ArgumentNullException(nameof(planes));
-        
-        return b2ClipVector(vector, planes, planeCount);
+        fixed (CollisionPlane* planesPtr = planes)
+            return b2ClipVector(vector, planesPtr, planeCount);
     }
 }
