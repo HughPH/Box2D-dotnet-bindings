@@ -10,7 +10,7 @@ namespace Box2D.Delegates.Generic;
 /// <param name="color">The color</param>
 /// <param name="context">The context</param>
 public delegate void DrawCircleDelegate<in TContext>(Vec2 center, float radius, HexColor color, TContext context) where TContext : class;
-    
+
 /// <summary>
 /// Draw a point.
 /// </summary>

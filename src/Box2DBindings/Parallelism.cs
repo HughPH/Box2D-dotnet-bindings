@@ -33,7 +33,7 @@ public static class Parallelism
     /// Maximum number of worker threads to use for parallel task execution.
     /// </summary>
     /// <remarks>
-    /// This is the maximum number of worker threads that can be used, defaults to Environment.ProcessorCount / 2. It will be clamped to the number of logical processors available on the system. It cannot be changed while worlds exist.
+    /// This is the maximum number of worker threads that can be used, defaults to Environment.ProcessorCount / 2. It will be clamped to the number of logical processors available on the system. It cannot be changed while Worlds exist.
     /// </remarks>
     public static int MaxWorkerCount
     {
@@ -52,25 +52,33 @@ public static class Parallelism
 
     private sealed class Job
     {
-        public TaskCallback Task;
+#if NET7_0_OR_GREATER
+        public required TaskCallback Task;
+        public required int Start, End;
+        public required uint Index;
+        public required nint TaskContext;
+        public required BatchState Batch;
+#else
+        public TaskCallback? Task;
         public int Start, End;
         public uint Index;
         public nint TaskContext;
-        public BatchState Batch;
-
+        public BatchState? Batch;
+#endif
+        
         public void Execute()
         {
             try
             {
-                Task(Start, End, Index, TaskContext);
+                Task!(Start, End, Index, TaskContext);
             }
             catch (Exception ex)
             {
-                Interlocked.CompareExchange(ref Batch.Exception, ex, null);
+                Interlocked.CompareExchange(ref Batch!.Exception, ex, null);
             }
             finally
             {
-                Batch.Countdown.Signal();
+                Batch!.Countdown.Signal();
             }
         }
     }
