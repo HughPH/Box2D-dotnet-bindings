@@ -498,7 +498,7 @@ public partial struct Shape : IEquatable<Shape>, IComparable<Shape>
                     var segment = GetSegment();
                     return new([segment.Point1, segment.Point2]);
                 case ShapeType.Polygon:
-                    return GetPolygon().Vertices;
+                    return GetPolygon().CopyVertices();
                 case ShapeType.Capsule:
                     var capsule = GetCapsule();
                     return new([capsule.Center1, capsule.Center2]);
@@ -534,36 +534,6 @@ public partial struct Shape : IEquatable<Shape>, IComparable<Shape>
         }
     }
 
-    internal unsafe Vec2* GetVertices(out int count)
-    {
-        switch (Type)
-        {
-            case ShapeType.Circle:
-                var circle = GetCircle();
-                count = 1;
-                return &circle.Center;
-            case ShapeType.Segment:
-                var segment = GetSegment();
-                count = 2;
-                return &segment.Point1;
-            case ShapeType.Polygon:
-                var readOnlySpan = GetPolygon().Vertices;
-                count = readOnlySpan.Length;
-                Vec2 reference = readOnlySpan.GetPinnableReference();
-                return &reference;
-            case ShapeType.Capsule:
-                var capsule = GetCapsule();
-                count = 2;
-                return &capsule.Center1;
-            case ShapeType.ChainSegment:
-                var chainSegment = GetChainSegment();
-                count = 2;
-                return &chainSegment.Segment.Point1;
-        }
-        count = 0;
-        return (Vec2*)0;
-    }
-    
     public int CompareTo(Shape other)
     {
         int index1Comparison = index1.CompareTo(other.index1);

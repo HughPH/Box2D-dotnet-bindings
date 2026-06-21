@@ -78,6 +78,17 @@ public unsafe partial struct Polygon
     }
 
     /// <summary>
+    /// Copies vertices. Useful in the case that original memory is invalid.
+    /// </summary>
+    public Vec2[] CopyVertices()
+    {
+        Vec2[] result = new Vec2[count];
+        fixed (float* ptr = vertices)
+            new ReadOnlySpan<Vec2>(ptr, count).CopyTo(result);
+        return result;
+    }
+
+    /// <summary>
     /// Make a convex polygon from a set of points. This will create a hull and assert if it is not valid.
     /// </summary>
     public static Polygon MakePolygon(ReadOnlySpan<Vec2> points, float radius)
