@@ -3,9 +3,10 @@
 bin/
 obj/
 
-# Visual Studio Code
+# IDEs
 
 .vscode/
+.vs/
 
 # Rider
 
