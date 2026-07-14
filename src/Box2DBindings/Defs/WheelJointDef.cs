@@ -141,9 +141,9 @@ public sealed class WheelJointDef
         Vec2 anchorA,
         Vec2 anchorB,
         Vec2 axisA,
-        bool enableSpring = false,
-        float hertz = 0.0f,
-        float dampingRatio = 0.0f,
+        bool? enableSpring = null,
+        float? hertz = null,
+        float? dampingRatio = null,
         bool enableLimit = false,
         float lowerTranslation = 0.0f,
         float upperTranslation = 0.0f,
@@ -158,9 +158,12 @@ public sealed class WheelJointDef
         _internal.LocalAnchorA = anchorA;
         _internal.LocalAnchorB = anchorB;
         _internal.LocalAxisA = axisA;
-        EnableSpring = enableSpring;
-        Hertz = hertz;
-        DampingRatio = dampingRatio;
+        if (enableSpring != null)
+            EnableSpring = enableSpring.Value;
+        if (hertz != null)
+            Hertz = hertz.Value;
+        if (dampingRatio != null)
+            DampingRatio = dampingRatio.Value;
         EnableLimit = enableLimit;
         LowerTranslation = lowerTranslation;
         UpperTranslation = upperTranslation;

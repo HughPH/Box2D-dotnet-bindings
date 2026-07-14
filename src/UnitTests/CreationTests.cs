@@ -46,6 +46,120 @@ public class CreationTests
     }
 
     [Fact]
+    public void CreateWorld_WithGravityAssignedAfterDefaultConstructor_AppliesGravity()
+    {
+        Vector2 gravity = -Vector2.UnitY * 60;
+        WorldDef worldDef = new();
+        worldDef.Gravity = gravity;
+        World world = new(worldDef);
+        Body body = CreateDynamicBody(world);
+
+        Assert.Equal(gravity, worldDef.Gravity);
+        Assert.Equal(gravity, world.Gravity);
+        world.Step(1.0f / 60.0f, 4);
+        Assert.True(body.LinearVelocity.Y < 0, $"Expected gravity to move body downward; velocity was {body.LinearVelocity}");
+    }
+
+    [Fact]
+    public void CreateWorld_WithGravityPassedToConstructor_AppliesGravity()
+    {
+        Vector2 gravity = -Vector2.UnitY * 60;
+        WorldDef worldDef = new(gravity: gravity);
+        World world = new(worldDef);
+        Body body = CreateDynamicBody(world);
+
+        Assert.Equal(gravity, worldDef.Gravity);
+        Assert.Equal(gravity, world.Gravity);
+        world.Step(1.0f / 60.0f, 4);
+        Assert.True(body.LinearVelocity.Y < 0, $"Expected gravity to move body downward; velocity was {body.LinearVelocity}");
+    }
+
+    private static Body CreateDynamicBody(World world)
+    {
+        BodyDef bodyDef = new()
+        {
+            Type = BodyType.Dynamic
+        };
+
+        Body body = world.CreateBody(bodyDef);
+        ShapeDef shapeDef = new()
+        {
+            Density = 1.0f
+        };
+        Circle circle = new()
+        {
+            Radius = 1.0f
+        };
+        body.CreateShape(shapeDef, circle);
+
+        return body;
+    }
+
+    [Fact]
+    public void DefConstructors_WithOmittedOptionalParameters_PreserveNativeDefaults()
+    {
+        World world = new(new WorldDef());
+        Body bodyA = world.CreateBody(new BodyDef());
+        Body bodyB = world.CreateBody(new BodyDef());
+
+        ShapeDef defaultShapeDef = new();
+        ShapeDef shapeDef = new(defaultShapeDef.Material, defaultShapeDef.Density, defaultShapeDef.Filter);
+        Assert.Equal(defaultShapeDef.InvokeContactCreation, shapeDef.InvokeContactCreation);
+
+        DistanceJointDef defaultDistanceJointDef = new();
+        DistanceJointDef distanceJointDef = new(bodyA, bodyB, default, default);
+        Assert.Equal(defaultDistanceJointDef.Length, distanceJointDef.Length);
+        Assert.Equal(defaultDistanceJointDef.MaxLength, distanceJointDef.MaxLength);
+
+        MouseJointDef defaultMouseJointDef = new();
+        MouseJointDef mouseJointDef = new(bodyA, bodyB, default);
+        Assert.Equal(defaultMouseJointDef.Hertz, mouseJointDef.Hertz);
+        Assert.Equal(defaultMouseJointDef.DampingRatio, mouseJointDef.DampingRatio);
+        Assert.Equal(defaultMouseJointDef.MaxForce, mouseJointDef.MaxForce);
+
+        MotorJointDef defaultMotorJointDef = new();
+        MotorJointDef motorJointDef = new(bodyA, bodyB, default, 0.0f);
+        Assert.Equal(defaultMotorJointDef.MaxForce, motorJointDef.MaxForce);
+        Assert.Equal(defaultMotorJointDef.MaxTorque, motorJointDef.MaxTorque);
+
+        WheelJointDef defaultWheelJointDef = new();
+        WheelJointDef wheelJointDef = new(bodyA, bodyB, default, default, default);
+        Assert.Equal(defaultWheelJointDef.EnableSpring, wheelJointDef.EnableSpring);
+        Assert.Equal(defaultWheelJointDef.Hertz, wheelJointDef.Hertz);
+        Assert.Equal(defaultWheelJointDef.DampingRatio, wheelJointDef.DampingRatio);
+    }
+
+    [Fact]
+    public void DefConstructors_WithExplicitOptionalValues_OverwriteNativeDefaults()
+    {
+        World world = new(new WorldDef());
+        Body bodyA = world.CreateBody(new BodyDef());
+        Body bodyB = world.CreateBody(new BodyDef());
+
+        ShapeDef defaultShapeDef = new();
+        ShapeDef shapeDef = new(defaultShapeDef.Material, defaultShapeDef.Density, defaultShapeDef.Filter, invokeContactCreation: false);
+        Assert.False(shapeDef.InvokeContactCreation);
+
+        DistanceJointDef distanceJointDef = new(bodyA, bodyB, default, default, length: 0.0f, maxLength: 0.0f);
+        Assert.Equal(0.0f, distanceJointDef.Length);
+        Assert.Equal(0.0f, distanceJointDef.MaxLength);
+
+        MouseJointDef mouseJointDef = new(bodyA, bodyB, default, hertz: 0.0f, dampingRatio: 0.0f, maxForce: 0.0f);
+        Assert.Equal(0.0f, mouseJointDef.Hertz);
+        Assert.Equal(0.0f, mouseJointDef.DampingRatio);
+        Assert.Equal(0.0f, mouseJointDef.MaxForce);
+
+        MotorJointDef motorJointDef = new(bodyA, bodyB, default, 0.0f, maxForce: 0.0f, maxTorque: 0.0f);
+        Assert.Equal(0.0f, motorJointDef.MaxForce);
+        Assert.Equal(0.0f, motorJointDef.MaxTorque);
+
+        WheelJointDef wheelJointDef = new(bodyA, bodyB, default, default, default, enableSpring: false, hertz: 0.0f, dampingRatio: 0.0f);
+        Assert.False(wheelJointDef.EnableSpring);
+        Assert.Equal(0.0f, wheelJointDef.Hertz);
+        Assert.Equal(0.0f, wheelJointDef.DampingRatio);
+    }
+
+    [Fact]
     void CreateTwoJointedBodies()
     {
         string? error = null;

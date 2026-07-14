@@ -51,7 +51,7 @@ public readonly ref struct Profile
     /// <summary>
     /// Time integrating velocities for dynamic bodies.
     /// </summary>
-    public readonly float UntegrateVelocities;
+    public readonly float IntegrateVelocities;
 
     /// <summary>
     /// Time applying cached impulses to warm start the constraint solver.

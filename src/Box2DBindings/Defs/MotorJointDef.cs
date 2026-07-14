@@ -83,8 +83,8 @@ public sealed class MotorJointDef
         Body bodyB,
         Vec2 linearOffset,
         float angularOffset,
-        float maxForce = 0.0f,
-        float maxTorque = 0.0f,
+        float? maxForce = null,
+        float? maxTorque = null,
         float correctionFactor = 0.3f,
         bool collideConnected = false,
         object? userData = null)
@@ -93,8 +93,10 @@ public sealed class MotorJointDef
         BodyB = bodyB;
         LinearOffset = linearOffset;
         AngularOffset = angularOffset;
-        MaxForce = maxForce;
-        MaxTorque = maxTorque;
+        if (maxForce != null)
+            MaxForce = maxForce.Value;
+        if (maxTorque != null)
+            MaxTorque = maxTorque.Value;
         CorrectionFactor = correctionFactor;
         CollideConnected = collideConnected;
         UserData = userData;

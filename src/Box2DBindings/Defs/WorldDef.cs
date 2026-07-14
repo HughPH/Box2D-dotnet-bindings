@@ -168,12 +168,12 @@ public sealed class WorldDef
     /// </remarks>
     public  WorldDef(  
         Vec2 gravity,
-        float restitutionThreshold = 0.0f,
-        float hitEventThreshold = 0.0f,
-        float contactHertz = 0.0f,
-        float contactDampingRatio = 0.0f,
-        float maxContactPushSpeed = 0.0f,
-        float maximumLinearSpeed = 0.0f,
+        float? restitutionThreshold = null,
+        float? hitEventThreshold = null,
+        float? contactHertz = null,
+        float? contactDampingRatio = null,
+        float? maxContactPushSpeed = null,
+        float? maximumLinearSpeed = null,
         bool enableSleep = true,
         bool enableContinuous = true,
         object? userData = null,
@@ -185,12 +185,18 @@ public sealed class WorldDef
         bool enableParallelEvents = false)
     {
         Gravity = gravity;
-        RestitutionThreshold = restitutionThreshold;
-        HitEventThreshold = hitEventThreshold;
-        ContactHertz = contactHertz;
-        ContactDampingRatio = contactDampingRatio;
-        MaxContactPushSpeed = maxContactPushSpeed;
-        MaximumLinearSpeed = maximumLinearSpeed;
+        if (restitutionThreshold != null)
+            RestitutionThreshold = restitutionThreshold.Value;
+        if (hitEventThreshold != null)
+            HitEventThreshold = hitEventThreshold.Value;
+        if (contactHertz != null)
+            ContactHertz = contactHertz.Value;
+        if (contactDampingRatio != null)
+            ContactDampingRatio = contactDampingRatio.Value;
+        if (maxContactPushSpeed != null)
+            MaxContactPushSpeed = maxContactPushSpeed.Value;
+        if (maximumLinearSpeed != null)
+            MaximumLinearSpeed = maximumLinearSpeed.Value;
         EnableSleep = enableSleep;
         EnableContinuous = enableContinuous;
         UserData = userData;

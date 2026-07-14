@@ -129,7 +129,7 @@ public sealed class ShapeDef
         bool enableContactEvents = false,
         bool enableHitEvents = false,
         bool enablePreSolveEvents = false,
-        bool invokeContactCreation = false,
+        bool? invokeContactCreation = null,
         bool updateBodyMass = true,
         object? userData = null)
     {
@@ -141,7 +141,8 @@ public sealed class ShapeDef
         EnableContactEvents = enableContactEvents;
         EnableHitEvents = enableHitEvents;
         EnablePreSolveEvents = enablePreSolveEvents;
-        InvokeContactCreation = invokeContactCreation;
+        if (invokeContactCreation != null)
+            InvokeContactCreation = invokeContactCreation.Value;
         UpdateBodyMass = updateBodyMass;
         UserData = userData;
     }

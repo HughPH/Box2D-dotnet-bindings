@@ -140,13 +140,13 @@ public sealed class DistanceJointDef
         Body bodyB,
         Vec2 anchorA,
         Vec2 anchorB,
-        float length = 0.0f,
+        float? length = null,
         bool enableSpring = false,
         float hertz = 0.0f,
         float dampingRatio = 0.0f,
         bool enableLimit = false,
         float minLength = 0.0f,
-        float maxLength = 0.0f,
+        float? maxLength = null,
         bool enableMotor = false,
         float maxMotorForce = 0.0f,
         float motorSpeed = 0.0f,
@@ -157,13 +157,15 @@ public sealed class DistanceJointDef
         BodyB = bodyB;
         LocalAnchorA = anchorA;
         LocalAnchorB = anchorB;
-        Length = length;
+        if (length != null)
+            Length = length.Value;
         EnableSpring = enableSpring;
         Hertz = hertz;
         DampingRatio = dampingRatio;
         EnableLimit = enableLimit;
         MinLength = minLength;
-        MaxLength = maxLength;
+        if (maxLength != null)
+            MaxLength = maxLength.Value;
         EnableMotor = enableMotor;
         MaxMotorForce = maxMotorForce;
         MotorSpeed = motorSpeed;
