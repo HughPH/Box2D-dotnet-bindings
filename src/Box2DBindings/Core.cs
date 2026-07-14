@@ -78,11 +78,8 @@ public static partial class Core
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
     /// </summary>
-    public static unsafe ShapeProxy MakeProxy(Shape shape, float radius)
-    {
-        Vec2* vertices = shape.GetVertices(out int count);
-        return b2MakeProxy(vertices, count, radius);
-    }
+    public static ShapeProxy MakeProxy(Shape shape, float radius)
+        => MakeProxy(shape.LocalVertices, radius);
     
     /// <summary>
     /// Make a proxy for use in GJK and related functions.
