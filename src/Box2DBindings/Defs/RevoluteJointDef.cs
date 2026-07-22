@@ -17,7 +17,7 @@ public sealed class RevoluteJointDef
 {
     //! \internal
     internal RevoluteJointDefInternal _internal = new();
-    
+
     /// <summary>
     /// The first attached body
     /// </summary>
@@ -43,7 +43,7 @@ public sealed class RevoluteJointDef
     /// This defines the zero angle for the joint limit.
     /// </summary>
     public ref float ReferenceAngle => ref _internal.ReferenceAngle;
-    
+
     /// <summary>
     /// The target angle for the joint in radians. The spring-damper will drive
     /// to this angle.
@@ -58,7 +58,7 @@ public sealed class RevoluteJointDef
         get => _internal.EnableSpring != 0;
         set => _internal.EnableSpring = value ? (byte)1 : (byte)0;
     }
-    
+
     /// <summary>
     /// The spring stiffness Hertz, cycles per second
     /// </summary>
@@ -120,7 +120,7 @@ public sealed class RevoluteJointDef
         get => _internal.CollideConnected != 0;
         set => _internal.CollideConnected = value ? (byte)1 : (byte)0;
     }
-    
+
     /// <summary>
     /// User data
     /// </summary>
@@ -129,7 +129,7 @@ public sealed class RevoluteJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
-    
+
     /// <summary>
     /// Construct a revolute joint definition with the supplied values
     /// </summary>
@@ -155,38 +155,38 @@ public sealed class RevoluteJointDef
         Body bodyB,
         Vec2 anchorA,
         Vec2 anchorB,
-        float referenceAngle = 0.0f,
-        bool enableSpring = false,
-        float hertz = 0.0f,
-        float dampingRatio = 0.0f,
-        bool enableLimit = false,
-        float lowerAngle = 0.0f,
-        float upperAngle = 0.0f,
-        bool enableMotor = false,
-        float maxMotorTorque = 0.0f,
-        float motorSpeed = 0.0f,
-        bool collideConnected = false,
+        float? referenceAngle = null,
+        bool? enableSpring = null,
+        float? hertz = null,
+        float? dampingRatio = null,
+        bool? enableLimit = null,
+        float? lowerAngle = null,
+        float? upperAngle = null,
+        bool? enableMotor = null,
+        float? maxMotorTorque = null,
+        float? motorSpeed = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
         BodyB = bodyB;
         LocalAnchorA = anchorA;
         LocalAnchorB = anchorB;
-        ReferenceAngle = referenceAngle;
-        EnableSpring = enableSpring;
-        Hertz = hertz;
-        DampingRatio = dampingRatio;
-        EnableLimit = enableLimit;
-        LowerAngle = lowerAngle;
-        UpperAngle = upperAngle;
-        EnableMotor = enableMotor;
-        MaxMotorTorque = maxMotorTorque;
-        MotorSpeed = motorSpeed;
-        CollideConnected = collideConnected;
-        
+        ReferenceAngle = referenceAngle ?? ReferenceAngle;
+        EnableSpring = enableSpring ?? EnableSpring;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        EnableLimit = enableLimit ?? EnableLimit;
+        LowerAngle = lowerAngle ?? LowerAngle;
+        UpperAngle = upperAngle ?? UpperAngle;
+        EnableMotor = enableMotor ?? EnableMotor;
+        MaxMotorTorque = maxMotorTorque ?? MaxMotorTorque;
+        MotorSpeed = motorSpeed ?? MotorSpeed;
+        CollideConnected = collideConnected ?? CollideConnected;
+
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a revolute joint definition with the supplied values
     /// </summary>
@@ -212,40 +212,40 @@ public sealed class RevoluteJointDef
         Body bodyB,
         Vec2 anchorA,
         Vec2 anchorB,
-        float referenceAngle = 0.0f,
-        float targetAngle = 0.0f,
-        bool enableSpring = false,
-        float hertz = 0.0f,
-        float dampingRatio = 0.0f,
-        bool enableLimit = false,
-        float lowerAngle = 0.0f,
-        float upperAngle = 0.0f,
-        bool enableMotor = false,
-        float maxMotorTorque = 0.0f,
-        float motorSpeed = 0.0f,
-        bool collideConnected = false,
+        float? referenceAngle = null,
+        float? targetAngle = null,
+        bool? enableSpring = null,
+        float? hertz = null,
+        float? dampingRatio = null,
+        bool? enableLimit = null,
+        float? lowerAngle = null,
+        float? upperAngle = null,
+        bool? enableMotor = null,
+        float? maxMotorTorque = null,
+        float? motorSpeed = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
         BodyB = bodyB;
         LocalAnchorA = anchorA;
         LocalAnchorB = anchorB;
-        ReferenceAngle = referenceAngle;
-        TargetAngle = targetAngle;
-        EnableSpring = enableSpring;
-        Hertz = hertz;
-        DampingRatio = dampingRatio;
-        EnableLimit = enableLimit;
-        LowerAngle = lowerAngle;
-        UpperAngle = upperAngle;
-        EnableMotor = enableMotor;
-        MaxMotorTorque = maxMotorTorque;
-        MotorSpeed = motorSpeed;
-        CollideConnected = collideConnected;
-        
+        ReferenceAngle = referenceAngle ?? ReferenceAngle;
+        TargetAngle = targetAngle ?? TargetAngle;
+        EnableSpring = enableSpring ?? EnableSpring;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        EnableLimit = enableLimit ?? EnableLimit;
+        LowerAngle = lowerAngle ?? LowerAngle;
+        UpperAngle = upperAngle ?? UpperAngle;
+        EnableMotor = enableMotor ?? EnableMotor;
+        MaxMotorTorque = maxMotorTorque ?? MaxMotorTorque;
+        MotorSpeed = motorSpeed ?? MotorSpeed;
+        CollideConnected = collideConnected ?? CollideConnected;
+
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a revolute joint definition with the default values
     /// </summary>

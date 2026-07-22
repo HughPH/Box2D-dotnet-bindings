@@ -10,20 +10,18 @@ public sealed class WorldDef
 {
     //! \internal
     internal WorldDefInternal _internal = new();
-    
+
     /// <summary>
     /// Creates a world definition with the default values.
     /// </summary>
     public WorldDef()
-    {
-        
-    }
-    
+    { }
+
     /// <summary>
     /// Creates a world definition with the default values.
     /// </summary>
-    public static WorldDef Default => new ();
-    
+    public static WorldDef Default => new();
+
     /// <summary>
     /// Gravity vector. Box2D has no up-vector defined.
     /// </summary>
@@ -124,7 +122,7 @@ public sealed class WorldDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
-    
+
     /// <summary>
     /// User context that is provided to enqueueTask and finishTask
     /// </summary>
@@ -141,7 +139,7 @@ public sealed class WorldDef
     /// This is not a standard Box2D feature.
     /// </remarks>
     public bool EnableParallelEvents;
-    
+
     /// <summary>
     /// Construct a new world definition with the supplied values
     /// </summary>
@@ -166,7 +164,7 @@ public sealed class WorldDef
     /// <remarks>
     /// Parallel processing of World events is not a standard Box2D feature.
     /// </remarks>
-    public  WorldDef(  
+    public WorldDef(
         Vec2 gravity,
         float? restitutionThreshold = null,
         float? hitEventThreshold = null,
@@ -174,44 +172,32 @@ public sealed class WorldDef
         float? contactDampingRatio = null,
         float? maxContactPushSpeed = null,
         float? maximumLinearSpeed = null,
-        bool enableSleep = true,
-        bool enableContinuous = true,
+        bool? enableSleep = null,
+        bool? enableContinuous = null,
         object? userData = null,
         FrictionCallback? frictionCallback = null,
         RestitutionCallback? restitutionCallback = null,
         EnqueueTaskCallback? enqueueTask = null,
         FinishTaskCallback? finishTask = null,
         object? userTaskContext = null,
-        bool enableParallelEvents = false)
+        bool? enableParallelEvents = null)
     {
         Gravity = gravity;
-        if (restitutionThreshold != null)
-            RestitutionThreshold = restitutionThreshold.Value;
-        if (hitEventThreshold != null)
-            HitEventThreshold = hitEventThreshold.Value;
-        if (contactHertz != null)
-            ContactHertz = contactHertz.Value;
-        if (contactDampingRatio != null)
-            ContactDampingRatio = contactDampingRatio.Value;
-        if (maxContactPushSpeed != null)
-            MaxContactPushSpeed = maxContactPushSpeed.Value;
-        if (maximumLinearSpeed != null)
-            MaximumLinearSpeed = maximumLinearSpeed.Value;
-        EnableSleep = enableSleep;
-        EnableContinuous = enableContinuous;
+        RestitutionThreshold = restitutionThreshold ?? RestitutionThreshold;
+        HitEventThreshold = hitEventThreshold ?? HitEventThreshold;
+        ContactHertz = contactHertz ?? ContactHertz;
+        ContactDampingRatio = contactDampingRatio ?? ContactDampingRatio;
+        MaxContactPushSpeed = maxContactPushSpeed ?? MaxContactPushSpeed;
+        MaximumLinearSpeed = maximumLinearSpeed ?? MaximumLinearSpeed;
+        EnableSleep = enableSleep ?? EnableSleep;
+        EnableContinuous = enableContinuous ?? EnableContinuous;
         UserData = userData;
-        if (frictionCallback != null)
-            FrictionCallback = frictionCallback;
-        if (restitutionCallback != null)
-            RestitutionCallback = restitutionCallback;
-        
-        if (enqueueTask != null)
-            EnqueueTask = enqueueTask;
-        if (finishTask != null)
-            FinishTask = finishTask;
-        
+        FrictionCallback = frictionCallback ?? FrictionCallback;
+        RestitutionCallback = restitutionCallback ?? RestitutionCallback;
+        EnqueueTask = enqueueTask ?? EnqueueTask;
+        FinishTask = finishTask ?? FinishTask;
         UserTaskContext = userTaskContext;
-        
-        EnableParallelEvents = enableParallelEvents;
+
+        EnableParallelEvents = enableParallelEvents ?? EnableParallelEvents;
     }
 }

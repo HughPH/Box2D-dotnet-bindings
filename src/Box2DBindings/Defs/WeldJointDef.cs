@@ -14,7 +14,7 @@ public sealed class WeldJointDef
 {
     //! \internal
     internal WeldJointDefInternal _internal = new();
-    
+
     /// <summary>
     /// The first attached body
     /// </summary>
@@ -77,7 +77,7 @@ public sealed class WeldJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
-    
+
     /// <summary>
     /// Construct a weld joint definition with the supplied values
     /// </summary>
@@ -97,27 +97,27 @@ public sealed class WeldJointDef
         Body bodyB,
         Vec2 anchorA,
         Vec2 anchorB,
-        float referenceAngle = 0.0f,
-        float linearHertz = 0.0f,
-        float angularHertz = 0.0f,
-        float linearDampingRatio = 0.0f,
-        float angularDampingRatio = 0.0f,
-        bool collideConnected = false,
+        float? referenceAngle = null,
+        float? linearHertz = null,
+        float? angularHertz = null,
+        float? linearDampingRatio = null,
+        float? angularDampingRatio = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
         BodyB = bodyB;
         LocalAnchorA = anchorA;
         LocalAnchorB = anchorB;
-        ReferenceAngle = referenceAngle;
-        LinearHertz = linearHertz;
-        AngularHertz = angularHertz;
-        LinearDampingRatio = linearDampingRatio;
-        AngularDampingRatio = angularDampingRatio;
-        CollideConnected = collideConnected;
+        ReferenceAngle = referenceAngle ?? ReferenceAngle;
+        LinearHertz = linearHertz ?? LinearHertz;
+        AngularHertz = angularHertz ?? AngularHertz;
+        LinearDampingRatio = linearDampingRatio ?? LinearDampingRatio;
+        AngularDampingRatio = angularDampingRatio ?? AngularDampingRatio;
+        CollideConnected = collideConnected ?? CollideConnected;
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a weld joint definition with the default values
     /// </summary>

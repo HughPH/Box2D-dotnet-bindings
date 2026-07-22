@@ -80,20 +80,17 @@ public sealed class MouseJointDef
         float? hertz = null,
         float? dampingRatio = null,
         float? maxForce = null,
-        bool collideConnected = false,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
         BodyB = bodyB;
         Target = target;
-        if (hertz != null)
-            Hertz = hertz.Value;
-        if (dampingRatio != null)
-            DampingRatio = dampingRatio.Value;
-        if (maxForce != null)
-            MaxForce = maxForce.Value;
-        CollideConnected = collideConnected;
-        UserData = userData;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        MaxForce = maxForce ?? MaxForce;
+        CollideConnected = collideConnected ?? CollideConnected;
+        UserData = userData ?? UserData;
     }
     
     /// <summary>

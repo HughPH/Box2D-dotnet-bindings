@@ -14,7 +14,7 @@ public sealed class DistanceJointDef
 {
     //! \internal
     internal DistanceJointDefInternal _internal = new();
-    
+
     /// <summary>
     /// The first attached body
     /// </summary>
@@ -106,7 +106,7 @@ public sealed class DistanceJointDef
         get => _internal.CollideConnected != 0;
         set => _internal.CollideConnected = (byte)(value ? 1 : 0);
     }
-    
+
     /// <summary>
     /// Use this to store application specific shape data.
     /// </summary>
@@ -115,7 +115,7 @@ public sealed class DistanceJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
-    
+
     /// <summary>
     /// Construct a distance joint definition with the supplied values
     /// </summary>
@@ -141,39 +141,37 @@ public sealed class DistanceJointDef
         Vec2 anchorA,
         Vec2 anchorB,
         float? length = null,
-        bool enableSpring = false,
-        float hertz = 0.0f,
-        float dampingRatio = 0.0f,
-        bool enableLimit = false,
-        float minLength = 0.0f,
+        bool? enableSpring = null,
+        float? hertz = null,
+        float? dampingRatio = null,
+        bool? enableLimit = null,
+        float? minLength = null,
         float? maxLength = null,
-        bool enableMotor = false,
-        float maxMotorForce = 0.0f,
-        float motorSpeed = 0.0f,
-        bool collideConnected = false,
+        bool? enableMotor = null,
+        float? maxMotorForce = null,
+        float? motorSpeed = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
         BodyB = bodyB;
         LocalAnchorA = anchorA;
         LocalAnchorB = anchorB;
-        if (length != null)
-            Length = length.Value;
-        EnableSpring = enableSpring;
-        Hertz = hertz;
-        DampingRatio = dampingRatio;
-        EnableLimit = enableLimit;
-        MinLength = minLength;
-        if (maxLength != null)
-            MaxLength = maxLength.Value;
-        EnableMotor = enableMotor;
-        MaxMotorForce = maxMotorForce;
-        MotorSpeed = motorSpeed;
-        CollideConnected = collideConnected;
-        
+        Length = length ?? Length;
+        EnableSpring = enableSpring ?? EnableSpring;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        EnableLimit = enableLimit ?? EnableLimit;
+        MinLength = minLength ?? MinLength;
+        MaxLength = maxLength ?? MaxLength;
+        EnableMotor = enableMotor ?? EnableMotor;
+        MaxMotorForce = maxMotorForce ?? MaxMotorForce;
+        MotorSpeed = motorSpeed ?? MotorSpeed;
+        CollideConnected = collideConnected ?? CollideConnected;
+
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a distance joint definition with the default values
     /// </summary>
@@ -181,5 +179,4 @@ public sealed class DistanceJointDef
     {
         _internal = new();
     }
-    
 }

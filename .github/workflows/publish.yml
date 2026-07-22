@@ -315,7 +315,7 @@ jobs:
                 run: |
                     rm -rf ./* 
 
-            -   uses: actions/checkout@v4
+            -   uses: actions/checkout@v7
 
             -   name: "Download native libs"
                 uses: actions/download-artifact@v8
@@ -367,7 +367,7 @@ jobs:
 #                run: |
 #                    rm -rf ./* 
 #
-#            -   uses: actions/checkout@v4
+#            -   uses: actions/checkout@v7
 #
 #            -   name: Generate Doxygen Documentation
 #                run: doxygen
@@ -393,7 +393,7 @@ jobs:
                 run: |
                     rm -rf ./*
 
-            -   uses: actions/checkout@v4
+            -   uses: actions/checkout@v7
 
             -   name: "Download native libs"
                 uses: actions/download-artifact@v4

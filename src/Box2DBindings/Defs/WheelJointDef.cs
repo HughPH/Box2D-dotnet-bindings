@@ -144,13 +144,13 @@ public sealed class WheelJointDef
         bool? enableSpring = null,
         float? hertz = null,
         float? dampingRatio = null,
-        bool enableLimit = false,
-        float lowerTranslation = 0.0f,
-        float upperTranslation = 0.0f,
-        bool enableMotor = false,
-        float maxMotorTorque = 0.0f,
-        float motorSpeed = 0.0f,
-        bool collideConnected = false,
+        bool? enableLimit = null,
+        float? lowerTranslation = null,
+        float? upperTranslation = null,
+        bool? enableMotor = null,
+        float? maxMotorTorque = null,
+        float? motorSpeed = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         _internal.BodyA = bodyA;
@@ -158,22 +158,19 @@ public sealed class WheelJointDef
         _internal.LocalAnchorA = anchorA;
         _internal.LocalAnchorB = anchorB;
         _internal.LocalAxisA = axisA;
-        if (enableSpring != null)
-            EnableSpring = enableSpring.Value;
-        if (hertz != null)
-            Hertz = hertz.Value;
-        if (dampingRatio != null)
-            DampingRatio = dampingRatio.Value;
-        EnableLimit = enableLimit;
-        LowerTranslation = lowerTranslation;
-        UpperTranslation = upperTranslation;
-        EnableMotor = enableMotor;
-        MaxMotorTorque = maxMotorTorque;
-        MotorSpeed = motorSpeed;
-        CollideConnected = collideConnected;
+        EnableSpring = enableSpring ?? EnableSpring;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        EnableLimit = enableLimit ?? EnableLimit;
+        LowerTranslation = lowerTranslation ?? LowerTranslation;
+        UpperTranslation = upperTranslation ?? UpperTranslation;
+        EnableMotor = enableMotor ?? EnableMotor;
+        MaxMotorTorque = maxMotorTorque ?? MaxMotorTorque;
+        MotorSpeed = motorSpeed ?? MotorSpeed;
+        CollideConnected = collideConnected ?? CollideConnected;
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a wheel joint definition with the default values
     /// </summary>
@@ -181,5 +178,4 @@ public sealed class WheelJointDef
     {
         _internal = new();
     }
-    
 }

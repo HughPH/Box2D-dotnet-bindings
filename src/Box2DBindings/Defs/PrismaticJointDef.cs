@@ -16,7 +16,7 @@ public sealed class PrismaticJointDef
 {
     //! \internal
     internal PrismaticJointDefInternal _internal = new();
-    
+
     /// <summary>
     /// The first attached body
     /// </summary>
@@ -52,7 +52,7 @@ public sealed class PrismaticJointDef
     /// to this translation.
     /// </summary>
     public ref float TargetTranslation => ref _internal.TargetTranslation;
-    
+
     /// <summary>
     /// Enable a linear spring along the prismatic joint axis
     /// </summary>
@@ -127,7 +127,7 @@ public sealed class PrismaticJointDef
         get => GetObjectAtPointer(_internal.UserData);
         set => SetObjectAtPointer(ref _internal.UserData, value);
     }
-    
+
     /// <summary>
     /// Construct a prismatic joint definition with the supplied values
     /// </summary>
@@ -155,17 +155,17 @@ public sealed class PrismaticJointDef
         Vec2 localAnchorA,
         Vec2 localAnchorB,
         Vec2 localAxisA,
-        float referenceAngle = 0.0f,
-        bool enableSpring = false,
-        float hertz = 0.0f,
-        float dampingRatio = 0.0f,
-        bool enableLimit = false,
-        float lowerTranslation = 0.0f,
-        float upperTranslation = 0.0f,
-        bool enableMotor = false,
-        float maxMotorForce = 0.0f,
-        float motorSpeed = 0.0f,
-        bool collideConnected = false,
+        float? referenceAngle = null,
+        bool? enableSpring = null,
+        float? hertz = null,
+        float? dampingRatio = null,
+        bool? enableLimit = null,
+        float? lowerTranslation = null,
+        float? upperTranslation = null,
+        bool? enableMotor = null,
+        float? maxMotorForce = null,
+        float? motorSpeed = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
@@ -173,20 +173,20 @@ public sealed class PrismaticJointDef
         LocalAnchorA = localAnchorA;
         LocalAnchorB = localAnchorB;
         LocalAxisA = localAxisA;
-        ReferenceAngle = referenceAngle;
-        EnableSpring = enableSpring;
-        Hertz = hertz;
-        DampingRatio = dampingRatio;
-        EnableLimit = enableLimit;
-        LowerTranslation = lowerTranslation;
-        UpperTranslation = upperTranslation;
-        EnableMotor = enableMotor;
-        MaxMotorForce = maxMotorForce;
-        MotorSpeed = motorSpeed;
-        CollideConnected = collideConnected;
+        ReferenceAngle = referenceAngle ?? ReferenceAngle;
+        EnableSpring = enableSpring ?? EnableSpring;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        EnableLimit = enableLimit ?? EnableLimit;
+        LowerTranslation = lowerTranslation ?? LowerTranslation;
+        UpperTranslation = upperTranslation ?? UpperTranslation;
+        EnableMotor = enableMotor ?? EnableMotor;
+        MaxMotorForce = maxMotorForce ?? MaxMotorForce;
+        MotorSpeed = motorSpeed ?? MotorSpeed;
+        CollideConnected = collideConnected ?? CollideConnected;
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a prismatic joint definition with the supplied values
     /// </summary>
@@ -214,18 +214,18 @@ public sealed class PrismaticJointDef
         Vec2 localAnchorA,
         Vec2 localAnchorB,
         Vec2 localAxisA,
-        float referenceAngle = 0.0f,
-        float targetTranslation = 0.0f,
-        bool enableSpring = false,
-        float hertz = 0.0f,
-        float dampingRatio = 0.0f,
-        bool enableLimit = false,
-        float lowerTranslation = 0.0f,
-        float upperTranslation = 0.0f,
-        bool enableMotor = false,
-        float maxMotorForce = 0.0f,
-        float motorSpeed = 0.0f,
-        bool collideConnected = false,
+        float? referenceAngle = null,
+        float? targetTranslation = null,
+        bool? enableSpring = null,
+        float? hertz = null,
+        float? dampingRatio = null,
+        bool? enableLimit = null,
+        float? lowerTranslation = null,
+        float? upperTranslation = null,
+        bool? enableMotor = null,
+        float? maxMotorForce = null,
+        float? motorSpeed = null,
+        bool? collideConnected = null,
         object? userData = null)
     {
         BodyA = bodyA;
@@ -233,21 +233,21 @@ public sealed class PrismaticJointDef
         LocalAnchorA = localAnchorA;
         LocalAnchorB = localAnchorB;
         LocalAxisA = localAxisA;
-        ReferenceAngle = referenceAngle;
-        TargetTranslation = targetTranslation;
-        EnableSpring = enableSpring;
-        Hertz = hertz;
-        DampingRatio = dampingRatio;
-        EnableLimit = enableLimit;
-        LowerTranslation = lowerTranslation;
-        UpperTranslation = upperTranslation;
-        EnableMotor = enableMotor;
-        MaxMotorForce = maxMotorForce;
-        MotorSpeed = motorSpeed;
-        CollideConnected = collideConnected;
+        ReferenceAngle = referenceAngle ?? ReferenceAngle;
+        TargetTranslation = targetTranslation ?? TargetTranslation;
+        EnableSpring = enableSpring ?? EnableSpring;
+        Hertz = hertz ?? Hertz;
+        DampingRatio = dampingRatio ?? DampingRatio;
+        EnableLimit = enableLimit ?? EnableLimit;
+        LowerTranslation = lowerTranslation ?? LowerTranslation;
+        UpperTranslation = upperTranslation ?? UpperTranslation;
+        EnableMotor = enableMotor ?? EnableMotor;
+        MaxMotorForce = maxMotorForce ?? MaxMotorForce;
+        MotorSpeed = motorSpeed ?? MotorSpeed;
+        CollideConnected = collideConnected ?? CollideConnected;
         UserData = userData;
     }
-    
+
     /// <summary>
     /// Construct a prismatic joint definition with the default values
     /// </summary>

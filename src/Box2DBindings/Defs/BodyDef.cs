@@ -202,42 +202,40 @@ public sealed class BodyDef
     /// <param name="userData">Use this to store application specific body data.</param>
     public BodyDef(
         BodyType type = BodyType.Static,
-        Vec2 position = default,
-        Rotation rotation = default,
-        Vec2 linearVelocity = default,
-        float angularVelocity = 0f,
-        float linearDamping = 0f,
-        float angularDamping = 0f,
-        float gravityScale = 1f,
-        float sleepThreshold = 0.05f,
-        bool enableSleep = true,
-        bool isAwake = true,
-        bool fixedRotation = false,
-        bool isBullet = false,
-        bool isEnabled = true,
-        bool allowFastRotation = false,
+        Vec2? position = null,
+        Rotation? rotation = null,
+        Vec2? linearVelocity = null,
+        float? angularVelocity = null,
+        float? linearDamping = null,
+        float? angularDamping = null,
+        float? gravityScale = null,
+        float? sleepThreshold = null,
+        bool? enableSleep = null,
+        bool? isAwake = null,
+        bool? fixedRotation = null,
+        bool? isBullet = null,
+        bool? isEnabled = null,
+        bool? allowFastRotation = null,
         string? name = null,
         object? userData = null)
     {
         Type = type;
-        Position = position;
-        Rotation = rotation;
-        LinearVelocity = linearVelocity;
-        AngularVelocity = angularVelocity;
-        LinearDamping = linearDamping;
-        AngularDamping = angularDamping;
-        GravityScale = gravityScale;
-        SleepThreshold = sleepThreshold;
-        EnableSleep = enableSleep;
-        IsAwake = isAwake;
-        FixedRotation = fixedRotation;
-        IsBullet = isBullet;
-        IsEnabled = isEnabled;
-        AllowFastRotation = allowFastRotation;
-
-        Name = name;
-
-        UserData = userData;
+        Position = position ?? Position;
+        Rotation = rotation ?? Rotation;
+        LinearVelocity = linearVelocity ?? LinearVelocity;
+        AngularVelocity = angularVelocity ?? AngularVelocity;
+        LinearDamping = linearDamping ?? LinearDamping;
+        AngularDamping = angularDamping ?? AngularDamping;
+        GravityScale = gravityScale ?? GravityScale;
+        SleepThreshold = sleepThreshold ?? SleepThreshold;
+        EnableSleep = enableSleep ?? EnableSleep;
+        IsAwake = isAwake ?? IsAwake;
+        FixedRotation = fixedRotation ?? FixedRotation;
+        IsBullet = isBullet ?? IsBullet;
+        IsEnabled = isEnabled ?? IsEnabled;
+        AllowFastRotation = allowFastRotation ?? AllowFastRotation;
+        Name = name ?? Name;
+        UserData = userData ?? UserData;
     }
 
     /// <summary>

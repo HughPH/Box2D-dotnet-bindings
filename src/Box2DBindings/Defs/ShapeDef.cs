@@ -124,26 +124,25 @@ public sealed class ShapeDef
         SurfaceMaterial material,
         float density,
         Filter filter,
-        bool isSensor = false,
-        bool enableSensorEvents = false,
-        bool enableContactEvents = false,
-        bool enableHitEvents = false,
-        bool enablePreSolveEvents = false,
+        bool? isSensor = null,
+        bool? enableSensorEvents = null,
+        bool? enableContactEvents = null,
+        bool? enableHitEvents = null,
+        bool? enablePreSolveEvents = null,
         bool? invokeContactCreation = null,
-        bool updateBodyMass = true,
+        bool? updateBodyMass = null,
         object? userData = null)
     {
         _internal.Material = material;
         _internal.Density = density;
         _internal.Filter = filter;
-        IsSensor = isSensor;
-        EnableSensorEvents = enableSensorEvents;
-        EnableContactEvents = enableContactEvents;
-        EnableHitEvents = enableHitEvents;
-        EnablePreSolveEvents = enablePreSolveEvents;
-        if (invokeContactCreation != null)
-            InvokeContactCreation = invokeContactCreation.Value;
-        UpdateBodyMass = updateBodyMass;
+        IsSensor = isSensor??IsSensor;
+        EnableSensorEvents = enableSensorEvents??EnableSensorEvents;
+        EnableContactEvents = enableContactEvents??EnableContactEvents;
+        EnableHitEvents = enableHitEvents??EnableHitEvents;
+        EnablePreSolveEvents = enablePreSolveEvents??EnablePreSolveEvents;
+        InvokeContactCreation = invokeContactCreation??InvokeContactCreation;
+        UpdateBodyMass = updateBodyMass??UpdateBodyMass;
         UserData = userData;
     }
     
